@@ -1,0 +1,158 @@
+/* Variables globales */
+:root {
+    --color-negro: #000000;
+    --color-rojo: #C8102E;
+    --color-mostaza: #D4AF37;
+    --color-blanco: #FFFFFF;
+    --color-gris-claro: #F5F5F5;
+    --color-texto: #333333;
+}
+
+/* Tipografía */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--color-texto);
+    background-color: var(--color-blanco);
+}
+
+/* Encabezado */
+header {
+    background-color: var(--color-negro);
+}
+
+header .btn-outline-light:hover {
+    background-color: var(--color-mostaza);
+    color: var(--color-negro);
+}
+
+header .btn-warning {
+    background-color: var(--color-mostaza);
+    color: var(--color-negro);
+    border: none;
+}
+
+header .btn-warning:hover {
+    background-color: #B8952A;
+    color: var(--color-negro);
+}
+
+/* Botones personalizados */
+.btn-rojo {
+    background-color: var(--color-rojo);
+    color: var(--color-blanco);
+    border: none;
+}
+
+.btn-rojo:hover {
+    background-color: #A50D24;
+}
+
+/* Tarjetas */
+.card {
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* Colores personalizados */
+.text-mostaza {
+    color: var(--color-mostaza);
+}
+
+.text-rojo {
+    color: var(--color-rojo);
+}
+
+.bg-gris-claro {
+    background-color: var(--color-gris-claro);
+}
+
+/* Mapa */
+.ratio {
+    background-color: #ddd;
+}
+
+/* Llamada a la acción */
+footer .btn-warning {
+    background-color: var(--color-mostaza);
+    color: var(--color-negro);
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+footer .btn-warning:hover {
+    background-color: #B8952A;
+}
+/* Footer que ocupa todo el ancho */
+.footer-wrapper {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    background-color: #000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    header nav {
+        margin-top: 15px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+}
+
+/* carrusel */
+/* Estilos del carrusel */
+.carousel-item img {
+    height: 400px;
+    object-fit: cover;
+    filter: brightness(0.9);
+}
+
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.carousel-caption h5 {
+    color: var(--color-mostaza);
+    font-weight: bold;
+}
+
+.carousel-caption p {
+    color: var(--color-blanco);
+    font-size: 0.9rem;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: var(--color-rojo);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 250px;
+    }
+
+    .carousel-caption {
+        display: none;
+    }
+}
