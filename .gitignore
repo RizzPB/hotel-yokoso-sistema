@@ -1,0 +1,16 @@
+# Archivos de configuración sensibles
+config/database.php
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+
+# Carpetas de IDE 
+.vscode/
+.idea/
+
+/vendor/
+
+# Archivos de backup o SQL locales 
+*.sql
+/db_backups/
