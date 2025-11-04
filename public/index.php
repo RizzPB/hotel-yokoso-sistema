@@ -182,8 +182,8 @@
                         </div>
                         <div class="col-md-4 mb-4">
                             <h5>Redes Sociales</h5>
-                            <a href="#" class="me-3"><i class="fab fa-facebook-f fa-2x text-white"></i></a>
-                            <a href="#" class="me-3"><i class="fab fa-instagram fa-2x text-white"></i></a>
+                            <a href="https://www.facebook.com/share/1L89sfZGV5/" class="me-3"><i class="fab fa-facebook-f fa-2x text-white"></i></a>
+                            <a href="https://www.instagram.com/hostalyokoso?igsh=MW5tODFiNnoydndhcA==" class="me-3"><i class="fab fa-instagram fa-2x text-white"></i></a>
                             <a href="#" class="me-3"><i class="fab fa-whatsapp fa-2x text-white"></i></a>
                         </div>
                         <div class="col-md-4">
