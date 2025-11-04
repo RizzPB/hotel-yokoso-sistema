@@ -6,6 +6,13 @@
     --color-blanco: #FFFFFF;
     --color-gris-claro: #F5F5F5;
     --color-texto: #333333;
+    --color-rojo-oscuro: #8A1C1C;
+    --color-mostaza-claro: #F4C542;
+    --color-mostaza-oscuro: #B17F00;
+    --color-gris-medio: #A3A3A3;
+    --color-gris-oscuro:#3C3C3C;
+    --color-transicion-arena-mostaza: #EBD8A9;
+    --color-rojo-quemado: #9E2B25;
 }
 
 /* Tipografía */
@@ -17,7 +24,7 @@ body {
 
 /* Encabezado */
 header {
-    background-color: var(--color-negro);
+    background-color: var(--color-rojo-quemado);
 }
 
 header .btn-outline-light:hover {

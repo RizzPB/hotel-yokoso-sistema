@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="auth-container">
-        <img src="img/logo_yokoso.png" alt="Hotel Yokoso Logo" />
+        <img src="img/empresaLogoYokoso.png" alt="Hotel Yokoso Logo" />
         <h2>Registro de Usuario</h2>
 
         <?php if ($error): ?>

@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="auth-container">
-        <img src="img/logo_yokoso.png" alt="Hotel Yokoso Logo" />
+        <img src="img/logoYOKOSO2.png" alt="Hotel Yokoso Logo" />
         <h2>Recuperar Contraseña</h2>
         <p>Ingresa tu correo para restablecer tu contraseña.</p>
 

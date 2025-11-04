@@ -19,10 +19,10 @@
 </head>
 <body>
     <!-- Encabezado -->
-    <header class="bg-dark text-white py-3">
+    <header id="encabezado" class="text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <img src="img/logo.png" alt="Logo Hotel Yokoso" width="60" class="me-3">
+                <img src="img/empresaLogoYokoso.png" alt="Logo Hotel Yokoso" width="60" class="me-3">
                 <div>
                     <h1 class="h4 mb-0">Hotel Yokoso</h1>
                     <p class="mb-0 small">Hospitalidad única en el corazón de Uyuni, Bolivia</p>
