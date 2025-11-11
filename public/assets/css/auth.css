@@ -1,17 +1,35 @@
 /* auth.css */
+/* Fondos personalizados para auth */
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 20px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Fondo para login */
+body.login-bg {
+  background-image: url('/assets/img/bgLogin.jpg');
+}
+
+/* Fondo para registro */
+body.registro-bg {
+  background-image: url('/assets/img/bgRegistro.jpg');
+}
+
+/* Fondo para recuperar */
+body.recuperar-bg {
+  background-image: url('/assets/img/bgRecuperar.jpg');
 }
 
 .auth-container {
-  background: white;
+  background: rgba(255, 255, 255, 0.92);
   border-radius: 15px;
   padding: 40px;
   width: 100%;
