@@ -13,13 +13,29 @@
     --color-gris-oscuro:#3C3C3C;
     --color-transicion-arena-mostaza: #EBD8A9;
     --color-rojo-quemado: #9E2B25;
+
+    /* fuente */
+    --font-body: 'Poppins', sans-serif;
+    --font-heading: 'Playfair Display', serif;
 }
 
 /* Tipografía */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-body);
     color: var(--color-texto);
     background-color: var(--color-blanco);
+}
+/* Títulos */
+h1, h2, h3, h4, h5, h6,
+.display-4, .display-5,
+.carousel-caption h1,
+.carousel-caption h5 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+/* Opc */
+h1, h2 {
+  line-height: 1.2;
 }
 
 /* Encabezado */
@@ -103,63 +119,31 @@ footer .btn-warning:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
-    header .container {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    header nav {
-        margin-top: 15px;
-    }
-
     .card {
         margin-bottom: 20px;
     }
 }
-
-/* carrusel */
-/* Estilos del carrusel */
-.carousel-item img {
-    height: 400px;
-    object-fit: cover;
-    filter: brightness(0.9);
+/* nuevos estilos del carrusel */
+.carousel-item {
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
 }
-
-.carousel-caption {
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
 }
-
-.carousel-caption h5 {
-    color: var(--color-mostaza);
-    font-weight: bold;
-}
-
-.carousel-caption p {
-    color: var(--color-blanco);
-    font-size: 0.9rem;
-}
-
-.carousel-control-prev,
-.carousel-control-next {
-    width: 5%;
-}
-
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: var(--color-rojo);
-    border-radius: 50%;
-    padding: 10px;
+  background-color: var(--color-mostaza);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
 }
-
 @media (max-width: 768px) {
-    .carousel-item img {
-        height: 250px;
-    }
-
-    .carousel-caption {
-        display: none;
-    }
+  .carousel-caption h1 {
+    font-size: 2rem;
+  }
+  .carousel-caption p {
+    font-size: 1rem;
+  }
 }

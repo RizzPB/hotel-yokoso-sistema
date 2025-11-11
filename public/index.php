@@ -12,80 +12,110 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Estilos personalizados -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- estilos para fuente-titulos -->
+     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Favicon (opcional) -->
     <link rel="icon" href="img/favicon.ico">
 </head>
 <body>
     <!-- Encabezado -->
-    <header id="encabezado" class="text-white py-3">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <img src="img/empresaLogoYokoso.png" alt="Logo Hotel Yokoso" width="60" class="me-3">
-                <div>
-                    <h1 class="h4 mb-0">Hotel Yokoso</h1>
-                    <p class="mb-0 small">Hospitalidad única en el corazón de Uyuni, Bolivia</p>
-                </div>
+    <!-- Navbar Responsive -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-rojo-quemado);">
+        <div class="container">
+            <!-- Logo y título -->
+            <a class="navbar-brand d-flex align-items-center" href="index.php">
+            <img src="assets/img/empresaLogoYokoso.png" alt="Logo Hotel Yokoso" width="40" class="me-2">
+            <span class="fw-bold">Hotel Yokoso</span>
+            </a>
+
+            <!-- Botón colapsable en móvil -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Enlaces y botones -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item">
+                <a class="nav-link text-white" href="#habitaciones">Habitaciones</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link text-white" href="#paquetes">Paquetes</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link text-white" href="#contacto">Contacto</a>
+                </li>
+                <li class="nav-item ms-2">
+                <a href="login.php" class="btn btn-outline-light btn-sm">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item ms-2">
+                <a href="registro.php" class="btn btn-warning btn-sm text-dark">Regístrate</a>
+                </li>
+            </ul>
             </div>
-            <nav>
-                <a href="#" class="btn btn-outline-light me-2">Inicio</a>
-                <a href="login.php" class="btn btn-outline-light me-2">Log In</a>
-                <a href="registro.php" class="btn btn-warning">Regístrate</a>
-            </nav>
         </div>
-    </header>
+    </nav>
 
     <!-- Sección Principal -->
     <main class="container my-5">
-        <!-- Bienvenida -->
+    <!-- Bienvenida -->
         <section class="text-center mb-5">
             <h2 class="display-5 fw-bold text-mostaza">¡Bienvenido a Hotel Yokoso!</h2>
             <p class="lead mt-3">Tu refugio auténtico en Uyuni, donde la magia del Salar se encuentra con la calidez boliviana.</p>
         </section>
-
-        <!-- Carrusel de Imágenes -->
-        <section class="mb-5">
-            <div id="carouselYokoso" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#carouselYokoso" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#carouselYokoso" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#carouselYokoso" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                </div>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="img/carrusel1.jpeg" class="d-block w-100" alt="Habitación de Sal">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Habitaciones de Sal</h5>
-                            <p>Una experiencia única construida con bloques del Salar de Uyuni.</p>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="img/carrusel2.jpeg" class="d-block w-100" alt="Paquete Turístico">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Paquetes al Salar</h5>
-                            <p>Recorridos de 2 o 3 días con transporte, guía y comida personalizada.</p>
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <img src="img/carrusel3.jpeg" class="d-block w-100" alt="Vista del Salar">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5>Magia del Salar</h5>
-                            <p>El espejo natural más grande del mundo, a solo minutos de tu habitación.</p>
-                        </div>
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselYokoso" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Anterior</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselYokoso" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Siguiente</span>
-                </button>
+    </main>
+    <!-- Hero Full-Screen Carousel -->
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active" style="background-image: url('assets/img/carrusel4.jpg');">
+            <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
+                <h1 class="display-4 fw-bold text-white text-shadow">Habitaciones de Sal</h1>
+                <p class="lead text-white text-shadow">Una experiencia única en el corazón del Salar.</p>
+                <a href="#" class="btn btn-warning btn-lg mt-3 text-dark">Descubre más</a>
             </div>
-        </section>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/carrusel2.jpg');">
+            <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
+                <h1 class="display-4 fw-bold text-white text-shadow">Paquetes Turísticos</h1>
+                <p class="lead text-white text-shadow">2 o 3 días de magia en el Salar de Uyuni.</p>
+                <a href="#" class="btn btn-warning btn-lg mt-3 text-dark">Ver paquetes</a>
+            </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/carrusel1.jpg');">
+            <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
+                <h1 class="display-4 fw-bold text-white text-shadow">Bajo el Cielo del Salar</h1>
+                <p class="lead text-white text-shadow">El espejo más grande del mundo te espera.</p>
+                <a href="#" class="btn btn-warning btn-lg mt-3 text-dark">Reserva ahora</a>
+            </div>
+            </div>
+            <div class="carousel-item" style="background-image: url('assets/img/carrusel3.jpg');">
+            <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
+                <h1 class="display-4 fw-bold text-white text-shadow">Hospitalidad Andina</h1>
+                <p class="lead text-white text-shadow">Calidez, autenticidad y conexión con la Pachamama.</p>
+                <a href="#" class="btn btn-warning btn-lg mt-3 text-dark">Contáctanos</a>
+            </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
 
+    <main class="container my-5">
         <!-- Acerca de Nosotros -->
         <section class="row mb-5">
             <div class="col-md-6">
@@ -111,26 +141,40 @@
         </section>
 
         <!-- Habitaciones -->
-        <section class="mb-5">
-            <h3 class="text-center text-rojo mb-4">Nuestras Habitaciones</h3>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5><i class="fas fa-home text-mostaza me-2"></i>Habitaciones Normales / Rústicas</h5>
-                            <p>22 habitaciones diseñadas con materiales locales, cálidas, cómodas y con vista al entorno natural de Uyuni. Ideal para quienes buscan autenticidad.</p>
-                        </div>
-                    </div>
+                <!-- Habitaciones con imágenes -->
+        <section id="habitaciones" class="mb-5 py-5 bg-gris-claro">
+        <div class="container">
+            <h3 class="text-center text-rojo mb-5">Nuestras Habitaciones</h3>
+            <div class="row g-4">
+            <!-- Habitación Rústica -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                <img src="assets/img/carrusel1.jpg" class="card-img-top" alt="Habitación Rústica" style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><i class="fas fa-home text-mostaza me-2"></i>Habitaciones Normales / Rústicas</h5>
+                    <p class="card-text flex-grow-1">
+                    22 habitaciones diseñadas con materiales locales, cálidas, cómodas y con vista al entorno natural de Uyuni.
+                    </p>
+                    <a href="registro.php" class="btn btn-rojo mt-auto align-self-start">Ver detalles</a>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <h5><i class="fas fa-mountain text-mostaza me-2"></i>Habitaciones de Sal</h5>
-                            <p>6 habitaciones únicas construidas con bloques de sal del Salar de Uyuni. Una experiencia mística y exclusiva que no encontrarás en ningún otro lugar del mundo.</p>
-                        </div>
-                    </div>
                 </div>
             </div>
+
+            <!-- Habitación de Sal -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                <img src="assets/img/carrusel4.jpg" class="card-img-top" alt="Habitación de Sal" style="height: 250px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title"><i class="fas fa-mountain text-mostaza me-2"></i>Habitaciones de Sal</h5>
+                    <p class="card-text flex-grow-1">
+                    6 habitaciones únicas construidas con bloques de sal del Salar de Uyuni. ¡Una experiencia mística!
+                    </p>
+                    <a href="registro.php" class="btn btn-rojo mt-auto align-self-start">Ver detalles</a>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
         </section>
 
         <!-- Paquetes Turísticos -->

@@ -11,11 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar Contraseña - Hotel Yokoso</title>
-    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
 </head>
 <body>
     <div class="auth-container">
-        <img src="img/logoYOKOSO2.png" alt="Hotel Yokoso Logo" />
+        <img src="assets/img/logoYOKOSO2.png" alt="Hotel Yokoso Logo" />
         <h2>Recuperar Contraseña</h2>
         <p>Ingresa tu correo para restablecer tu contraseña.</p>
 
