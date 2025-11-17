@@ -182,19 +182,59 @@ ob_start();
 <!-- Validación Bootstrap -->
 <script>
 (function () {
-  'use strict'
-  var forms = document.querySelectorAll('.needs-validation')
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
+  'use strict';
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function (event) {
+      // Verificar manualmente
+      let valid = true;
+
+      // Campos obligatorios
+      const requiredFields = form.querySelectorAll('[required]');
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          field.classList.add('is-invalid');
+          valid = false;
+        } else {
+          field.classList.remove('is-invalid');
         }
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
+      });
+
+      // Validar email
+      const email = form.querySelector('[name="email"]');
+      if (email && email.value && !/^\S+@\S+\.\S+$/.test(email.value)) {
+        email.classList.add('is-invalid');
+        valid = false;
+      } else if (email) {
+        email.classList.remove('is-invalid');
+      }
+
+      // Validar fechas
+      const fechaInicio = form.querySelector('[name="fechaInicio"]');
+      const fechaFin = form.querySelector('[name="fechaFin"]');
+      if (fechaInicio && fechaFin) {
+        if (fechaInicio.value && fechaFin.value && fechaFin.value <= fechaInicio.value) {
+          fechaFin.classList.add('is-invalid');
+          valid = false;
+        } else {
+          fechaFin.classList.remove('is-invalid');
+        }
+      }
+
+      if (!valid) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    });
+
+    // Quitar rojo al escribir
+    form.querySelectorAll('input, select, textarea').forEach(input => {
+      input.addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+      });
+    });
+  }
+})();
 </script>
 
 <?php
