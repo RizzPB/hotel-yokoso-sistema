@@ -2,11 +2,20 @@
 session_start();
 require_once '../config/database.php';
 
-// Si ya está logeado, redirigir
+// Si ya está logeado, redirigir según su ROL EN SESIÓN
 if (isset($_SESSION['idUsuario'])) {
-    // Más adelante redirigirá por rol, por ahora al panel
-    header("Location: panel.php");
-    exit;
+    switch ($_SESSION['rol']) { 
+        case 'admin':
+            header('Location: ../admin/dashboard.php');
+            exit;
+        case 'empleado':
+            header('Location: ../receptionist/checkin.php');
+            exit;
+        case 'huésped':
+        default:
+            header('Location: ../guest/rooms.php');
+            exit;
+    }
 }
 
 $error = '';
