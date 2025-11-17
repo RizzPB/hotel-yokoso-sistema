@@ -1,13 +1,13 @@
 <?php
 $title = "Iniciar Sesión - Hotel Yokoso";
-$extra_css = "/assets/css/auth.css"; 
+$extra_css = "assets/css/auth.css"; 
 $body_class = "login-bg";
 ob_start();
 ?>
 
 <div class="auth-container">
     <a href="/" class="back-to-home" style="display:inline-block; margin-bottom:10px; color:#C8102E; text-decoration:none;">← Volver al inicio</a>
-    <img src="/assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso Logo" />
+    <img src="assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso Logo" />
     <h2>Iniciar Sesión</h2>
 
     <?php if ($error ?? false): ?>
@@ -33,7 +33,7 @@ ob_start();
 
     <div class="links">
         <p><a href="/recuperar.php">¿Olvidaste tu contraseña?</a></p>
-        <p>¿No tienes cuenta? <a href="/registro.php">Regístrate aquí</a></p>
+        <p>¿No tienes cuenta? <a href="registro.php">Regístrate aquí</a></p>
     </div>
 </div>
 

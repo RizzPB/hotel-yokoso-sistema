@@ -1,13 +1,13 @@
 <?php
 $title = "Registro - Hotel Yokoso";
-$extra_css = "/assets/css/auth.css"; 
+$extra_css = "assets/css/auth.css"; 
 $body_class = "registro-bg";
 ob_start();
 ?>
 
 <div class="auth-container">
     <a href="/" class="back-to-home" style="display:inline-block; margin-bottom:10px; color:#C8102E; text-decoration:none;">← Volver al inicio</a>
-    <img src="/assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso Logo" />
+    <img src="assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso Logo" />
     <h2>Registro de Usuario</h2>
 
     <?php if ($error ?? false): ?>
@@ -45,7 +45,7 @@ ob_start();
     </form>
 
     <div class="links">
-        ¿Ya tienes una cuenta? <a href="/login.php">Inicia sesión aquí</a>
+        ¿Ya tienes una cuenta? <a href="login.php">Inicia sesión aquí</a>
     </div>
 </div>
 

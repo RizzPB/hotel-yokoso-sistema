@@ -1,10 +1,9 @@
 <?php
 session_start();
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 // Si ya está logeado, redirigir
 if (isset($_SESSION['idUsuario'])) {
-    // Más adelante redirigirá por rol, por ahora al panel
     header("Location: panel.php");
     exit;
 }
