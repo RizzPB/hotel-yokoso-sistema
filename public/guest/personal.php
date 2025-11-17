@@ -139,10 +139,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->commit();
             header('Location: confirmacion.php');
             exit;
+            /* 
+            header('Location: dashboard.php?reserva=' . $idReserva);
+            exit;
+            */
 
         } catch (Exception $e) {
             $pdo->rollback();
-            $errors['general'] = "Error al procesar la reserva. Intente más tarde.";
+            //$errors['general'] = "Error técnico: " . $e->getMessage();
+            $errors['general'] = "Error al procesar la reserva. Intente más tarde por favor.";
         }
     }
 }

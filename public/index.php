@@ -149,7 +149,7 @@
             <!-- Habitación Rústica -->
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <img src="assets/img/carrusel1.jpg" class="card-img-top" alt="Habitación Rústica" style="height: 250px; object-fit: cover;">
+                <img src="assets/img/roonNormal.jpeg" class="card-img-top" alt="Habitación Rústica" style="height: 250px; object-fit: cover;">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title"><i class="fas fa-home text-mostaza me-2"></i>Habitaciones Normales / Rústicas</h5>
                     <p class="card-text flex-grow-1">
@@ -163,7 +163,7 @@
             <!-- Habitación de Sal -->
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <img src="assets/img/carrusel4.jpg" class="card-img-top" alt="Habitación de Sal" style="height: 250px; object-fit: cover;">
+                <img src="assets/img/roomSal.jpeg" class="card-img-top" alt="Habitación de Sal" style="height: 250px; object-fit: cover;">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title"><i class="fas fa-mountain text-mostaza me-2"></i>Habitaciones de Sal</h5>
                     <p class="card-text flex-grow-1">

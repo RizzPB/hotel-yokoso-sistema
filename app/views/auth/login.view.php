@@ -1,6 +1,6 @@
 <?php
 $title = "Iniciar Sesión - Hotel Yokoso";
-$extra_css = "/assets/css/auth.css"; 
+$extra_css = "assets/css/auth.css"; 
 $body_class = "login-bg";
 ob_start();
 ?>
