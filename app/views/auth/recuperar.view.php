@@ -5,6 +5,19 @@ $body_class = "recuperar-bg";
 ob_start();
 ?>
 
+<!-- Navbar -->
+<nav class="navbar navbar-dark" style="background-color: var(--color-rojo-quemado); padding: 0.8rem 1rem;">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="navbar-brand d-flex align-items-center text-white text-decoration-none" href="/">
+      <img src="/assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso" width="36" class="me-2">
+      <span class="fw-bold">Hotel Yokoso</span>
+    </a>
+    <a href="/" class="text-white text-decoration-none">
+      <i class="fas fa-home me-1"></i> Inicio
+    </a>
+  </div>
+</nav>
+
 <div class="auth-container">
     <a href="/" class="back-to-home" style="display:inline-block; margin-bottom:10px; color:#C8102E; text-decoration:none;">← Volver al inicio</a>
     <img src="/assets/img/logoYOKOSO2.png" alt="Hotel Yokoso Logo" />
