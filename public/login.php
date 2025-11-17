@@ -8,7 +8,7 @@ if (isset($_SESSION['idUsuario'])) {
         case 'admin':
             header('Location: ../admin/dashboard.php');
             exit;
-        case 'empleado':
+        case 'empleado': // ← ¡cambia 'empleado' a 'recepcionista'!
             header('Location: ../receptionist/checkin.php');
             exit;
         case 'huésped':
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = trim($_POST['usuario']);
     $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("SELECT idUsuario, nombreUsuario, contrasena, rol, bloqueadoHasta, intentosFallidos FROM Usuario WHERE nombreUsuario = ? OR email = ?");
+    $stmt = $pdo->prepare("SELECT idUsuario, nombreUsuario, contrasena, rol, bloqueadoHasta, intentosFallidos FROM Usuario WHERE (nombreUsuario = ? OR email = ?) AND activo = 1");
     $stmt->execute([$usuario, $usuario]);
     $user = $stmt->fetch();
 
@@ -33,33 +33,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Usuario o contraseña incorrectos.";
     } else {
         $bloqueadoHasta = $user['bloqueadoHasta'];
+
+        // ssi el bloqueo YA EXPIRÓ, resetearlo
+        if ($bloqueadoHasta && new DateTime() >= new DateTime($bloqueadoHasta)) {
+            $pdo->prepare("UPDATE Usuario SET intentosFallidos = 0, bloqueadoHasta = NULL WHERE idUsuario = ?")
+                ->execute([$user['idUsuario']]);
+            $bloqueadoHasta = null;
+        }
+
+        // Verificar si aún está bloqueado
         if ($bloqueadoHasta && new DateTime() < new DateTime($bloqueadoHasta)) {
             $error = "Cuenta bloqueada temporalmente. Inténtalo más tarde.";
             $bloqueado = true;
         } else {
             if (password_verify($password, $user['contrasena'])) {
-                $resetStmt = $pdo->prepare("UPDATE Usuario SET intentosFallidos = 0, bloqueadoHasta = NULL WHERE idUsuario = ?");
-                $resetStmt->execute([$user['idUsuario']]);
+                // Resetear intentos tras login exitoso
+                $pdo->prepare("UPDATE Usuario SET intentosFallidos = 0, bloqueadoHasta = NULL WHERE idUsuario = ?")
+                    ->execute([$user['idUsuario']]);
 
                 $_SESSION['idUsuario'] = $user['idUsuario'];
                 $_SESSION['rol'] = $user['rol'];
 
-                $auditStmt = $pdo->prepare("INSERT INTO AuditoriaLogin (idUsuario, fechaHora) VALUES (?, NOW())");
-                $auditStmt->execute([$user['idUsuario']]);
+                $pdo->prepare("INSERT INTO AuditoriaLogin (idUsuario, fechaHora) VALUES (?, NOW())")
+                    ->execute([$user['idUsuario']]);
 
-                header("Location: panel.php");
+                switch ($user['rol']) {
+                    case 'admin':
+                        header('Location: ../admin/dashboard.php');
+                        break;
+                    case 'empleado':
+                        header('Location: ../receptionist/checkin.php');
+                        break;
+                    case 'huésped':
+                    default:
+                        header('Location: ../guest/rooms.php');
+                        break;
+                }
                 exit;
             } else {
+                // Incrementar intentos
                 $nuevosIntentos = $user['intentosFallidos'] + 1;
                 if ($nuevosIntentos >= 3) {
                     $bloqueadoHasta = date('Y-m-d H:i:s', strtotime('+15 minutes'));
-                    $updateStmt = $pdo->prepare("UPDATE Usuario SET intentosFallidos = ?, bloqueadoHasta = ? WHERE idUsuario = ?");
-                    $updateStmt->execute([$nuevosIntentos, $bloqueadoHasta, $user['idUsuario']]);
+                    $pdo->prepare("UPDATE Usuario SET intentosFallidos = ?, bloqueadoHasta = ? WHERE idUsuario = ?")
+                        ->execute([$nuevosIntentos, $bloqueadoHasta, $user['idUsuario']]);
                     $error = "Demasiados intentos fallidos. Cuenta bloqueada por 15 minutos.";
                     $bloqueado = true;
                 } else {
-                    $updateStmt = $pdo->prepare("UPDATE Usuario SET intentosFallidos = ? WHERE idUsuario = ?");
-                    $updateStmt->execute([$nuevosIntentos, $user['idUsuario']]);
+                    $pdo->prepare("UPDATE Usuario SET intentosFallidos = ? WHERE idUsuario = ?")
+                        ->execute([$nuevosIntentos, $user['idUsuario']]);
                     $error = "Usuario o contraseña incorrectos.";
                 }
             }
@@ -67,6 +89,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Pasar variables a la vista
 include '../app/views/auth/login.view.php';
 ?>
