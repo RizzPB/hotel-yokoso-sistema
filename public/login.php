@@ -9,7 +9,7 @@ if (isset($_SESSION['idUsuario'])) {
             header('Location: ../admin/panel_admin.php');
             exit;
         case 'empleado': 
-            header('Location: ../receptionista/panel_recepcionista.php');
+            header('Location: ../recepcionista/panel_recepcionista.php');
             exit;
         case 'huésped':
         default:
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header('Location: ../admin/panel_admin.php');
                         break;
                     case 'empleado':
-                        header('Location: ../receptionista/panel_recepcionista.php');
+                        header('Location: ../recepcionista/panel_recepcionista.php');
                         break;
                     case 'huésped':
                     default:

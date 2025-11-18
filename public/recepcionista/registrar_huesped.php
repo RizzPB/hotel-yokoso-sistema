@@ -9,7 +9,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'empleado') {
     exit;
 }
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Obtener todos los tipos de habitación únicos
 $stmt = $pdo->prepare("SELECT DISTINCT tipo FROM Habitacion WHERE estado = 'disponible' ORDER BY tipo ASC");

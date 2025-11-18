@@ -9,7 +9,7 @@ if (!isset($_SESSION['idUsuario']) || ($_SESSION['rol'] !== 'empleado' && $_SESS
     exit;
 }
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Obtener todas las reservas con información del huésped, habitación y paquete
 $stmt = $pdo->prepare("

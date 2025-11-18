@@ -13,7 +13,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $idReserva = $_GET['id'];
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Eliminar la reserva y sus habitaciones asociadas (por clave foránea CASCADE)
 $stmt = $pdo->prepare("DELETE FROM Reserva WHERE idReserva = ?");

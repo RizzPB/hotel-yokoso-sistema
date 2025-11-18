@@ -13,7 +13,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $idHuesped = $_GET['id'];
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Marcar como inactivo en lugar de eliminar físicamente
 $stmt = $pdo->prepare("UPDATE Huesped SET activo = 0 WHERE idHuesped = ?");

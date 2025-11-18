@@ -9,7 +9,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'empleado') {
     exit;
 }
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 $stmt = $pdo->prepare("
     SELECT idHuesped, nombre, apellido, tipoDocumento, nroDocumento, procedencia, email, telefono
