@@ -8,12 +8,12 @@ if (isset($_SESSION['idUsuario'])) {
         case 'admin':
             header('Location: ../admin/dashboard.php');
             exit;
-        case 'empleado': // ← ¡cambia 'empleado' a 'recepcionista'!
+        case 'empleado': 
             header('Location: ../receptionist/checkin.php');
             exit;
         case 'huésped':
         default:
-            header('Location: ../guest/rooms.php');
+            header('Location: ../guest/dashboard.php');
             exit;
     }
 }
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
                     case 'huésped':
                     default:
-                        header('Location: ../guest/rooms.php');
+                        header('Location: ../guest/dashboard.php');
                         break;
                 }
                 exit;

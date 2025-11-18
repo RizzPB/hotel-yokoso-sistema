@@ -231,6 +231,17 @@ footer .btn-warning:hover {
 .badge.bg-warning {
   color: var(--color-negro) !important;
 }
+
+/* para dashboard botones - huesped */
+/* Dashboard: ajuste de botones en tabla */
+.table td {
+    vertical-align: middle !important;
+}
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
 /* navbar responsive */
 .logo-navbar {
     height: 58px;     
@@ -265,3 +276,25 @@ footer .btn-warning:hover {
 .navbar-brand {
     gap: 12px; 
 }
+
+/* Sticky footer */
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+}
+main {
+    flex: 1 0 auto;
+}
+footer {
+    flex-shrink: 0;
+}
+
+.prueba-footer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.prueba-footer main { flex: 1; }

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../../app/middleware/auth.php';
 require_once '../../config/database.php';
 
 // Proteger: solo huéspedes
@@ -35,6 +35,8 @@ if ($idHuesped) {
 $mensajeExito = '';
 if (isset($_GET['reserva'])) {
     $mensajeExito = "Tu solicitud de reserva #" . htmlspecialchars($_GET['reserva']) . " ha sido enviada y está pendiente de aprobación.";
+} elseif (isset($_GET['reserva_editada'])) {
+    $mensajeExito = "La reserva #" . htmlspecialchars($_GET['reserva_editada']) . " ha sido actualizada exitosamente.";
 }
 
 // Acción: cancelar reserva

@@ -146,8 +146,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (Exception $e) {
             $pdo->rollback();
-            //$errors['general'] = "Error técnico: " . $e->getMessage();
-            $errors['general'] = "Error al procesar la reserva. Intente más tarde por favor.";
+            $errors['general'] = "Error técnico: " . $e->getMessage();
+           // $errors['general'] = "Error al procesar la reserva. Intente más tarde por favor.";
         }
     }
 }
