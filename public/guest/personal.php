@@ -133,16 +133,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtHab->execute([$idReserva, $idHab]);
             }
 
-            $_SESSION['reserva_id'] = $idReserva;
-            $_SESSION['reserva_total'] = $total;
-
             $pdo->commit();
-            header('Location: confirmacion.php');
-            exit;
-            /* 
             header('Location: dashboard.php?reserva=' . $idReserva);
             exit;
-            */
 
         } catch (Exception $e) {
             $pdo->rollback();

@@ -121,7 +121,7 @@ ob_start();
                 <i class="fas fa-eye"></i>
               </a>
               <?php if ($r['estado'] === 'pendiente'): ?>
-                <a href="/hotel-yokoso/public/guest/editar_reserva.php?id=<?= $r['idReserva'] ?>" 
+                <a href="/guest/editar_reserva.php?id=<?= $r['idReserva'] ?>" 
                    class="btn btn-sm btn-outline-primary me-1" title="Editar">
                   <i class="fas fa-edit"></i>
                 </a>

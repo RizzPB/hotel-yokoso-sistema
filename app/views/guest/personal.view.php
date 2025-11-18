@@ -1,7 +1,38 @@
 <?php
+$body_class = 'layout-dashboard'; // para footer fijo
 $title = "Completa tus Datos - Hotel Yokoso";
 ob_start();
 ?>
+
+<!-- Navbar igual al dashboard -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-rojo-quemado);">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="../index.php">
+            <img src="../assets/img/empresaLogoYokoso.png" 
+                 alt="Logo Hotel Yokoso" 
+                 class="logo-navbar">
+            <span class="fw-bold">Hotel Yokoso</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavGuest"
+                aria-controls="navbarNavGuest" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavGuest">
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item">
+                    <span class="navbar-text text-white me-3">
+                        <i class="fas fa-user me-1"></i> <?= htmlspecialchars($_SESSION['nombreUsuario'] ?? 'Huésped') ?>
+                    </span>
+                </li>
+                <li class="nav-item ms-2">
+                    <a href="../logout.php" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-door-open me-1"></i> Cerrar Sesión
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
 <!-- Indicador de pasos -->
 <nav aria-label="Progreso de reserva" class="mb-4">
@@ -14,7 +45,7 @@ ob_start();
 
 <div class="container py-4">
   <div class="text-center mb-5">
-    <h1 class="display-5 fw-bold text-rojo" style="font-family: var(--font-heading);">
+    <h1 class="display-5 fw-bold" style="font-family: var(--font-heading); color: var(--color-rojo);">
       <i class="fas fa-user-edit me-2"></i> Tus Datos Personales
     </h1>
     <p class="lead" style="font-family: var(--font-body);">
@@ -29,37 +60,37 @@ ob_start();
 
   <form method="POST" class="needs-validation" novalidate>
 
-    <!-- Sección: Fechas de Estadía -->
+    <!-- Fechas -->
     <div class="card mb-4 shadow-sm border-0">
-    <div class="card-header bg-mostaza text-dark">
+      <div class="card-header bg-mostaza text-dark">
         <h5 class="mb-0" style="font-family: var(--font-heading);">
-        <i class="fas fa-calendar-check me-2"></i> Fechas de Estadía
+          <i class="fas fa-calendar-check me-2"></i> Fechas de Estadía
         </h5>
-    </div>
-    <div class="card-body">
+      </div>
+      <div class="card-body">
         <div class="row">
-        <div class="col-md-6 mb-3">
+          <div class="col-md-6 mb-3">
             <label for="fechaInicio" class="form-label">Fecha de Entrada <span class="text-danger">*</span></label>
             <input type="date" class="form-control <?= !empty($errors['fechaInicio']) ? 'is-invalid' : '' ?>" 
-                id="fechaInicio" name="fechaInicio" value="<?= htmlspecialchars($datos['fechaInicio'] ?? '') ?>" required>
+                   id="fechaInicio" name="fechaInicio" value="<?= htmlspecialchars($datos['fechaInicio'] ?? '') ?>" required>
             <?php if (!empty($errors['fechaInicio'])): ?>
-            <div class="invalid-feedback"><?= htmlspecialchars($errors['fechaInicio']) ?></div>
+              <div class="invalid-feedback"><?= htmlspecialchars($errors['fechaInicio']) ?></div>
             <?php endif; ?>
-        </div>
-        <div class="col-md-6 mb-3">
+          </div>
+          <div class="col-md-6 mb-3">
             <label for="fechaFin" class="form-label">Fecha de Salida <span class="text-danger">*</span></label>
             <input type="date" class="form-control <?= !empty($errors['fechaFin']) ? 'is-invalid' : '' ?>" 
-                id="fechaFin" name="fechaFin" value="<?= htmlspecialchars($datos['fechaFin'] ?? '') ?>" required>
+                   id="fechaFin" name="fechaFin" value="<?= htmlspecialchars($datos['fechaFin'] ?? '') ?>" required>
             <?php if (!empty($errors['fechaFin'])): ?>
-            <div class="invalid-feedback"><?= htmlspecialchars($errors['fechaFin']) ?></div>
+              <div class="invalid-feedback"><?= htmlspecialchars($errors['fechaFin']) ?></div>
             <?php endif; ?>
-        </div>
+          </div>
         </div>
         <small class="text-muted">Las fechas deben ser futuras y la salida posterior a la entrada.</small>
-    </div>
+      </div>
     </div>
     
-    <!-- Sección 1: Información Personal -->
+    <!-- Información Personal -->
     <div class="card mb-4 shadow-sm border-0">
       <div class="card-header bg-rojo text-white">
         <h5 class="mb-0" style="font-family: var(--font-heading);">
@@ -104,7 +135,7 @@ ob_start();
       </div>
     </div>
 
-    <!-- Sección 2: Contacto -->
+    <!-- Contacto -->
     <div class="card mb-4 shadow-sm border-0">
       <div class="card-header bg-mostaza text-dark">
         <h5 class="mb-0" style="font-family: var(--font-heading);">
@@ -141,7 +172,7 @@ ob_start();
       </div>
     </div>
 
-    <!-- Sección 3: Preferencias -->
+    <!-- Preferencias -->
     <div class="card mb-4 shadow-sm border-0">
       <div class="card-header bg-gris-oscuro text-white">
         <h5 class="mb-0" style="font-family: var(--font-heading);">
@@ -168,73 +199,81 @@ ob_start();
     </div>
 
     <!-- Botones -->
-    <div class="d-flex justify-content-between">
-      <a href="packages.php" class="btn btn-outline-secondary">
+    <div class="d-flex justify-content-between flex-wrap gap-2">
+      <a href="packages.php" class="btn btn-outline-secondary px-4 py-2">
         <i class="fas fa-arrow-left me-1"></i> Volver a Paquetes
       </a>
-      <button type="submit" class="btn btn-rojo">
+      <button type="submit" class="btn btn-rojo px-4 py-2">
         <i class="fas fa-paper-plane me-1"></i> Enviar Solicitud de Reserva
       </button>
     </div>
   </form>
 </div>
 
-<!-- Validación Bootstrap -->
+<!-- Footer -->
+<footer class="bg-black text-white text-center py-3 small">
+    <div class="container">
+        <p class="mb-1">© <?= date('Y') ?> Hotel Yokoso. Todos los derechos reservados.</p>
+        <p class="mb-0"><i class="fas fa-phone me-1"></i> +591 7000 0000</p>
+    </div>
+</footer>
+
+<!-- Validación JS -->
 <script>
-(function () {
-  'use strict';
-  const form = document.querySelector('form');
-  if (form) {
-    form.addEventListener('submit', function (event) {
-      // Verificar manualmente
-      let valid = true;
+  (function () {
+    'use strict';
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function (event) {
+        // Verificar manualmente
+        let valid = true;
 
-      // Campos obligatorios
-      const requiredFields = form.querySelectorAll('[required]');
-      requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-          field.classList.add('is-invalid');
+        // Campos obligatorios
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+          if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            valid = false;
+          } else {
+            field.classList.remove('is-invalid');
+          }
+        });
+
+        // Validar email
+        const email = form.querySelector('[name="email"]');
+        if (email && email.value && !/^\S+@\S+\.\S+$/.test(email.value)) {
+          email.classList.add('is-invalid');
           valid = false;
-        } else {
-          field.classList.remove('is-invalid');
+        } else if (email) {
+          email.classList.remove('is-invalid');
+        }
+
+        // Validar fechas
+        const fechaInicio = form.querySelector('[name="fechaInicio"]');
+        const fechaFin = form.querySelector('[name="fechaFin"]');
+        if (fechaInicio && fechaFin) {
+          if (fechaInicio.value && fechaFin.value && fechaFin.value <= fechaInicio.value) {
+            fechaFin.classList.add('is-invalid');
+            valid = false;
+          } else {
+            fechaFin.classList.remove('is-invalid');
+          }
+        }
+
+        if (!valid) {
+          event.preventDefault();
+          event.stopPropagation();
         }
       });
 
-      // Validar email
-      const email = form.querySelector('[name="email"]');
-      if (email && email.value && !/^\S+@\S+\.\S+$/.test(email.value)) {
-        email.classList.add('is-invalid');
-        valid = false;
-      } else if (email) {
-        email.classList.remove('is-invalid');
-      }
-
-      // Validar fechas
-      const fechaInicio = form.querySelector('[name="fechaInicio"]');
-      const fechaFin = form.querySelector('[name="fechaFin"]');
-      if (fechaInicio && fechaFin) {
-        if (fechaInicio.value && fechaFin.value && fechaFin.value <= fechaInicio.value) {
-          fechaFin.classList.add('is-invalid');
-          valid = false;
-        } else {
-          fechaFin.classList.remove('is-invalid');
-        }
-      }
-
-      if (!valid) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    });
-
-    // Quitar rojo al escribir
-    form.querySelectorAll('input, select, textarea').forEach(input => {
-      input.addEventListener('input', function() {
-        this.classList.remove('is-invalid');
+      // Quitar rojo al escribir
+      form.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('input', function() {
+          this.classList.remove('is-invalid');
+        });
       });
-    });
-  }
-})();
+    }
+  })();
 </script>
 
 <?php

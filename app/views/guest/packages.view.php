@@ -1,7 +1,38 @@
 <?php
+$body_class = 'layout-dashboard'; // para footer fijo
 $title = "Selecciona un Paquete Turístico - Hotel Yokoso";
 ob_start();
 ?>
+
+<!-- Navbar igual al dashboard -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-rojo-quemado);">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="../index.php">
+            <img src="../assets/img/empresaLogoYokoso.png" 
+                 alt="Logo Hotel Yokoso" 
+                 class="logo-navbar">
+            <span class="fw-bold">Hotel Yokoso</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavGuest"
+                aria-controls="navbarNavGuest" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavGuest">
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item">
+                    <span class="navbar-text text-white me-3">
+                        <i class="fas fa-user me-1"></i> <?= htmlspecialchars($_SESSION['nombreUsuario'] ?? 'Huésped') ?>
+                    </span>
+                </li>
+                <li class="nav-item ms-2">
+                    <a href="../logout.php" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-door-open me-1"></i> Cerrar Sesión
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
 <!-- Indicador de pasos -->
 <nav aria-label="Progreso de reserva" class="mb-4">
@@ -14,7 +45,7 @@ ob_start();
 
 <div class="container py-4">
   <div class="text-center mb-5">
-    <h1 class="display-5 fw-bold text-rojo" style="font-family: var(--font-heading);">
+    <h1 class="display-5 fw-bold" style="font-family: var(--font-heading); color: var(--color-rojo);">
       <i class="fas fa-mountain me-2"></i> Paquetes Turísticos al Salar
     </h1>
     <p class="lead" style="font-family: var(--font-body);">
@@ -26,15 +57,15 @@ ob_start();
   <!-- Opción: Ningún paquete -->
   <div class="row justify-content-center mb-5">
     <div class="col-md-8">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body text-center">
-          <h5 class="card-title text-mostaza" style="font-family: var(--font-heading);">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center d-flex flex-column justify-content-center">
+          <h5 class="card-title" style="font-family: var(--font-heading); color: var(--color-mostaza);">
             <i class="fas fa-times-circle me-2"></i> No, gracias
           </h5>
-          <p class="card-text">Prefiero solo alojamiento.</p>
-          <div class="form-check d-inline-block">
+          <p class="card-text mb-3">Prefiero solo alojamiento.</p>
+          <div class="form-check d-flex justify-content-center">
             <input class="form-check-input" type="radio" name="paquete" id="ninguno" value="" checked>
-            <label class="form-check-label" for="ninguno">Seleccionar</label>
+            <label class="form-check-label" for="ninguno">Seleccionar esta opción</label>
           </div>
         </div>
       </div>
@@ -43,8 +74,8 @@ ob_start();
 
   <!-- Paquetes disponibles -->
   <?php if (!empty($paquetes)): ?>
-  <section>
-    <h2 class="text-center text-rojo mb-4" style="font-family: var(--font-heading);">elige una experiencia única</h2>
+  <section class="mb-5">
+    <h2 class="text-center" style="font-family: var(--font-heading); color: var(--color-rojo);">Elige una experiencia única</h2>
     <div class="row g-4">
       <?php foreach ($paquetes as $p): ?>
       <div class="col-md-6 col-lg-6">
@@ -80,31 +111,40 @@ ob_start();
   <?php endif; ?>
 
   <!-- Botones de acción -->
-  <div class="text-center mt-5">
-    <button type="button" class="btn btn-rojo btn-lg px-5 py-2" id="btnSiguiente"
-            style="font-family: var(--font-body);">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <a href="rooms.php" class="btn btn-outline-rojo px-4 py-2">
+      <i class="fas fa-arrow-left me-1"></i> Volver a Habitaciones
+    </a>
+    <button type="button" class="btn btn-mostaza text-dark btn-lg px-5 py-2" id="btnSiguiente"
+            style="font-family: var(--font-body); font-weight: 600;">
       <i class="fas fa-arrow-right me-2"></i> Siguiente: Datos Personales
     </button>
-    <a href="rooms.php" class="d-block mt-3 text-muted" style="font-family: var(--font-body);">
-      ← Volver a seleccionar habitaciones
-    </a>
   </div>
 </div>
 
-<!-- Formulario para enviar -->
+<!-- Footer -->
+<footer class="bg-black text-white text-center py-3 small">
+    <div class="container">
+        <p class="mb-1">© <?= date('Y') ?> Hotel Yokoso. Todos los derechos reservados.</p>
+        <p class="mb-0"><i class="fas fa-phone me-1"></i> +591 7000 0000</p>
+    </div>
+</footer>
+
+<!-- Formulario oculto -->
 <form id="formPaquetes" method="POST" action="personal.php">
-  <input type="hidden" name="paquete_seleccionado" id="inputPaquete">
+  <input type="hidden" name="paquete_seleccionado" id="inputPaquete" value="">
 </form>
 
 <script>
+// Actualizar valor al cambiar selección
 document.querySelectorAll('input[name="paquete"]').forEach(radio => {
   radio.addEventListener('change', function() {
     document.getElementById('inputPaquete').value = this.value;
   });
 });
 
+// Enviar formulario
 document.getElementById('btnSiguiente').addEventListener('click', function() {
-  // Siempre permite continuar (paquete es opcional)
   document.getElementById('formPaquetes').submit();
 });
 </script>

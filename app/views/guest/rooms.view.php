@@ -1,9 +1,40 @@
 <?php
+$body_class = 'layout-dashboard'; // para footer fijo
 $title = "Selecciona tu Habitación - Hotel Yokoso";
 ob_start();
 ?>
 
-<!-- Indicador de pasos (Criterio 7) -->
+<!-- Navbar igual al dashboard -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-rojo-quemado);">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="../index.php">
+            <img src="../assets/img/empresaLogoYokoso.png" 
+                 alt="Logo Hotel Yokoso" 
+                 class="logo-navbar">
+            <span class="fw-bold">Hotel Yokoso</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavGuest"
+                aria-controls="navbarNavGuest" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavGuest">
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item">
+                    <span class="navbar-text text-white me-3">
+                        <i class="fas fa-user me-1"></i> <?= htmlspecialchars($_SESSION['nombreUsuario'] ?? 'Huésped') ?>
+                    </span>
+                </li>
+                <li class="nav-item ms-2">
+                    <a href="../logout.php" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-door-open me-1"></i> Cerrar Sesión
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Indicador de pasos -->
 <nav aria-label="Progreso de reserva" class="mb-4">
   <ol class="progress" style="height: 8px;">
     <li class="progress-bar bg-mostaza" style="width: 33%;">Habitación</li>
@@ -14,127 +45,144 @@ ob_start();
 
 <div class="container py-4">
   <div class="text-center mb-5">
-    <h1 class="display-5 fw-bold text-rojo" style="font-family: var(--font-heading);">
+    <h1 class="display-5 fw-bold" style="font-family: var(--font-heading); color: var(--color-rojo);">
       Elige tu Habitación en Uyuni
     </h1>
     <p class="lead" style="font-family: var(--font-body);">
-      Selecciona una o más habitaciones para tu estadía. Solo se muestran las disponibles.
+      Selecciona una o más habitaciones disponibles para tu estadía.
     </p>
   </div>
 
-  <!-- Sección: Habitaciones de Sal (Criterio 4) -->
-  <?php if (!empty($habitacionesSal)): ?>
-  <section class="mb-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="text-mostaza" style="font-family: var(--font-heading);">✨ Habitaciones de Sal</h2>
-      <span class="badge bg-mostaza text-dark"><?= count($habitacionesSal) ?> disponibles</span>
-    </div>
-    <div class="row g-4">
-      <?php foreach ($habitacionesSal as $h): ?>
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm border-0">
-          <img src="/assets/img/habitaciones/<?= htmlspecialchars($h['foto'] ?? 'sal-placeholder.jpg') ?>" 
-               class="card-img-top" alt="Habitación <?= $h['numero'] ?>" 
-               style="height: 200px; object-fit: cover;">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title" style="font-family: var(--font-heading);">Habitación <?= $h['numero'] ?></h5>
-            <p class="card-text flex-grow-1" style="font-family: var(--font-body);">
-              <span class="d-block mb-1"><i class="fas fa-mountain text-mostaza me-1"></i> <strong>Suite de Sal Única</strong></span>
-              <span class="d-block"><i class="fas fa-tag text-mostaza me-1"></i> <strong>Bs <?= number_format($h['precioNoche'], 2) ?></strong> / noche</span>
-            </p>
-            <!-- Campo de selección (Criterio 1) -->
-            <div class="form-check mt-auto">
-              <input class="form-check-input" type="checkbox" 
-                     name="habitaciones[]" value="<?= $h['idHabitacion'] ?>" id="h<?= $h['idHabitacion'] ?>">
-              <label class="form-check-label" for="h<?= $h['idHabitacion'] ?>">
-                Seleccionar esta habitación
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </section>
-  <?php endif; ?>
+  <!-- Filtro por tipo -->
+  <div class="mb-4">
+    <label for="filtroTipo" class="form-label fw-bold">Filtrar por tipo de habitación:</label>
+    <select class="form-select" id="filtroTipo">
+      <option value="todos">Todos los tipos</option>
+      <option value="simple">Simple</option>
+      <option value="doble">Doble</option>
+      <option value="suite">Suite</option>
+    </select>
+  </div>
 
-  <!-- Sección: Habitaciones Normales (Criterio 4) -->
-  <?php if (!empty($habitacionesNormales)): ?>
-  <section>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="text-rojo" style="font-family: var(--font-heading);">🏡 Habitaciones Normales / Rústicas</h2>
-      <span class="badge bg-rojo text-white"><?= count($habitacionesNormales) ?> disponibles</span>
-    </div>
-    <div class="row g-4">
-      <?php foreach ($habitacionesNormales as $h): ?>
-      <div class="col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm border-0">
-          <img src="/assets/img/habitaciones/<?= htmlspecialchars($h['foto'] ?? 'normal-placeholder.jpg') ?>" 
-               class="card-img-top" alt="Habitación <?= $h['numero'] ?>" 
-               style="height: 200px; object-fit: cover;">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title" style="font-family: var(--font-heading);">Habitación <?= $h['numero'] ?></h5>
-            <p class="card-text flex-grow-1" style="font-family: var(--font-body);">
-              <span class="d-block mb-1">
-                <i class="fas fa-home text-mostaza me-1"></i> 
-                <strong><?= $h['tipo'] === 'doble' ? 'Doble' : 'Simple' ?></strong>
-                <?php if (in_array($h['numero'], ['5A','5B','10A','10B'])): ?>
-                  <span class="badge bg-warning text-dark ms-1">Departamento</span>
-                <?php endif; ?>
-              </span>
-              <span class="d-block"><i class="fas fa-tag text-mostaza me-1"></i> <strong>Bs <?= number_format($h['precioNoche'], 2) ?></strong> / noche</span>
-            </p>
-            <div class="form-check mt-auto">
-              <input class="form-check-input" type="checkbox" 
-                     name="habitaciones[]" value="<?= $h['idHabitacion'] ?>" id="h<?= $h['idHabitacion'] ?>">
-              <label class="form-check-label" for="h<?= $h['idHabitacion'] ?>">
-                Seleccionar esta habitación
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </section>
-  <?php endif; ?>
+  <!-- Contenedor de habitaciones -->
+  <div id="contenedorHabitaciones">
+    <!-- Se llenará con JS -->
+  </div>
 
-  <!-- Botones de acción (Criterio 2) -->
+  <!-- Botón siguiente (deshabilitado al inicio) -->
   <div class="text-center mt-5">
     <button type="button" class="btn btn-rojo btn-lg px-5 py-2" id="btnSiguiente" disabled
             style="font-family: var(--font-body);">
       <i class="fas fa-arrow-right me-2"></i> Siguiente: Paquetes Turísticos
     </button>
-    <a href="/logout.php" class="d-block mt-3 text-muted" style="font-family: var(--font-body);">
-      ¿No eres tú? Cerrar sesión
-    </a>
   </div>
 </div>
 
-<!-- Formulario oculto para enviar selección -->
+<!-- Formulario oculto -->
 <form id="formHabitaciones" method="POST" action="packages.php">
   <input type="hidden" name="habitaciones_seleccionadas" id="inputHabitaciones">
 </form>
 
-<!-- Validación y envío (Criterio 3) -->
+<!-- Footer -->
+<footer class="bg-black text-white text-center py-3 small">
+    <div class="container">
+        <p class="mb-1">© <?= date('Y') ?> Hotel Yokoso. Todos los derechos reservados.</p>
+        <p class="mb-0"><i class="fas fa-phone me-1"></i> +591 7000 0000</p>
+    </div>
+</footer>
+
 <script>
-document.querySelectorAll('input[name="habitaciones[]"]').forEach(checkbox => {
-  checkbox.addEventListener('change', function() {
-    const seleccionadas = Array.from(document.querySelectorAll('input[name="habitaciones[]"]:checked'))
+// Datos de habitaciones desde PHP
+const habitacionesPorTipo = <?= json_encode($habitacionesPorTipo) ?>;
+
+function renderHabitaciones(tipo = 'todos') {
+    const contenedor = document.getElementById('contenedorHabitaciones');
+    let habitacionesAMostrar = [];
+
+    if (tipo === 'todos') {
+        // Aplanar todas
+        habitacionesAMostrar = Object.values(habitacionesPorTipo).flat();
+    } else {
+        habitacionesAMostrar = habitacionesPorTipo[tipo] || [];
+    }
+
+    if (habitacionesAMostrar.length === 0) {
+        contenedor.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-bed text-muted" style="font-size: 3rem;"></i>
+                <p class="mt-2 text-muted">No hay habitaciones disponibles de este tipo.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div class="row g-4">';
+    habitacionesAMostrar.forEach(h => {
+        const foto = h.foto ? `../assets/img/habitaciones/${h.foto}` : '../assets/img/habitaciones/normal-placeholder.jpg';
+        const tipoTexto = h.tipo.charAt(0).toUpperCase() + h.tipo.slice(1);
+        html += `
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="${foto}" class="card-img-top" alt="Habitación ${h.numero}" 
+                     style="height: 200px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title" style="font-family: var(--font-heading);">Habitación ${h.numero}</h5>
+                    <p class="card-text flex-grow-1" style="font-family: var(--font-body);">
+                        <span class="d-block mb-1">
+                            <i class="fas fa-home text-mostaza me-1"></i> 
+                            <strong>${tipoTexto}</strong>
+                        </span>
+                        <span class="d-block">
+                            <i class="fas fa-tag text-mostaza me-1"></i> 
+                            <strong>Bs ${parseFloat(h.precioNoche).toFixed(2)}</strong> / noche
+                        </span>
+                    </p>
+                    <div class="form-check mt-auto">
+                        <input class="form-check-input habitacion-checkbox" type="checkbox" 
+                               value="${h.idHabitacion}" id="h${h.idHabitacion}">
+                        <label class="form-check-label" for="h${h.idHabitacion}">
+                            Seleccionar
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    });
+    html += '</div>';
+    contenedor.innerHTML = html;
+
+    // Re-vincular eventos
+    document.querySelectorAll('.habitacion-checkbox').forEach(cb => {
+        cb.addEventListener('change', actualizarBoton);
+    });
+    actualizarBoton(); // en caso de que ya hubiera selección
+}
+
+function actualizarBoton() {
+    const seleccionadas = Array.from(document.querySelectorAll('.habitacion-checkbox:checked'))
                                .map(cb => cb.value);
-    document.getElementById('inputHabitaciones').value = JSON.stringify(seleccionadas);
     document.getElementById('btnSiguiente').disabled = seleccionadas.length === 0;
-  });
+}
+
+// Inicializar
+document.getElementById('filtroTipo').addEventListener('change', e => {
+    renderHabitaciones(e.target.value);
 });
 
 document.getElementById('btnSiguiente').addEventListener('click', function() {
-  const seleccionadas = JSON.parse(document.getElementById('inputHabitaciones').value);
-  if (seleccionadas.length === 0) {
-    alert("⚠️ Por favor, selecciona al menos una habitación.");
-    return;
-  }
-  document.getElementById('formHabitaciones').submit();
+    const seleccionadas = Array.from(document.querySelectorAll('.habitacion-checkbox:checked'))
+                               .map(cb => cb.value);
+    if (seleccionadas.length === 0) {
+        alert("⚠️ Por favor, selecciona al menos una habitación.");
+        return;
+    }
+    document.getElementById('inputHabitaciones').value = JSON.stringify(seleccionadas);
+    document.getElementById('formHabitaciones').submit();
 });
+
+// Mostrar todas al cargar
+renderHabitaciones('todos');
 </script>
 
 <?php
