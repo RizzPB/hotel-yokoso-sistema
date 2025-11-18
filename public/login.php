@@ -6,10 +6,10 @@ require_once '../config/database.php';
 if (isset($_SESSION['idUsuario'])) {
     switch ($_SESSION['rol']) { 
         case 'admin':
-            header('Location: ../admin/dashboard.php');
+            header('Location: ../admin/panel_admin.php');
             exit;
         case 'empleado': 
-            header('Location: ../receptionist/checkin.php');
+            header('Location: ../receptionista/panel_recepcionista.php');
             exit;
         case 'huésped':
         default:
