@@ -1,26 +1,12 @@
 <?php
 $title = "Iniciar Sesión - Hotel Yokoso";
-$extra_css = "/assets/css/auth.css";
+$extra_css = "/assets/css/auth.css"; 
 $body_class = "login-bg";
 ob_start();
 ?>
 
-<div class="auth-wrapper">
-  <!-- Navbar -->
-  <nav class="auth-navbar navbar navbar-dark" style="background-color: var(--color-rojo-quemado);">
-    <div class="container d-flex justify-content-between align-items-center">
-      <a class="navbar-brand d-flex align-items-center text-white text-decoration-none" href="/">
-        <img src="/assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso" width="36" class="me-2">
-        <span class="fw-bold">Hotel Yokoso</span>
-      </a>
-      <a href="/" class="text-white text-decoration-none">
-        <i class="fas fa-home me-1"></i> Inicio
-      </a>
-    </div>
-  </nav>
-
-  <div class="auth-container">
-    <a href="/" class="back-to-home">← Volver al inicio</a>
+<div class="auth-container">
+    <a href="/" class="back-to-home" style="display:inline-block; margin-bottom:10px; color:#C8102E; text-decoration:none;">← Volver al inicio</a>
     <img src="/assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso Logo" />
     <h2>Iniciar Sesión</h2>
 
@@ -49,7 +35,6 @@ ob_start();
         <p><a href="/recuperar.php">¿Olvidaste tu contraseña?</a></p>
         <p>¿No tienes cuenta? <a href="/registro.php">Regístrate aquí</a></p>
     </div>
-  </div>
 </div>
 
 <script>
