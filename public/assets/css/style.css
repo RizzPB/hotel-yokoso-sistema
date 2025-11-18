@@ -231,3 +231,37 @@ footer .btn-warning:hover {
 .badge.bg-warning {
   color: var(--color-negro) !important;
 }
+/* navbar responsive */
+.logo-navbar {
+    height: 58px;     
+    width: auto;
+    transition: height 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .logo-navbar {
+        height: 30px;
+    }
+}
+
+@media (min-width: 992px) {
+    .logo-navbar {
+        height: 60px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .logo-navbar {
+        height: 65px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .logo-navbar {
+        height: 70px;
+    }
+}
+
+.navbar-brand {
+    gap: 12px; 
+}

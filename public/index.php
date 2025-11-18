@@ -27,7 +27,9 @@
         <div class="container">
             <!-- Logo y título -->
             <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="assets/img/empresaLogoYokoso.png" alt="Logo Hotel Yokoso" width="40" class="me-2">
+            <img src="assets/img/empresaLogoYokoso.png" 
+                alt="Logo Hotel Yokoso" 
+                class="logo-navbar">
             <span class="fw-bold">Hotel Yokoso</span>
             </a>
 
@@ -141,7 +143,6 @@
         </section>
 
         <!-- Habitaciones -->
-                <!-- Habitaciones con imágenes -->
         <section id="habitaciones" class="mb-5 py-5 bg-gris-claro">
         <div class="container">
             <h3 class="text-center text-rojo mb-5">Nuestras Habitaciones</h3>
@@ -213,7 +214,7 @@
             <p class="text-center mt-3"><em>Todos nuestros paquetes incluyen transporte, guía, comidas adaptadas a tus necesidades y recuerdos fotográficos.</em></p>
         </section>
 
-        <!-- Pie de Página (ahora ocupa todo el ancho) -->
+        <!-- Pie de Página -->
         <div class="footer-wrapper">
             <footer class="bg-dark text-white pt-4 pb-3">
                 <div class="container">
