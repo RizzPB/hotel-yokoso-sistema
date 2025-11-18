@@ -9,7 +9,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Obtener ID del empleado a editar
 $id = $_GET['id'] ?? null;

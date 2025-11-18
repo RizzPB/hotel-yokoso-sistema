@@ -9,11 +9,11 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 // Obtener todos los paquetes turísticos
 $stmt = $pdo->prepare("
-    SELECT idPaquete, nombre, descripcion, precio, duracionDias, incluye, noIncluye, activo
+    SELECT idPaquete, nombre, descripcion, precio, duracionDias, activo
     FROM PaqueteTuristico
     ORDER BY nombre ASC
 ");

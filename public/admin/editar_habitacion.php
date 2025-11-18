@@ -9,7 +9,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 
 $id = $_GET['id'] ?? null;
 

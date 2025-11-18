@@ -59,10 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 switch ($user['rol']) {
                     case 'admin':
-                        header('Location: ../admin/dashboard.php');
+                        header('Location: ../admin/panel_admin.php');
                         break;
                     case 'empleado':
-                        header('Location: ../receptionist/checkin.php');
+                        header('Location: ../receptionista/panel_recepcionista.php');
                         break;
                     case 'huésped':
                     default:
