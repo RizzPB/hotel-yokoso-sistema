@@ -24,7 +24,6 @@ body {
     font-family: var(--font-body);
     color: var(--color-texto);
     background-color: var(--color-blanco);
-    padding-top: 40px;
 }
 /* modificacion para el navbar en dmovil */
 @media (max-width: 991.98px) {

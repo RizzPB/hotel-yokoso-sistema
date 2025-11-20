@@ -92,7 +92,7 @@ ob_start();
     
     <!-- Información Personal -->
     <div class="card mb-4 shadow-sm border-0">
-      <div class="card-header bg-rojo text-white">
+      <div class="card-header bg-rojo text-dark">
         <h5 class="mb-0" style="font-family: var(--font-heading);">
           <i class="fas fa-id-card me-2"></i> Información Personal
         </h5>
@@ -174,7 +174,7 @@ ob_start();
 
     <!-- Preferencias -->
     <div class="card mb-4 shadow-sm border-0">
-      <div class="card-header bg-gris-oscuro text-white">
+      <div class="card-header bg-gris-oscuro text-dark">
         <h5 class="mb-0" style="font-family: var(--font-heading);">
           <i class="fas fa-utensils me-2"></i> Preferencias
         </h5>
