@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $activo = isset($_POST['activo']) ? 1 : 0;
     $nuevaPassword = $_POST['nuevaPassword'] ?? '';
 
-    // Validaciones
+    // Validaciones para los campos obligatorios 
     if (empty($nombre) || empty($apellido) || empty($cargo) || empty($nombreUsuario) || empty($email)) {
         $error = "Los campos nombre, apellido, cargo, usuario y email son obligatorios.";
     } else {

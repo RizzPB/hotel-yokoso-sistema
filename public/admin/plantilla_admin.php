@@ -108,7 +108,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
         justify-content: center;
     }
 
-    /* MÓVIL: Sidebar deslizable con texto visible */
+    /* MÓVIL: Sidebar deslizable */
     @media (max-width: 992px) {
         .sidebar {
             transform: translateX(-100%);
@@ -216,6 +216,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
         </div>
     </footer>
 <script>
+    /* aqui se hace.. */
 document.getElementById('menuToggle').addEventListener('click', function() {
     document.getElementById('sidebar').classList.toggle('show');
     document.getElementById('overlay').classList.toggle('show');

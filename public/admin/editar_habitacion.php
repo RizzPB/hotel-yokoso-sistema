@@ -82,7 +82,7 @@ $contenido_principal = '
     ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
     ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
 
-    <!-- FORMULARIO FIJO, ANCHO Y PREMIUM -->
+    <!-- FORMULARIO FIJO -->
     <div class="row justify-content-center">
         <div class="col-xl-11 col-xxl-10">
             <div class="card border-0 shadow-lg rounded-4">

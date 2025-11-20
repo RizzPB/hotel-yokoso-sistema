@@ -26,7 +26,7 @@ $stmt = $pdo->prepare("SELECT idPaquete, nombre, descripcion, precio FROM Paquet
 $stmt->execute();
 $paquetes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Procesar formulario (igual que antes, solo optimizado)
+// Procesar formulario de registro 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
     $apellido = trim($_POST['apellido'] ?? '');
@@ -230,7 +230,7 @@ $contenido_principal = '
 </div>
 
 <script>
-// FILTRO DE HABITACIONES 100% FUNCIONAL
+// FILTRO DE HABITACIONES 
 document.getElementById("filtroHabitacion").addEventListener("change", function() {
     const tipo = this.value.toLowerCase();
     document.querySelectorAll(".habitacion-item").forEach(item => {

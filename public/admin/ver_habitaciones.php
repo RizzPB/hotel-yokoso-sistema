@@ -29,9 +29,9 @@ $contenido_principal = '
         </a>
     </div>
 
-    <!-- ÁREA FIJA + ANCHA + HERMOSA (exacto como los formularios) -->
+    <!-- ÁREA FIJA -->
     <div class="row justify-content-center">
-        <div class="col-xl-11 col-xxl-10"> <!-- ← BIEN ANCHO, casi pantalla completa -->
+        <div class="col-xl-11 col-xxl-10"> <!-- tamaño -->
 
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-body p-5">
@@ -48,6 +48,7 @@ $contenido_principal = '
                             $texto = ucfirst($h['estado']);
 
                             return '
+                            
                             <div class="col-md-6 col-lg-4">
                                 <div class="card h-100 shadow-sm border-0 hover-lift position-relative">
                                     <div class="card-body text-center py-5">

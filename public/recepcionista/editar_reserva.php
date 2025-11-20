@@ -104,7 +104,7 @@ $contenido_principal = '
     ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
     ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
 
-    <!-- FORMULARIO PREMIUM, FIJO Y CENTRADO -->
+    <!-- FORMULARIO -->
     <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
             <div class="card border-0 shadow-lg rounded-4">
@@ -214,7 +214,7 @@ $contenido_principal = '
 </div>
 
 <script>
-// FILTRO DE HABITACIONES 100% FUNCIONAL
+// FILTRO DE HABITACIONES
 document.getElementById("filtroHabitacion")?.addEventListener("change", function() {
     const tipo = this.value.toLowerCase();
     document.querySelectorAll(".habitacion-item").forEach(item => {

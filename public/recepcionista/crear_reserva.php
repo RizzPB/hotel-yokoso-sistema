@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idPaquete = !empty($_POST['idPaquete']) ? $_POST['idPaquete'] : null;
     $fechaInicio = $_POST['fechaInicio'] ?? '';
     $fechaFin    = $_POST['fechaFin'] ?? '';
- '';
     $anticipo    = $_POST['anticipo'] ?? 0;
     $total       = $_POST['total'] ?? 0;
     $habitacionesSeleccionadas = $_POST['habitaciones'] ?? [];
@@ -81,7 +80,7 @@ $contenido_principal = '
     ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
     ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
 
-    <!-- FORMULARIO FIJO, CENTRADO Y PREMIUM -->
+    <!-- FORMULARIO FIJO -->
     <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
             <div class="card border-0 shadow-lg rounded-4">
@@ -138,7 +137,7 @@ $contenido_principal = '
                                         <div class="card-body text-center p-4">
                                             <h3 class="text-rojo fw-bold mb-1">Hab. '.$hab['numero'].'</h3>
                                             <p class="text-muted fw-bold">'.ucwords($hab['tipo']).'</p>
-                                            <h4 class="text-success fw-bold mb-3">Bs. '.number_format($hab['precioNoche'],2).'</h4>
+                                            <h4 class="text-success fw-bold mb-3" data-precio="'.number_format($hab['precioNoche'], 2, '.', '').'">Bs. '.number_format($hab['precioNoche'],2).'</h4>
                                             <input type="checkbox" name="habitaciones[]" value="'.$hab['idHabitacion'].'" id="hab_'.$hab['idHabitacion'].'" class="btn-check">
                                             <label for="hab_'.$hab['idHabitacion'].'" class="btn btn-yokoso btn-lg w-100 rounded-pill shadow-sm">
                                                 <i class="fas fa-bed me-2"></i>Seleccionar
@@ -180,7 +179,7 @@ $contenido_principal = '
 </div>
 
 <script>
-// CÁLCULO AUTOMÁTICO DEL TOTAL - AHORA SÍ 100% CORRECTO
+// CÁLCULO AUTOMÁTICO DEL TOTAL - CORREGIDO
 document.addEventListener("DOMContentLoaded", function () {
     function calcularTotal() {
         const fechaInicio = document.querySelector("[name=fechaInicio]").value;
@@ -191,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // CÁLCULO CORRECTO DE NOCHES (el secreto estaba aquí)
+        // CÁLCULO CORRECTO DE NOCHES 
         const inicio = new Date(fechaInicio);
         const fin    = new Date(fechaFin);
         const noches = (fin - inicio) / (1000 * 60 * 60 * 24); // Esto da 2.0 exacto del 21 al 23
@@ -203,17 +202,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let subtotal = 0;
 
-        // SUMAR HABITACIONES
+        // SUMAR HABITACIONES (CORREGIDO)
         document.querySelectorAll("[name=\"habitaciones[]\"]:checked").forEach(cb => {
             const card = cb.closest(".card");
-            const precioTexto = card.querySelector("h4.text-success").textContent;
-            const precio = parseFloat(precioTexto.replace(/[^\d.-]/g, "").replace(",", ""));
+            const precioElemento = card.querySelector("h4.text-success");
+            const precio = parseFloat(precioElemento.dataset.precio); // ✅ LEEMOS EL DATA-PRECIO
             if (!isNaN(precio)) {
                 subtotal += precio * noches;
             }
         });
 
-        // SUMAR PAQUETE (usando data-precio = 100% seguro)
+        // SUMAR PAQUETE 
         const paqueteSelect = document.querySelector("[name=idPaquete]");
         if (paqueteSelect && paqueteSelect.value) {
             const opcion = paqueteSelect.options[paqueteSelect.selectedIndex];

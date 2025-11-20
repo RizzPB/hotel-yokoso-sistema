@@ -9,7 +9,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-// ← RESALTA "INICIO" EN EL SIDEBAR DEL ADMIN
+// RESALTA "INICIO" EN EL SIDEBAR DEL ADMIN
 $current_page = 'panel_admin';
 
 $titulo_pagina = "Panel Administrador - Hotel Yokoso";

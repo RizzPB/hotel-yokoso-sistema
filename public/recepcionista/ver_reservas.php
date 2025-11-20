@@ -11,7 +11,7 @@ if (!isset($_SESSION['idUsuario']) || ($_SESSION['rol'] !== 'empleado' && $_SESS
 $current_page = 'ver_reservas';
 require_once __DIR__ . '/../../config/database.php';
 
-// TRAEMOS TODAS LAS RESERVAS (incluso finalizadas, nunca canceladas)
+// TRAEMOS TODAS LAS RESERVAS NO CANCELADAS 
 $stmt = $pdo->prepare("
     SELECT r.*, h.nombre, h.apellido,
            GROUP_CONCAT(ha.numero SEPARATOR ', ') AS numeros_habitacion
@@ -41,7 +41,7 @@ $contenido_principal = '
         </a>
     </div>
 
-    <!-- FILTRO BONITO Y FUNCIONAL -->
+    <!-- FILTRO PARA RESERVAS -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body py-3">
             <div class="row align-items-center">

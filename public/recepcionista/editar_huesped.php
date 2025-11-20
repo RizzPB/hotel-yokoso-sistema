@@ -78,7 +78,7 @@ $contenido_principal = '
     '. ($mensaje ? '<div class="alert alert-success text-center mx-auto" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>'.htmlspecialchars($mensaje).'</div>' : '') .'
     '. ($error ? '<div class="alert alert-danger text-center mx-auto" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>'.htmlspecialchars($error).'</div>' : '') .'
 
-    <!-- FORMULARIO FIJO, CENTRADO Y HERMOSO -->
+    <!-- FORMULARIO FIJO -->
     <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
             <div class="card border-0 shadow-lg rounded-4">
@@ -138,7 +138,7 @@ $contenido_principal = '
                             <textarea class="form-control form-control-lg rounded-4" rows="4" name="preferenciaAlimentaria" placeholder="Ej. Vegetariano, sin gluten...">'.htmlspecialchars($huesped['preferenciaAlimentaria']).'</textarea>
                         </div>
 
-                        <!-- BOTONES FINALES FIJOS Y PERFECTOS -->
+                        <!-- BOTONES FINALES-->
                         <div class="pt-4 border-top text-end">
                             <a href="ver_huespedes.php" class="btn btn-outline-secondary btn-lg px-5 rounded-pill me-3">
                                 Cancelar

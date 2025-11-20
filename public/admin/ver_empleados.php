@@ -20,6 +20,7 @@ $empleados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $titulo_pagina = "Empleados - Hotel Yokoso";
 
 $contenido_principal = '
+/* BTN NUEVO EMPLEADO */
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-rojo fw-bold">Gestión de Empleados</h2>
     <a href="crear_empleado.php" class="btn btn-dark btn-lg shadow-lg px-5 position-relative overflow-hidden">
