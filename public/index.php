@@ -20,8 +20,8 @@
     <!-- para animaciones -->
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
-    <!-- Favicon (opcional) -->
-    <link rel="icon" href="img/favicon.ico">
+    <!-- Favicon -->
+    <link rel="icon" href="/assets/img/favicon.ico">
 </head>
 <body>
     <!-- Navbar fijo -->
@@ -136,43 +136,69 @@
         </div>
     </section>
 
+    <!-- Habitaciones - Full View -->
+<section id="habitaciones" class="section-full bg-gris-claro d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <!-- Título -->
+            <div class="col-12 mb-5 text-center" data-aos="fade-up">
+                <h3 class="text-rojo display-5 fw-bold">Nuestras Habitaciones</h3>
+                <p class="lead mt-3 text-muted">Descubre el refugio perfecto para tu estancia en Uyuni.</p>
+            </div>
 
-    <main class="container my-5">
-        <!-- Habitaciones -->
-        <section id="habitaciones" class="mb-5 py-5 bg-gris-claro">
-        <div class="container">
-            <h3 class="text-center text-rojo mb-5">Nuestras Habitaciones</h3>
-            <div class="row g-4">
-            <!-- Habitación Rústica -->
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <img src="assets/img/roonNormal.jpeg" class="card-img-top" alt="Habitación Rústica" style="height: 250px; object-fit: cover;">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"><i class="fas fa-home text-mostaza me-2"></i>Habitaciones Normales / Rústicas</h5>
-                    <p class="card-text flex-grow-1">
-                    22 habitaciones diseñadas con materiales locales, cálidas, cómodas y con vista al entorno natural de Uyuni.
-                    </p>
-                    <a href="registro.php" class="btn btn-rojo mt-auto align-self-start">Ver detalles</a>
-                </div>
+            <!-- Tarjeta 1: Rústicas Clásicas -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
+                    <img src="assets/img/roonNormal.jpeg" alt="Habitaciones Rústicas" class="w-100" style="height: 280px; object-fit: cover;">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="text-rojo mb-3">
+                            <i class="fas fa-home text-mostaza me-2"></i>Rústicas Clásicas
+                        </h5>
+                        <p class="mb-4">
+                            Cálidas y auténticas, diseñadas con madera, piedra y textiles bolivianos. Ideal para quienes buscan confort con sabor andino.
+                        </p>
+                        <a href="habitaciones.php#rusticas" class="btn btn-outline-rojo w-100">Ver más</a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Habitación de Sal -->
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                <img src="assets/img/roomSal.jpeg" class="card-img-top" alt="Habitación de Sal" style="height: 250px; object-fit: cover;">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title"><i class="fas fa-mountain text-mostaza me-2"></i>Habitaciones de Sal</h5>
-                    <p class="card-text flex-grow-1">
-                    6 habitaciones únicas construidas con bloques de sal del Salar de Uyuni. ¡Una experiencia mística!
-                    </p>
-                    <a href="registro.php" class="btn btn-rojo mt-auto align-self-start">Ver detalles</a>
-                </div>
+            <!-- Tarjeta 2: Suites Familiares -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
+                    <img src="assets/img/roomSuite.jpg" alt="Suites Familiares" class="w-100" style="height: 280px; object-fit: cover;">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="text-rojo mb-3">
+                            <i class="fas fa-door-open text-mostaza me-2"></i>Suites Familiares
+                        </h5>
+                        <p class="mb-4">
+                            Espacios amplios con dos habitaciones conectadas. Perfectos para familias o grupos que buscan privacidad y comodidad.
+                        </p>
+                        <a href="habitaciones.php#familiares" class="btn btn-outline-rojo w-100">Ver más</a>
+                    </div>
                 </div>
             </div>
+
+            <!-- Tarjeta 3: De Sal -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
+                    <img src="assets/img/roomSal.jpeg" alt="Habitaciones de Sal" class="w-100" style="height: 280px; object-fit: cover;">
+                    <div class="card-body p-4 text-center">
+                        <h5 class="text-rojo mb-3">
+                            <i class="fas fa-mountain text-mostaza me-2"></i>De Sal
+                        </h5>
+                        <p class="mb-4">
+                            Construidas íntegramente con bloques de sal del Salar de Uyuni. Una experiencia sensorial única bajo el cielo estrellado.
+                        </p>
+                        <a href="habitaciones.php#sal" class="btn btn-outline-rojo w-100">Ver más</a>
+                    </div>
+                </div>
             </div>
         </div>
-        </section>
+    </div>
+</section>
+
+    <main class="container my-5">
+    
 
         <!-- Paquetes Turísticos -->
         <section class="mb-5">
