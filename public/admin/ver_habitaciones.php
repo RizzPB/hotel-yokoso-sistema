@@ -1,110 +1,84 @@
 <?php
-// public/vistas/admin/ver_habitaciones.php
+// public/admin/ver_habitaciones.php
 
 define('ACCESO_PERMITIDO', true);
-
 session_start();
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../../login.php");
     exit;
 }
 
+$current_page = 'habitaciones';
 require_once __DIR__ . '/../../config/database.php';
 
-// Obtener todas las habitaciones
-$stmt = $pdo->prepare("
-    SELECT idHabitacion, numero, tipo, precioNoche, estado, foto
-    FROM Habitacion
-    ORDER BY numero ASC
-");
+$stmt = $pdo->prepare("SELECT idHabitacion, numero, tipo, precioNoche, estado FROM Habitacion ORDER BY CAST(numero AS UNSIGNED)");
 $stmt->execute();
 $habitaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$titulo_pagina = "Ver Habitaciones - Hotel Yokoso";
+$titulo_pagina = "Habitaciones - Hotel Yokoso";
 
 $contenido_principal = '
-    <div class="content-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <h2 class="text-rojo fw-bold">Gestión de Habitaciones</h2>
-            <a href="crear_habitacion.php" class="btn btn-yokoso btn-lg shadow-sm">
-                <i class="fas fa-plus me-2"></i>Nueva Habitación
-            </a>
-        </div>
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="text-rojo fw-bold">
+            Gestión de Habitaciones
+        </h2>
+        <a href="crear_habitacion.php" class="btn btn-yokoso btn-lg rounded-pill px-5 shadow-lg">
+             + Nueva Habitación
+        </a>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered border-0">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Número</th>
-                    <th>Tipo</th>
-                    <th>Precio por Noche (Bs.)</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                ' . (empty($habitaciones) ? '<tr><td colspan="6" class="text-center py-4">No hay habitaciones registradas.</td></tr>' : implode('', array_map(function($hab) {
-                    $estado = $hab['estado'] === 'disponible' ? 'Disponible' : ($hab['estado'] === 'ocupada' ? 'Ocupada' : 'Mantenimiento');
-                    $estadoClass = $hab['estado'] === 'disponible' ? 'status-disponible' : ($hab['estado'] === 'ocupada' ? 'status-ocupada' : 'status-mantenimiento');
-                    return '
-                        <tr>
-                            <td>' . htmlspecialchars($hab['idHabitacion']) . '</td>
-                            <td>' . htmlspecialchars($hab['numero']) . '</td>
-                            <td>' . htmlspecialchars(ucfirst($hab['tipo'])) . '</td>
-                            <td>' . htmlspecialchars($hab['precioNoche']) . '</td>
-                            <td>
-                                <span class="status-badge ' . $estadoClass . '">' . $estado . '</span>
-                            </td>
-                            <td class="text-center">
-                                <a href="editar_habitacion.php?id=' . $hab['idHabitacion'] . '" class="btn btn-outline-primary btn-sm me-1" title="Editar">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button class="btn btn-outline-danger btn-sm" onclick="eliminarHabitacion(' . $hab['idHabitacion'] . ')" title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>';
-                }, $habitaciones))) . '
-            </tbody>
-        </table>
-    </div>
+    <!-- ÁREA FIJA + ANCHA + HERMOSA (exacto como los formularios) -->
+    <div class="row justify-content-center">
+        <div class="col-xl-11 col-xxl-10"> <!-- ← BIEN ANCHO, casi pantalla completa -->
 
-    <!-- Modal de confirmación de eliminación -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ¿Estás seguro de que deseas eliminar esta habitación? Esta acción no se puede deshacer.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="confirmarEliminarBtn">Eliminar</button>
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-5">
+
+                    <div class="row g-4">
+                        ' . (empty($habitaciones) ? '
+                        <div class="col-12 text-center py-5">
+                            <i class="fas fa-bed fa-5x text-muted mb-4"></i>
+                            <h4 class="text-muted">No hay habitaciones registradas</h4>
+                        </div>' : '') . '
+
+                        ' . implode('', array_map(function($h) {
+                            $color = $h['estado'] === 'disponible' ? 'success' : ($h['estado'] === 'ocupada' ? 'warning' : 'secondary');
+                            $texto = ucfirst($h['estado']);
+
+                            return '
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card h-100 shadow-sm border-0 hover-lift position-relative">
+                                    <div class="card-body text-center py-5">
+                                        <h1 class="display-4 fw-bold text-rojo mb-3">' . htmlspecialchars($h['numero']) . '</h1>
+                                        <h5 class="text-uppercase text-muted">' . htmlspecialchars($h['tipo']) . '</h5>
+                                        <h4 class="text-success fw-bold mt-3">Bs. ' . number_format($h['precioNoche'], 2) . ' / noche</h4>
+                                        <span class="badge bg-' . $color . ' position-absolute top-0 end-0 mt-3 me-3 fs-6">' . $texto . '</span>
+                                        <div class="mt-4">
+                                            <a href="editar_habitacion.php?id=' . $h['idHabitacion'] . '" class="btn btn-outline-primary">
+                                                Editar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>';
+                        }, $habitaciones)) . '
+                    </div>
+
                 </div>
             </div>
+
+            <!-- Contador elegante al final -->
+            <div class="text-center mt-4">
+                <h5 class="text-muted">
+                    Total: <strong class="text-rojo">' . count($habitaciones) . '</strong> habitaciones registradas
+                </h5>
+            </div>
+
         </div>
     </div>
-
-    <script>
-        let habitacionAEliminar = null;
-
-        function eliminarHabitacion(id) {
-            habitacionAEliminar = id;
-            const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
-            modal.show();
-        }
-
-        document.getElementById("confirmarEliminarBtn").addEventListener("click", function() {
-            if (habitacionAEliminar) {
-                window.location.href = "eliminar_habitacion.php?id=" + habitacionAEliminar;
-            }
-        });
-    </script>
+</div>
 ';
 
 include 'plantilla_admin.php';

@@ -11,8 +11,8 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
 
 require_once __DIR__ . '/../../config/database.php';
 
-$error = '';
-$mensaje = '';
+$error = null;
+$mensaje = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $numero = trim($_POST['numero']);
@@ -73,9 +73,16 @@ $contenido_principal = '
         </div>
     </div>
 
-    ' . (isset($mensaje) ? '<div class="alert alert-success">' . htmlspecialchars($mensaje) . '</div>' : '') . '
-    ' . (isset($error) ? '<div class="alert alert-danger">' . htmlspecialchars($error) . '</div>' : '') . '
+    ' . (!empty($mensaje) ? '<div class="alert alert-alert-success alert-dismissible fade show" role="alert">
+        <strong>Éxito!</strong> ' . htmlspecialchars($mensaje) . '
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>' : '') . '
 
+    ' . (!empty($error) ? '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error:</strong> ' . htmlspecialchars($error) . '
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>' : '') . '
+    
     <div class="reserva-form-container">
         <form method="POST" enctype="multipart/form-data">
             <div class="row">

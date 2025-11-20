@@ -1,70 +1,57 @@
 <?php
-// public/vistas/recepcionista/registrar_huesped.php
+// public/recepcionista/registrar_huesped.php
 
 define('ACCESO_PERMITIDO', true);
-
 session_start();
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'empleado') {
     header("Location: ../../login.php");
     exit;
 }
 
+$current_page = 'registrar_huesped';
 require_once __DIR__ . '/../../config/database.php';
 
-// Obtener todos los tipos de habitación únicos
-$stmt = $pdo->prepare("SELECT DISTINCT tipo FROM Habitacion WHERE estado = 'disponible' ORDER BY tipo ASC");
+$mensaje = $error = '';
+
+// Cargar habitaciones disponibles
+$stmt = $pdo->prepare("SELECT DISTINCT tipo FROM Habitacion WHERE estado = 'disponible' ORDER BY tipo");
 $stmt->execute();
 $tiposHabitacion = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// Obtener todas las habitaciones disponibles
-$stmt = $pdo->prepare("SELECT idHabitacion, numero, tipo, precioNoche FROM Habitacion WHERE estado = 'disponible'");
+$stmt = $pdo->prepare("SELECT idHabitacion, numero, tipo, precioNoche FROM Habitacion WHERE estado = 'disponible' ORDER BY numero");
 $stmt->execute();
 $habitaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Obtener tipos de paquetes turísticos (duración)
-$stmt = $pdo->prepare("SELECT DISTINCT duracionDias FROM PaqueteTuristico WHERE activo = 1 ORDER BY duracionDias ASC");
-$stmt->execute();
-$duracionPaquetes = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-// Obtener paquetes turísticos activos
-$stmt = $pdo->prepare("SELECT idPaquete, nombre, descripcion, precio, duracionDias FROM PaqueteTuristico WHERE activo = 1");
+$stmt = $pdo->prepare("SELECT idPaquete, nombre, descripcion, precio FROM PaqueteTuristico WHERE activo = 1");
 $stmt->execute();
 $paquetes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Si el formulario fue enviado, procesarlo
-$mensaje = '';
-$error = '';
-
+// Procesar formulario (igual que antes, solo optimizado)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = trim($_POST['nombre']);
-    $apellido = trim($_POST['apellido']);
-    $tipoDocumento = $_POST['tipoDocumento'];
-    $nroDocumento = trim($_POST['nroDocumento']);
-    $procedencia = trim($_POST['procedencia']);
-    $email = trim($_POST['email']);
-    $telefono = trim($_POST['telefono']);
-    $motivoVisita = trim($_POST['motivoVisita']);
-    $preferenciaAlimentaria = trim($_POST['preferenciaAlimentaria']);
-    $idPaquete = $_POST['idPaquete'] ?? null;
-
-    // Obtener las habitaciones seleccionadas
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellido = trim($_POST['apellido'] ?? '');
+    $tipoDocumento = $_POST['tipoDocumento'] ?? '';
+    $nroDocumento = trim($_POST['nroDocumento'] ?? '');
+    $procedencia = trim($_POST['procedencia'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $motivoVisita = trim($_POST['motivoVisita'] ?? '');
+    $preferenciaAlimentaria = trim($_POST['preferenciaAlimentaria'] ?? '');
+    $idPaquete = !empty($_POST['idPaquete']) ? $_POST['idPaquete'] : null;
     $habitacionesSeleccionadas = $_POST['habitaciones'] ?? [];
 
-    // Validaciones
-    if (empty($nombre) || empty($apellido) || empty($tipoDocumento) || empty($nroDocumento)) {
-        $error = "Los campos nombre, apellido, tipo y número de documento son obligatorios.";
-    } elseif (empty($habitacionesSeleccionadas)) {
-        $error = "Debes seleccionar al menos una habitación.";
+    if (empty($nombre) || empty($apellido) || empty($tipoDocumento) || empty($nroDocumento) || empty($habitacionesSeleccionadas)) {
+        $error = "Completa todos los campos obligatorios y selecciona al menos una habitación.";
     } else {
-        // Insertar huésped
-        $stmt = $pdo->prepare("
-            INSERT INTO Huesped (nombre, apellido, tipoDocumento, nroDocumento, procedencia, email, telefono, motivoVisita, preferenciaAlimentaria)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ");
-        if ($stmt->execute([$nombre, $apellido, $tipoDocumento, $nroDocumento, $procedencia, $email, $telefono, $motivoVisita, $preferenciaAlimentaria])) {
+        try {
+            $pdo->beginTransaction();
+
+            // Registrar huésped
+            $stmt = $pdo->prepare("INSERT INTO Huesped (nombre, apellido, tipoDocumento, nroDocumento, procedencia, email, telefono, motivoVisita, preferenciaAlimentaria, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
+            $stmt->execute([$nombre, $apellido, $tipoDocumento, $nroDocumento, $procedencia, $email, $telefono, $motivoVisita, $preferenciaAlimentaria]);
             $idHuesped = $pdo->lastInsertId();
 
-            // Fecha de inicio y fin (por defecto hoy y mañana)
+            // Fechas por defecto
             $fechaInicio = date('Y-m-d');
             $fechaFin = date('Y-m-d', strtotime('+1 day'));
 
@@ -73,49 +60,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($habitacionesSeleccionadas as $idHab) {
                 $stmt = $pdo->prepare("SELECT precioNoche FROM Habitacion WHERE idHabitacion = ?");
                 $stmt->execute([$idHab]);
-                $hab = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($hab) {
-                    $total += $hab['precioNoche'];
-                }
+                $hab = $stmt->fetch();
+                $total += $hab['precioNoche'] ?? 0;
             }
-
-            // Si hay paquete, sumar su precio
             if ($idPaquete) {
                 $stmt = $pdo->prepare("SELECT precio FROM PaqueteTuristico WHERE idPaquete = ?");
                 $stmt->execute([$idPaquete]);
-                $pkg = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($pkg) {
-                    $total += $pkg['precio'];
-                }
+                $pkg = $stmt->fetch();
+                $total += $pkg['precio'] ?? 0;
             }
 
-            // Crear la reserva
-            $stmt = $pdo->prepare("
-                INSERT INTO Reserva (idHuesped, idPaquete, fechaInicio, fechaFin, total, estado)
-                VALUES (?, ?, ?, ?, ?, 'confirmada')
-            ");
-            if ($stmt->execute([$idHuesped, $idPaquete, $fechaInicio, $fechaFin, $total])) {
-                $idReserva = $pdo->lastInsertId();
+            // Crear reserva
+            $stmt = $pdo->prepare("INSERT INTO Reserva (idHuesped, idPaquete, fechaInicio, fechaFin, total, estado) VALUES (?, ?, ?, ?, ?, 'confirmada')");
+            $stmt->execute([$idHuesped, $idPaquete, $fechaInicio, $fechaFin, $total]);
+            $idReserva = $pdo->lastInsertId();
 
-                // Insertar cada habitación en la tabla intermedia ReservaHabitacion
-                foreach ($habitacionesSeleccionadas as $idHab) {
-                    $stmt = $pdo->prepare("
-                        INSERT INTO ReservaHabitacion (idReserva, idHabitacion, precioNoche)
-                        VALUES (?, ?, (SELECT precioNoche FROM Habitacion WHERE idHabitacion = ?))
-                    ");
-                    $stmt->execute([$idReserva, $idHab, $idHab]);
-
-                    // Cambiar estado de la habitación a ocupada
-                    $stmt = $pdo->prepare("UPDATE Habitacion SET estado = 'ocupada' WHERE idHabitacion = ?");
-                    $stmt->execute([$idHab]);
-                }
-
-                $mensaje = "Huésped registrado exitosamente.";
-            } else {
-                $error = "Error al crear la reserva.";
+            // Asignar habitaciones
+            foreach ($habitacionesSeleccionadas as $idHab) {
+                $stmt = $pdo->prepare("INSERT INTO ReservaHabitacion (idReserva, idHabitacion, precioNoche) VALUES (?, ?, (SELECT precioNoche FROM Habitacion WHERE idHabitacion = ?))");
+                $stmt->execute([$idReserva, $idHab, $idHab]);
+                $stmt = $pdo->prepare("UPDATE Habitacion SET estado = 'ocupada' WHERE idHabitacion = ?");
+                $stmt->execute([$idHab]);
             }
-        } else {
-            $error = "Error al registrar el huésped.";
+
+            $pdo->commit();
+            $mensaje = "Huésped registrado y habitación asignada con éxito.";
+
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $error = "Error al procesar el registro. Intenta nuevamente.";
         }
     }
 }
@@ -123,159 +96,149 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $titulo_pagina = "Registrar Huésped - Hotel Yokoso";
 
 $contenido_principal = '
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-rojo fw-bold">Registrar Nuevo Huésped</h2>
-    </div>
+<div class="container py-5">
+    <h2 class="text-rojo fw-bold text-center mb-5">Registrar Nuevo Huésped</h2>
 
-    ' . (isset($mensaje) ? '<div class="alert alert-success w-100">' . htmlspecialchars($mensaje) . '</div>' : '') . '
-    ' . (isset($error) ? '<div class="alert alert-danger w-100">' . htmlspecialchars($error) . '</div>' : '') . '
+    ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto" style="max-width: 900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
+    ' . ($error ? '<div class="alert alert-danger text-center mx-auto" style="max-width: 900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
 
-    <div class="reserva-form-container">
-        <form method="POST">
-            <div class="row">
-                <div class="col-md-6">
-                    <label class="form-label">Nombre *</label>
-                    <input type="text" class="form-control" name="nombre" required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Apellido *</label>
-                    <input type="text" class="form-control" name="apellido" required>
-                </div>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-xl-10 col-xxl-9">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-5 p-lg-6">
 
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <label class="form-label">Tipo de Documento *</label>
-                    <select class="form-select" name="tipoDocumento" required>
-                        <option value="">Seleccionar...</option>
-                        <option value="DNI">DNI</option>
-                        <option value="Pasaporte">Pasaporte</option>
-                        <option value="Carnet">Carnet</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Número de Documento *</label>
-                    <input type="text" class="form-control" name="nroDocumento" required>
-                </div>
-            </div>
+                    <form method="POST">
+                        <!-- DATOS PERSONALES -->
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Nombre *</label>
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="nombre" required placeholder="Ej. Rebeca">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Apellido *</label>
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="apellido" required placeholder="Ej. Lopez Choque">
+                            </div>
+                        </div>
 
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <label class="form-label">Procedencia</label>
-                    <input type="text" class="form-control" name="procedencia">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Email</label>
-                    <input type="email" class="form-control" name="email">
-                </div>
-            </div>
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Tipo Documento *</label>
+                                <select class="form-select form-select-lg rounded-pill" name="tipoDocumento" required >
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Carnet">Carnet</option>
+                                    <option value="DNI">DNI</option>
+                                    <option value="Pasaporte">Pasaporte</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Nro. Documento *</label>
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="nroDocumento" required placeholder="Ej. 456852">
+                            </div>
+                        </div>
 
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <label class="form-label">Teléfono</label>
-                    <input type="text" class="form-control" name="telefono">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Motivo de Visita</label>
-                    <input type="text" class="form-control" name="motivoVisita">
-                </div>
-            </div>
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Procedencia</label>
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="procedencia" placeholder="Ej. Cochabamba">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Email</label>
+                                <input type="email" class="form-control form-control-lg rounded-pill" name="email" placeholder="Ej. usuario@gmail.com">
+                            </div>
+                        </div>
 
-            <div class="mt-3">
-                <label class="form-label">Preferencias Alimentarias</label>
-                <textarea class="form-control" rows="3" name="preferenciaAlimentaria" placeholder="Ej. Vegetariano, sin gluten, alérgico a la leche..."></textarea>
-            </div>
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Teléfono</label>
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="telefono">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-dark">Motivo de Visita</label>
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="motivoVisita" placeholder="Ej. Turismo, Trabajo">
+                            </div>
+                        </div>
 
-            <!-- Sección de Habitaciones -->
-            <div class="mt-4">
-                <h4 class="text-rojo">Habitaciones</h4>
-                <label class="form-label">Filtrar por tipo de habitación</label>
-                <select class="form-select mb-3" id="filtroHabitacion">
-                    <option value="">Ver todas las disponibles</option>
-                    ' . implode('', array_map(fn($tipo) => "<option value=\"" . htmlspecialchars($tipo) . "\">" . htmlspecialchars($tipo) . "</option>", $tiposHabitacion)) . '
-                </select>
+                        <div class="mb-5">
+                            <label class="form-label fw-bold text-dark">Preferencias Alimentarias</label>
+                            <textarea class="form-control form-control-lg rounded-4" rows="3" name="preferenciaAlimentaria" placeholder="Ej. Vegetariano, sin gluten, alérgico a la leche..."></textarea>
+                        </div>
 
-                <div id="listaHabitaciones" class="border p-3 rounded bg-light">
-                    ' . implode('', array_map(function($hab) {
-                        return '
-                            <div class="habitacion-item mb-2 p-2 bg-white rounded shadow-sm" data-tipo="' . $hab['tipo'] . '">
-                                <input type="checkbox" name="habitaciones[]" value="' . $hab['idHabitacion'] . '" id="hab_' . $hab['idHabitacion'] . '">
-                                <label for="hab_' . $hab['idHabitacion'] . '" class="fw-semibold">
-                                    ' . htmlspecialchars($hab['numero']) . ' (' . htmlspecialchars($hab['tipo']) . ') - Bs. ' . htmlspecialchars($hab['precioNoche']) . '/noche
-                                </label>
-                            </div>';
-                    }, $habitaciones)) . '
-                </div>
-            </div>
+                        <!-- HABITACIONES -->
+                        <hr class="my-5 border-secondary">
+                        <h4 class="text-rojo fw-bold mb-4">Seleccionar Habitación(es)</h4>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-5">
+                                <select class="form-select form-select-lg rounded-pill" id="filtroHabitacion">
+                                    <option value="">Todas las disponibles</option>
+                                    ' . implode('', array_map(fn($t) => '<option value="'.htmlspecialchars($t).'">'.ucwords($t).'</option>', $tiposHabitacion)) . '
+                                </select>
+                            </div>
+                        </div>
 
-            <!-- Sección de Paquetes Turísticos -->
-            <div class="mt-4">
-                <h4 class="text-rojo">Paquetes Turísticos</h4>
-                <label class="form-label">Filtrar por duración</label>
-                <select class="form-select mb-3" id="filtroPaquete">
-                    <option value="">Ver todos</option>
-                    ' . implode('', array_map(fn($duracion) => "<option value=\"$duracion\">$duracion día(s)</option>", $duracionPaquetes)) . '
-                </select>
-
-                <div id="listaPaquetes" class="row">
-                    ' . implode('', array_map(function($pkg) {
-                        return '
-                            <div class="col-md-6 mb-3 paquete-card" data-duracion="' . $pkg['duracionDias'] . '">
-                                <div class="card h-100 border-0 shadow-sm">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-rojo">' . htmlspecialchars($pkg['nombre']) . '</h5>
-                                        <p class="card-text text-muted small">' . htmlspecialchars($pkg['descripcion']) . '</p>
-                                        <p class="fw-bold text-mostaza">Bs. ' . htmlspecialchars($pkg['precio']) . '</p>
-                                        
-                                        <div class="mt-2">
-                                            <input type="radio" name="idPaquete" value="' . $pkg['idPaquete'] . '" id="pkg_' . $pkg['idPaquete'] . '">
-                                            <label for="pkg_' . $pkg['idPaquete'] . '" class="fw-semibold">Seleccionar este paquete</label>
+                        <div class="row g-4" id="listaHabitaciones">
+                            ' . implode('', array_map(function($hab) {
+                                return '
+                                <div class="col-md-6 col-lg-4 habitacion-item" data-tipo="'.htmlspecialchars($hab['tipo']).'">
+                                    <div class="card h-100 border-0 shadow hover-lift transition">
+                                        <div class="card-body text-center p-4">
+                                            <h3 class="text-rojo fw-bold mb-1">Hab. '.$hab['numero'].'</h3>
+                                            <p class="text-muted fw-bold">'.ucwords($hab['tipo']).'</p>
+                                            <h4 class="text-success fw-bold mb-3">Bs. '.number_format($hab['precioNoche'], 2).'</h4>
+                                            <input type="checkbox" name="habitaciones[]" value="'.$hab['idHabitacion'].'" id="hab_'.$hab['idHabitacion'].'" class="btn-check">
+                                            <label for="hab_'.$hab['idHabitacion'].'" class="btn btn-yokoso btn-lg w-100 rounded-pill shadow-sm">
+                                                <i class="fas fa-bed me-2"></i>Seleccionar
+                                            </label>
                                         </div>
                                     </div>
-                                </div>
-                            </div>';
-                    }, $paquetes)) . '
+                                </div>';
+                            }, $habitaciones)) . '
+                        </div>
+
+                        <!-- PAQUETES -->
+                        <hr class="my-5 border-secondary">
+                        <h4 class="text-rojo fw-bold mb-4">Paquete Turístico (Opcional)</h4>
+                        <div class="row g-4">
+                            ' . implode('', array_map(function($pkg) {
+                                return '
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <h5 class="text-rojo fw-bold">'.$pkg['nombre'].'</h5>
+                                            <p class="small text-muted">'.$pkg['descripcion'].'</p>
+                                            <h4 class="text-mostaza fw-bold">Bs. '.number_format($pkg['precio'],2).'</h4>
+                                            <input type="radio" name="idPaquete" value="'.$pkg['idPaquete'].'" id="pkg_'.$pkg['idPaquete'].'" class="btn-check">
+                                            <label for="pkg_'.$pkg['idPaquete'].'" class="btn btn-outline-yokoso btn-lg w-100 mt-3 rounded-pill">Elegir</label>
+                                        </div>
+                                    </div>
+                                </div>';
+                            }, $paquetes)) . '
+                        </div>
+
+                        <!-- BOTONES FINALES -->
+                        <div class="mt-5 pt-4 text-end">
+                            <a href="panel_recepcionista.php" class="btn btn-outline-secondary btn-lg px-5 rounded-pill me-3">Cancelar</a>
+                            <button type="submit" class="btn btn-yokoso btn-lg px-5 rounded-pill shadow-lg">
+                                <i class="fas fa-user-plus fa-lg me-2"></i>
+                                Registrar Huésped
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div class="mt-4 d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="panel_recepcionista.php" class="btn btn-cancelar me-md-2">Cancelar</a>
-                <button type="submit" class="btn btn-yokoso btn-lg shadow-sm">
-                    <i class="fas fa-save me-2"></i>Guardar Huésped
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
+</div>
 
-    <script>
-        // Filtrar habitaciones por tipo
-        document.getElementById("filtroHabitacion").addEventListener("change", function() {
-            const tipo = this.value;
-            const items = document.querySelectorAll("#listaHabitaciones .habitacion-item");
-
-            items.forEach(item => {
-                if (tipo === "" || item.getAttribute("data-tipo") === tipo) {
-                    item.style.display = "flex";
-                } else {
-                    item.style.display = "none";
-                }
-            });
-        });
-
-        // Filtrar paquetes por duración
-        document.getElementById("filtroPaquete").addEventListener("change", function() {
-            const duracion = this.value;
-            const cards = document.querySelectorAll("#listaPaquetes .paquete-card");
-
-            cards.forEach(card => {
-                if (duracion === "" || card.getAttribute("data-duracion") == duracion) {
-                    card.style.display = "block";
-                } else {
-                    card.style.display = "none";
-                }
-            });
-        });
-    </script>
+<script>
+// FILTRO DE HABITACIONES 100% FUNCIONAL
+document.getElementById("filtroHabitacion").addEventListener("change", function() {
+    const tipo = this.value.toLowerCase();
+    document.querySelectorAll(".habitacion-item").forEach(item => {
+        const tipoHab = item.dataset.tipo.toLowerCase();
+        item.style.display = (tipo === "" || tipoHab.includes(tipo)) ? "block" : "none";
+    });
+});
+</script>
 ';
 
 include 'plantilla_recepcionista.php';

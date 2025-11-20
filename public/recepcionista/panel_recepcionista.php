@@ -1,5 +1,5 @@
 <?php
-// public/vistas/recepcionista/panel_recepcionista.php
+// public/recepcionista/panel_recepcionista.php
 
 define('ACCESO_PERMITIDO', true);
 
@@ -9,41 +9,42 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'empleado') {
     exit;
 }
 
+// ← ESTA LÍNEA ES LA ÚNICA QUE FALTABA (resalta "Inicio" en el sidebar)
+$current_page = 'panel_recepcionista';
+
 $titulo_pagina = "Panel Recepcionista - Hotel Yokoso";
 
 $contenido_principal = '
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-rojo fw-bold">Panel de Recepcionista</h2>
-    </div>
 
-    <p>¡Hola! Bienvenido a tu panel de trabajo.</p>
-    <p>¿Qué quieres hacer?</p>
 
-    <div class="row">
-        <div class="col-md-6">
-            <a href="registrar_huesped.php" class="btn btn-rojo btn-lg w-100 mb-3">
-                <i class="fas fa-user-plus me-2"></i>Registrar Huésped
-            </a>
-        </div>
-        <div class="col-md-6">
-            <a href="ver_huespedes.php" class="btn btn-rojo btn-lg w-100 mb-3">
-                <i class="fas fa-users me-2"></i>Ver Huéspedes
-            </a>
-        </div>
-        <div class="col-md-6">
-            <a href="crear_reserva.php" class="btn btn-rojo btn-lg w-100 mb-3">
-                <i class="fas fa-calendar-plus me-2"></i>Hacer Reserva
-            </a>
-        </div>
-        <div class="col-md-6">
-            <a href="ver_reservas.php" class="btn btn-rojo btn-lg w-100 mb-3">
-                <i class="fas fa-calendar-check me-2"></i>Ver Reservas
-            </a>
-        </div>
-    </div>
+    <p class="fs-5">¡Hola <strong>' . htmlspecialchars($_SESSION['nombreEmpleado'] ?? 'Recepcionista') . '</strong>! Bienvenido a tu panel de trabajo.</p>
+    <p class="text-muted">¿Qué quieres hacer hoy?</p>
 
-    <div class="mt-4">
-        <a href="../../logout.php" class="btn btn-outline-danger">Cerrar Sesión</a>
+    <div class="row g-4 mt-3">
+        <div class="col-md-6">
+            <a href="registrar_huesped.php" class="btn btn-rojo btn-lg w-100 py-4 shadow-sm d-flex align-items-center justify-content-center">
+                <i class="fas fa-user-plus fa-2x me-3"></i>
+                <span class="fs-5">Registrar Huésped</span>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="ver_huespedes.php" class="btn btn-rojo btn-lg w-100 py-4 shadow-sm d-flex align-items-center justify-content-center">
+                <i class="fas fa-users fa-2x me-3"></i>
+                <span class="fs-5">Ver Huéspedes</span>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="crear_reserva.php" class="btn btn-rojo btn-lg w-100 py-4 shadow-sm d-flex align-items-center justify-content-center">
+                <i class="fas fa-calendar-plus fa-2x me-3"></i>
+                <span class="fs-5">Hacer Reserva</span>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="ver_reservas.php" class="btn btn-rojo btn-lg w-100 py-4 shadow-sm d-flex align-items-center justify-content-center">
+                <i class="fas fa-calendar-check fa-2x me-3"></i>
+                <span class="fs-5">Ver Reservas</span>
+            </a>
+        </div>
     </div>
 ';
 

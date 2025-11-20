@@ -1,111 +1,138 @@
 <?php
-// public/vistas/recepcionista/ver_reservas.php
+// public/recepcionista/ver_reservas.php
 
 define('ACCESO_PERMITIDO', true);
-
 session_start();
 if (!isset($_SESSION['idUsuario']) || ($_SESSION['rol'] !== 'empleado' && $_SESSION['rol'] !== 'admin')) {
     header("Location: ../../login.php");
     exit;
 }
 
+$current_page = 'ver_reservas';
 require_once __DIR__ . '/../../config/database.php';
 
-// Obtener todas las reservas con información del huésped, habitación y paquete
+// TRAEMOS TODAS LAS RESERVAS (incluso finalizadas, nunca canceladas)
 $stmt = $pdo->prepare("
-    SELECT r.idReserva, h.nombre, h.apellido, hab.tipo, hab.numero, r.fechaInicio, r.fechaFin, r.total, r.estado
+    SELECT r.*, h.nombre, h.apellido,
+           GROUP_CONCAT(ha.numero SEPARATOR ', ') AS numeros_habitacion
     FROM Reserva r
     JOIN Huesped h ON r.idHuesped = h.idHuesped
-    JOIN ReservaHabitacion rh ON r.idReserva = rh.idReserva
-    JOIN Habitacion hab ON rh.idHabitacion = hab.idHabitacion
-    ORDER BY r.fechaInicio DESC
+    LEFT JOIN ReservaHabitacion rh ON r.idReserva = rh.idReserva
+    LEFT JOIN Habitacion ha ON rh.idHabitacion = ha.idHabitacion
+    WHERE r.estado != 'cancelada'
+    GROUP BY r.idReserva
+    ORDER BY r.fechaInicio DESC, r.idReserva DESC
 ");
 $stmt->execute();
-$reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$todas_reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$titulo_pagina = "Ver Reservas - Hotel Yokoso";
+$titulo_pagina = "Reservas - Hotel Yokoso";
 
 $contenido_principal = '
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-rojo fw-bold">Reservas Registradas</h2>
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="text-rojo fw-bold">
+            <i class="fas fa-calendar-alt me-3"></i>
+            Gestión de Reservas
+        </h2>
+        <a href="crear_reserva.php" class="btn btn-yokoso btn-lg rounded-pill px-5 shadow-lg">
+            <i class="fas fa-plus me-2"></i>Nueva Reserva
+        </a>
     </div>
 
-    <!-- Tabla de Reservas -->
-    <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered border-0">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Huésped</th>
-                    <th>Tipo de Habitación</th>
-                    <th>Número de Habitación</th>
-                    <th>Fechas</th>
-                    <th>Total (Bs.)</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                ' . (empty($reservas) ? '<tr><td colspan="8" class="text-center py-4">No hay reservas registradas.</td></tr>' : implode('', array_map(function($res) {
-                    return '
-                    <tr>
-                        <td>' . htmlspecialchars($res['idReserva']) . '</td>
-                        <td>' . htmlspecialchars($res['nombre'] . ' ' . $res['apellido']) . '</td>
-                        <td>' . htmlspecialchars($res['tipo']) . '</td>
-                        <td>' . htmlspecialchars($res['numero']) . '</td>
-                        <td>' . htmlspecialchars($res['fechaInicio']) . ' - ' . htmlspecialchars($res['fechaFin']) . '</td>
-                        <td>' . htmlspecialchars($res['total']) . '</td>
-                        <td>
-                            <span class="status-badge status-' . $res['estado'] . '">' . ucfirst($res['estado']) . '</span>
-                        </td>
-                        <td class="text-center">
-                            <a href="editar_reserva.php?id=' . $res['idReserva'] . '" class="btn btn-outline-primary btn-sm me-1" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="btn btn-outline-danger btn-sm" onclick="eliminarReserva(' . $res['idReserva'] . ')" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>';
-                }, $reservas))) . '
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Modal de confirmación de eliminación -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- FILTRO BONITO Y FUNCIONAL -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-dark mb-0">Filtrar reservas:</label>
                 </div>
-                <div class="modal-body">
-                    ¿Estás seguro de que deseas eliminar esta reserva? Esta acción no se puede deshacer.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="confirmarEliminarBtn">Eliminar</button>
+                <div class="col-md-9">
+                    <select class="form-select form-select-lg rounded-pill w-auto d-inline-block" id="filtroEstado">
+                        <option value="todas">Todas las reservas</option>
+                        <option value="pendiente">Solo pendientes</option>
+                        <option value="confirmada">Solo confirmadas</option>
+                        <option value="activas" selected>Pendientes + Confirmadas</option>
+                        <option value="finalizada">Finalizadas</option>
+                    </select>
+                    <small class="text-muted ms-3">Total: <strong id="contador">'.count($todas_reservas).'</strong> reservas</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        let reservaAEliminar = null;
+    <!-- LISTA DE RESERVAS -->
+    <div class="row g-4" id="listaReservas">
+        ' . (empty($todas_reservas) ? '<div class="col-12 text-center py-5"><i class="fas fa-calendar fa-4x text-muted mb-3"></i><h4>No hay reservas activas</h4></div>' : '') . '
 
-        function eliminarReserva(id) {
-            reservaAEliminar = id;
-            const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
-            modal.show();
-        }
+        ' . implode('', array_map(function($r) {
+            $badge = match($r['estado']) {
+                'pendiente'   => 'warning',
+                'confirmada'  => 'success',
+                'finalizada'  => 'secondary',
+                'cancelada'   => 'danger',
+                default       => 'info'
+            };
+            $estadoTexto = ucfirst(str_replace('_', ' ', $r['estado']));
 
-        document.getElementById("confirmarEliminarBtn").addEventListener("click", function() {
-            if (reservaAEliminar) {
-                window.location.href = "eliminar_reserva.php?id=" + reservaAEliminar;
-            }
-        });
-    </script>
+            return '
+            <div class="col-md-6 col-lg-4 reserva-item" data-estado="'.$r['estado'].'">
+                <div class="card h-100 shadow hover-lift border-0 transition">
+                    <div class="card-header bg-rojo-quemado text-black">
+                        <h5 class="mb-0">Reserva #'.$r['idReserva'].'</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="fw-bold text-dark mb-2">'.htmlspecialchars($r['nombre'].' '.$r['apellido']).'</h6>
+                        <p class="small text-muted mb-2">
+                            <i class="fas fa-bed text-primary"></i> 
+                            Hab: '.htmlspecialchars($r['numeros_habitacion'] ?? 'Sin asignar').'
+                        </p>
+                        <p class="small mb-3">
+                            <i class="fas fa-calendar-alt text-rojo"></i> 
+                            '.date('d/m/Y', strtotime($r['fechaInicio'])).' → '.date('d/m/Y', strtotime($r['fechaFin'])).'
+                        </p>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <h4 class="text-success fw-bold mb-0">Bs. '.number_format($r['total'], 2).'</h4>
+                            <span class="badge bg-'.$badge.' fs-6 px-3 py-2">'.$estadoTexto.'</span>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light border-0">
+                        <a href="editar_reserva.php?id='.$r['idReserva'].'" class="btn btn-yokoso btn-sm w-100 rounded-pill">
+                            <i class="fas fa-edit"></i> Gestionar
+                        </a>
+                    </div>
+                </div>
+            </div>';
+        }, $todas_reservas)) . '
+    </div>
+</div>
+
+<script>
+// FILTRO EN TIEMPO REAL (sin recargar página)
+document.getElementById("filtroEstado").addEventListener("change", function() {
+    const filtro = this.value;
+    const items = document.querySelectorAll(".reserva-item");
+    let visibles = 0;
+
+    items.forEach(item => {
+        const estado = item.dataset.estado;
+
+        let mostrar = false;
+        if (filtro === "todas") mostrar = true;
+        else if (filtro === "pendiente" && estado === "pendiente") mostrar = true;
+        else if (filtro === "confirmada" && estado === "confirmada") mostrar = true;
+        else if (filtro === "finalizada" && estado === "finalizada") mostrar = true;
+        else if (filtro === "activas" && (estado === "pendiente" || estado === "confirmada")) mostrar = true;
+
+        item.style.display = mostrar ? "block" : "none";
+        if (mostrar) visibles++;
+    });
+
+    // Actualizar contador
+    document.getElementById("contador").textContent = visibles;
+});
+</script>
 ';
 
 include 'plantilla_recepcionista.php';

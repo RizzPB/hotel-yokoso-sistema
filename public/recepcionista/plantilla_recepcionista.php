@@ -1,10 +1,12 @@
 <?php
-// public/vistas/recepcionista/plantilla_recepcionista.php
+// public/recepcionista/plantilla_recepcionista.php
 
-// Este archivo no se accede directamente
 if (!defined('ACCESO_PERMITIDO')) {
     exit('Acceso directo no permitido.');
 }
+
+// Para resaltar el menú activo
+$current_page = $current_page ?? basename($_SERVER['PHP_SELF'], '.php');
 ?>
 
 <!DOCTYPE html>
@@ -13,150 +15,186 @@ if (!defined('ACCESO_PERMITIDO')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $titulo_pagina ?? 'Panel Recepcionista - Hotel Yokoso' ?></title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="../../assets/css/style.css">
     <style>
+        :root {
+            --navbar-height: 70px;
+            --sidebar-width: 280px;
+            --color-activo: var(--color-rojo-quemado);
+        }
+
+        /* Navbar igual que index.php */
         .navbar {
-            transition: all 0.3s ease;
+            height: var(--navbar-height) !important;
+            background-color: var(--color-rojo-quemado) !important;
+            padding: 0.5rem 1rem !important;
         }
+        .navbar-brand img { height: 55px; }
+        .navbar-brand span { font-size: 1.4rem; font-weight: 700; }
 
-        .navbar-brand {
-            font-family: var(--font-heading);
-            font-weight: 600;
-        }
-
-        .navbar-nav .nav-link {
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: var(--color-mostaza) !important;
-            transform: translateY(-2px);
-        }
-
+        /* Sidebar */
         .sidebar {
             position: fixed;
-            top: 56px; /* Altura del navbar */
+            top: var(--navbar-height);
             left: 0;
-            width: 250px;
-            height: calc(100vh - 56px);
-            background-color: #f8f9fa;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--navbar-height));
+            background: #f8f9fa;
             border-right: 1px solid #dee2e6;
-            padding: 20px;
-            z-index: 1000;
+            padding: 1.5rem 1rem;
+            z-index: 1040;
             overflow-y: auto;
+            transition: transform 0.35s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
 
         .sidebar .nav-link {
-            padding: 10px 15px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            display: block;
-            text-decoration: none;
-            color: #212529;
+            color: #333 !important;
+            padding: 14px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
         }
 
-        .sidebar .nav-link:hover {
-            background-color: #e9ecef;
-            color: #212529;
+        .sidebar .nav-link i {
+            width: 32px;
+            font-size: 1.3rem;
+            text-align: center;
         }
 
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: var(--color-activo) !important;
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        /* Contenido */
         .content {
-            margin-left: 250px;
-            padding: 20px;
-            min-height: calc(100vh - 56px - 50px); /* Altura navbar + footer */
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            padding-top: calc(var(--navbar-height) + 1.5rem);
+            padding-bottom: 100px;
+            min-height: 100vh;
+            transition: margin-left 0.35s ease;
         }
 
-        .content-header {
-            margin-bottom: 20px;
-            border-bottom: 1px solid #dee2e6;
-            padding-bottom: 10px;
-        }
-
+        /* Footer */
         .footer-wrapper {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            bottom: 0; left: 0; right: 0;
+            height: 60px;
+            background: #212529;
+            color: white;
             z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .shadow-sm {
-            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
+        /* MÓVIL */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0 !important;
+            }
+            .sidebar-overlay {
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.6);
+                z-index: 1030;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.35s;
+            }
+            .sidebar-overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar superior fijo -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: var(--color-rojo-quemado);">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="../../index.php">
-                <img src="../../assets/img/empresaLogoYokoso.png" alt="Logo Hotel Yokoso" width="40" class="me-2">
-                <span class="fw-bold">Hotel Yokoso</span>
+                <img src="../../assets/img/empresaLogoYokoso.png" alt="Logo" class="me-3">
+                <span class="d-none d-md-block">Hotel Yokoso</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center">
-                    <li class="nav-item">
-                        <?php
-                        $nombreEmpleado = $_SESSION['nombreEmpleado'] ?? '';
-                        $apellidoEmpleado = $_SESSION['apellidoEmpleado'] ?? '';
-                        $rol = $_SESSION['rol'] ?? 'huésped';
-                        $nombreMostrar = $nombreEmpleado ? "$rol $nombreEmpleado $apellidoEmpleado" : $rol;
-                        ?>
-                        <span class="nav-link text-white me-3" style="font-weight: 600;">Hola, <?= htmlspecialchars($nombreMostrar) ?></span>
-                    </li>
-                    <li class="nav-item ms-2">
-                        <a href="../../logout.php" class="btn btn-warning btn-sm text-dark">Cerrar Sesión</a>
-                    </li>
-                </ul>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-3 fw-semibold">
+                    Hola, <?= htmlspecialchars($_SESSION['nombreEmpleado'] ?? 'Recepcionista') ?>
+                </span>
+                <a href="../../logout.php" class="btn btn-warning btn-sm">Cerrar Sesion</a>
             </div>
         </div>
     </nav>
 
-    <!-- Sidebar fijo -->
-    <div class="sidebar">
-    
-        <hr>
-        <div class="nav flex-column">
-            <a href="panel_recepcionista.php" class="nav-link">
-                <i class="fas fa-home me-2"></i>Inicio
+    <!-- Botón menú móvil -->
+    <div class="d-lg-none position-fixed start-0 ms-3" style="top: 78px; z-index: 1050;">
+        <button class="btn btn-dark rounded-circle shadow-lg p-3" id="menuToggle">
+            <i class="fas fa-home fa-lg"></i>
+        </button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="nav flex-column mt-3">
+            <a href="panel_recepcionista.php" class="nav-link <?= $current_page == 'panel_recepcionista' ? 'active' : '' ?>">
+                <i class="fas fa-home"></i> <span>Inicio</span>
             </a>
-            <a href="registrar_huesped.php" class="nav-link">
-                <i class="fas fa-user-plus me-2"></i>Registrar Huésped
+            <a href="registrar_huesped.php" class="nav-link <?= $current_page == 'registrar_huesped' ? 'active' : '' ?>">
+                <i class="fas fa-user-plus"></i> <span>Registrar Huésped</span>
             </a>
-            <a href="ver_huespedes.php" class="nav-link">
-                <i class="fas fa-users me-2"></i>Ver Huéspedes
+            <a href="ver_huespedes.php" class="nav-link <?= $current_page == 'ver_huespedes' ? 'active' : '' ?>">
+                <i class="fas fa-users"></i> <span>Ver Huéspedes</span>
             </a>
-            <a href="crear_reserva.php" class="nav-link">
-                <i class="fas fa-calendar-plus me-2"></i>Hacer Reserva
+            <a href="crear_reserva.php" class="nav-link <?= $current_page == 'crear_reserva' ? 'active' : '' ?>">
+                <i class="fas fa-calendar-plus"></i> <span>Hacer Reserva</span>
             </a>
-            <a href="ver_reservas.php" class="nav-link">
-                <i class="fas fa-calendar-check me-2"></i>Ver Reservas
+            <a href="ver_reservas.php" class="nav-link <?= $current_page == 'ver_reservas' ? 'active' : '' ?>">
+                <i class="fas fa-calendar-check"></i> <span>Ver Reservas</span>
             </a>
         </div>
     </div>
 
-    <!-- Contenido principal -->
+    <!-- Contenido -->
     <div class="content">
-        <?= $contenido_principal ?? '<p>Contenido no definido.</p>' ?>
+        <?= $contenido_principal ?? '' ?>
     </div>
 
-    <!-- Footer fijo -->
-    <footer class="footer-wrapper bg-dark text-white py-2">
+    <!-- Footer -->
+    <footer class="footer-wrapper">
         <div class="container text-center">
-            <small>&copy; 2025 Hotel Yokoso. Todos los derechos reservados.</small>
+            <small>© 2025 Hotel Yokoso. Todos los derechos reservados.</small>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('overlay').classList.toggle('show');
+        });
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('show');
+            this.classList.remove('show');
+        });
+    </script>
 </body>
 </html>
