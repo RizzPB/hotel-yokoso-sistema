@@ -15,60 +15,49 @@
     <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- estilos para fuente-titulos -->
-     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- para animaciones -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
     <!-- Favicon (opcional) -->
     <link rel="icon" href="img/favicon.ico">
 </head>
 <body>
-    <!-- Encabezado -->
-    <!-- Navbar Responsive -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-rojo-quemado);">
+    <!-- Navbar fijo -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" style="background-color: var(--color-rojo-quemado);">
         <div class="container">
-            <!-- Logo y título -->
             <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="assets/img/empresaLogoYokoso.png" 
-                alt="Logo Hotel Yokoso" 
-                class="logo-navbar">
-            <span class="fw-bold">Hotel Yokoso</span>
+                <img src="assets/img/empresaLogoYokoso.png" alt="Logo Hotel Yokoso" class="logo-navbar">
+                <span class="fw-bold">Hotel Yokoso</span>
             </a>
-
-            <!-- Botón colapsable en móvil -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
             </button>
-
-            <!-- Enlaces y botones -->
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav align-items-center">
-                <li class="nav-item">
-                <a class="nav-link text-white" href="#habitaciones">Habitaciones</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link text-white" href="#paquetes">Paquetes</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link text-white" href="#contacto">Contacto</a>
-                </li>
-                <li class="nav-item ms-2">
-                <a href="login.php" class="btn btn-outline-light btn-sm">Iniciar Sesión</a>
-                </li>
-                <li class="nav-item ms-2">
-                <a href="registro.php" class="btn btn-warning btn-sm text-dark">Regístrate</a>
-                </li>
-            </ul>
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link text-white" href="#bienvenida">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#habitaciones">Habitaciones</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#paquetes">Paquetes</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#contacto">Contacto</a></li>
+                    <li class="nav-item ms-2"><a href="login.php" class="btn btn-outline-light btn-sm">Iniciar Sesión</a></li>
+                    <li class="nav-item ms-2"><a href="registro.php" class="btn btn-warning btn-sm text-dark">Regístrate</a></li>
+                </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Sección Principal -->
-    <main class="container my-5">
-    <!-- Bienvenida -->
-        <section class="text-center mb-5">
-            <h2 class="display-5 fw-bold text-mostaza">¡Bienvenido a Hotel Yokoso!</h2>
-            <p class="lead mt-3">Tu refugio auténtico en Uyuni, donde la magia del Salar se encuentra con la calidez boliviana.</p>
-        </section>
-    </main>
+    <!-- Sección de bienvenida (full viewport) -->
+    <section id="bienvenida" class="section-full text-center">
+        <div class="container">
+            <div class="p-4 rounded-4 bg-white shadow-sm mx-auto" style="max-width: 700px; background-color: rgba(255, 255, 255, 0.85);">
+                <h2 class="display-4 fw-bold text-rojo">¡Bienvenido a Hotel Yokoso!</h2>
+                <p class="lead mt-3 text-muted">Tu refugio auténtico en Uyuni, donde la magia del Salar se encuentra con la calidez boliviana.</p>
+                <a href="#habitaciones" class="btn btn-rojo btn-lg mt-4">Explorar Habitaciones</a>
+            </div>
+        </div>
+    </section>
+
     <!-- Hero Full-Screen Carousel -->
     <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
         <div class="carousel-indicators">
@@ -117,31 +106,38 @@
         </button>
     </div>
 
-    <main class="container my-5">
-        <!-- Acerca de Nosotros -->
-        <section class="row mb-5">
-            <div class="col-md-6">
-                <h3 class="text-rojo">Acerca de Nosotros</h3>
-                <p>Ubicado en el corazón de Uyuni, Bolivia, Hotel Yokoso nace del amor por nuestra tierra y la pasión por compartir la belleza del Salar con viajeros del mundo. Ofrecemos una experiencia íntima, personalizada y conectada con la naturaleza.</p>
+    <!-- Acerca de Nosotros (ahora con AOS) -->
+    <section id="acerca" class="section-full" style="background-color: var(--color-gris-claro);">
+        <div class="container acerca-container">
+            <div class="acerca-texto" data-aos="fade-up">
+                <h3 class="text-rojo mb-4">Acerca de Nosotros</h3>
+                <p class="lead">
+                    Ubicado en el corazón de Uyuni, Bolivia, Hotel Yokoso nace del amor por nuestra tierra y la pasión por compartir la belleza del Salar con viajeros del mundo. Ofrecemos una experiencia íntima, personalizada y conectada con la naturaleza.
+                </p>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="text-rojo">Misión</h5>
-                        <p>Brindar una estancia inolvidable, respetuosa con el entorno y adaptada a las necesidades únicas de cada huésped.</p>
+            <div class="row acerca-cards mt-4">
+                <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h5 class="text-rojo">Misión</h5>
+                            <p>Brindar una estancia inolvidable, respetuosa con el entorno y adaptada a las necesidades únicas de cada huésped.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h5 class="text-rojo">Visión</h5>
+                            <p>Ser el hotel más auténtico y recomendado en Uyuni, reconocido por su trato humano y experiencias memorables.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="text-rojo">Visión</h5>
-                        <p>Ser el hotel más auténtico y recomendado en Uyuni, reconocido por su trato humano y experiencias memorables.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
+    </section>
 
+
+    <main class="container my-5">
         <!-- Habitaciones -->
         <section id="habitaciones" class="mb-5 py-5 bg-gris-claro">
         <div class="container">
@@ -251,5 +247,13 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+    AOS.init({
+        duration: 800,
+        easing: 'ease-out-cubic',
+        once: true // Solo anima una vez al cargar
+    });
+    </script>
 </body>
 </html>
