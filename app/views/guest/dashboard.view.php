@@ -153,8 +153,6 @@ ob_start();
     </div>
 </footer>
 
-<?php $body_class = 'prueba-footer'; ?>
-
 <?php
 $content = ob_get_clean();
 include __DIR__ . '/../layout.php';

@@ -33,8 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $descripcion  = trim($_POST['descripcion'] ?? '');
     $precio       = $_POST['precio'] ?? 0;
     $duracionDias = $_POST['duracionDias'] ?? 0;
-    $incluye      = trim($_POST['incluye'] ?? '');
-    $noIncluye    = trim($_POST['noIncluye'] ?? '');
     $activo       = isset($_POST['activo']) ? 1 : 0;
 
     if (empty($nombre) || empty($descripcion) || $precio <= 0 || $duracionDias <= 0) {
@@ -42,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $stmt = $pdo->prepare("
             UPDATE PaqueteTuristico 
-            SET nombre = ?, descripcion = ?, precio = ?, duracionDias = ?, incluye = ?, noIncluye = ?, activo = ? 
+            SET nombre = ?, descripcion = ?, precio = ?, duracionDias = ?, activo = ? 
             WHERE idPaquete = ?
         ");
-        if ($stmt->execute([$nombre, $descripcion, $precio, $duracionDias, $incluye, $noIncluye, $activo, $id])) {
+        if ($stmt->execute([$nombre, $descripcion, $precio, $duracionDias, $activo, $id])) {
             $mensaje = "Paquete actualizado exitosamente.";
             $stmt = $pdo->prepare("SELECT * FROM PaqueteTuristico WHERE idPaquete = ?");
             $stmt->execute([$id]);
@@ -147,4 +145,5 @@ $contenido_principal = '
 ';
 
 include 'plantilla_admin.php';
+include __DIR__ . '/../layout.php';
 ?>

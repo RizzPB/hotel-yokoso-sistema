@@ -9,7 +9,6 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'empleado') {
     exit;
 }
 
-// ← ESTA LÍNEA ES LA ÚNICA QUE FALTABA (resalta "Inicio" en el sidebar)
 $current_page = 'panel_recepcionista';
 
 $titulo_pagina = "Panel Recepcionista - Hotel Yokoso";
@@ -18,7 +17,7 @@ $contenido_principal = '
 
 
     <p class="fs-5">¡Hola <strong>' . htmlspecialchars($_SESSION['nombreEmpleado'] ?? 'Recepcionista') . '</strong>! Bienvenido a tu panel de trabajo.</p>
-    <p class="text-muted">¿Qué quieres hacer hoy?</p>
+    <p class="text-muted">¿Qué deseas hacer hoy?</p>
 
     <div class="row g-4 mt-3">
         <div class="col-md-6">

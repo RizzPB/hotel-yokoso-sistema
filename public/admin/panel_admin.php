@@ -96,6 +96,7 @@ $contenido_principal = '
     </div>
 </div>
 
+
 <!-- Estilos específicos para inicio menu! -->
 <style>
     .bg-gradient-rojo { background: linear-gradient(135deg, #9b2226, #dc2626) !important; }
