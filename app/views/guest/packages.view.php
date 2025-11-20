@@ -36,10 +36,10 @@ ob_start();
 
 <!-- Indicador de pasos -->
 <nav aria-label="Progreso de reserva" class="mb-4">
-  <ol class="progress" style="height: 8px;">
-    <li class="progress-bar bg-mostaza" style="width: 33%;">Habitación</li>
+  <ol class="progress">
+    <li class="progress-bar bg-mostaza" style="width: 33%; margin-left: -33px;">Habitación</li>
     <li class="progress-bar bg-mostaza" style="width: 33%;">Paquete</li>
-    <li class="progress-bar bg-light" style="width: 34%;">Confirmar</li>
+    <li class="progress-bar bg-light" style="width: 36%;">Confirmar</li>
   </ol>
 </nav>
 
@@ -112,7 +112,7 @@ ob_start();
 
   <!-- Botones de acción -->
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-    <a href="rooms.php" class="btn btn-outline-rojo px-4 py-2">
+    <a href="rooms.php" class="btn btn-outline-secondary px-4 py-2">
       <i class="fas fa-arrow-left me-1"></i> Volver a Habitaciones
     </a>
     <button type="button" class="btn btn-mostaza text-dark btn-lg px-5 py-2" id="btnSiguiente"

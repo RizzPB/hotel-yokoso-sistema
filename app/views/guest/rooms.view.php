@@ -36,10 +36,10 @@ ob_start();
 
 <!-- Indicador de pasos -->
 <nav aria-label="Progreso de reserva" class="mb-4">
-  <ol class="progress" style="height: 8px;">
-    <li class="progress-bar bg-mostaza" style="width: 33%;">Habitación</li>
+  <ol class="progress">
+    <li class="progress-bar bg-mostaza" style="width: 33%; margin-left: -33px;">Habitación</li>
     <li class="progress-bar bg-light" style="width: 33%;">Paquete</li>
-    <li class="progress-bar bg-light" style="width: 34%;">Confirmar</li>
+    <li class="progress-bar bg-light" style="width: 36%; ">Confirmar</li>
   </ol>
 </nav>
 

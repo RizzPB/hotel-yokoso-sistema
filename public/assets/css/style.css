@@ -151,8 +151,12 @@ footer .btn-warning:hover {
 /* estilos para la seleccion de habitaciones por parte del huesped */
 /* Progreso de reserva */
 .progress {
+  height: 20px;
   border-radius: 4px;
   background-color: #e9ecef;
+}
+.progress-bar{
+  border-radius: 3px;
 }
 
 /* Tarjetas de habitación */
