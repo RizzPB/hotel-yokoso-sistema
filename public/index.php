@@ -137,106 +137,116 @@
     </section>
 
     <!-- Habitaciones - Full View -->
-<section id="habitaciones" class="section-full bg-gris-claro d-flex align-items-center">
-    <div class="container">
-        <div class="row justify-content-center">
-            <!-- Título -->
-            <div class="col-12 mb-5 text-center" data-aos="fade-up">
-                <h3 class="text-rojo display-5 fw-bold">Nuestras Habitaciones</h3>
-                <p class="lead mt-3 text-muted">Descubre el refugio perfecto para tu estancia en Uyuni.</p>
-            </div>
+    <section id="habitaciones" class="section-full bg-gris-claro d-flex align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Título -->
+                <div class="col-12 mb-5 text-center" data-aos="fade-up">
+                    <h3 class="text-rojo display-5 fw-bold">Nuestras Habitaciones</h3>
+                    <p class="lead mt-3 text-muted">Descubre el refugio perfecto para tu estancia en Uyuni.</p>
+                </div>
 
-            <!-- Tarjeta 1: Rústicas Clásicas -->
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
-                    <img src="assets/img/roonNormal.jpeg" alt="Habitaciones Rústicas" class="w-100" style="height: 280px; object-fit: cover;">
-                    <div class="card-body p-4 text-center">
-                        <h5 class="text-rojo mb-3">
-                            <i class="fas fa-home text-mostaza me-2"></i>Rústicas Clásicas
-                        </h5>
-                        <p class="mb-4">
-                            Cálidas y auténticas, diseñadas con madera, piedra y textiles bolivianos. Ideal para quienes buscan confort con sabor andino.
-                        </p>
-                        <a href="habitaciones.php#rusticas" class="btn btn-outline-rojo w-100">Ver más</a>
+                <!-- Tarjeta 1: Rústicas Clásicas -->
+                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
+                        <img src="assets/img/roonNormal.jpeg" alt="Habitaciones Rústicas" class="w-100" style="height: 280px; object-fit: cover;">
+                        <div class="card-body p-4 text-center">
+                            <h5 class="text-rojo mb-3">
+                                <i class="fas fa-home text-mostaza me-2"></i>Rústicas Clásicas
+                            </h5>
+                            <p class="mb-4">
+                                Cálidas y auténticas, diseñadas con madera, piedra y textiles bolivianos. Ideal para quienes buscan confort con sabor andino.
+                            </p>
+                            <a href="habitaciones.php#rusticas" class="btn btn-outline-rojo w-100">Ver más</a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Tarjeta 2: Suites Familiares -->
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
-                    <img src="assets/img/roomSuite.jpg" alt="Suites Familiares" class="w-100" style="height: 280px; object-fit: cover;">
-                    <div class="card-body p-4 text-center">
-                        <h5 class="text-rojo mb-3">
-                            <i class="fas fa-door-open text-mostaza me-2"></i>Suites Familiares
-                        </h5>
-                        <p class="mb-4">
-                            Espacios amplios con dos habitaciones conectadas. Perfectos para familias o grupos que buscan privacidad y comodidad.
-                        </p>
-                        <a href="habitaciones.php#familiares" class="btn btn-outline-rojo w-100">Ver más</a>
+                <!-- Tarjeta 2: Suites Familiares -->
+                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
+                        <img src="assets/img/roomSuite.jpg" alt="Suites Familiares" class="w-100" style="height: 280px; object-fit: cover;">
+                        <div class="card-body p-4 text-center">
+                            <h5 class="text-rojo mb-3">
+                                <i class="fas fa-door-open text-mostaza me-2"></i>Suites Familiares
+                            </h5>
+                            <p class="mb-4">
+                                Espacios amplios con dos habitaciones conectadas. Perfectos para familias o grupos que buscan privacidad y comodidad.
+                            </p>
+                            <a href="habitaciones.php#familiares" class="btn btn-outline-rojo w-100">Ver más</a>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Tarjeta 3: De Sal -->
-            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
-                    <img src="assets/img/roomSal.jpeg" alt="Habitaciones de Sal" class="w-100" style="height: 280px; object-fit: cover;">
-                    <div class="card-body p-4 text-center">
-                        <h5 class="text-rojo mb-3">
-                            <i class="fas fa-mountain text-mostaza me-2"></i>De Sal
-                        </h5>
-                        <p class="mb-4">
-                            Construidas íntegramente con bloques de sal del Salar de Uyuni. Una experiencia sensorial única bajo el cielo estrellado.
-                        </p>
-                        <a href="habitaciones.php#sal" class="btn btn-outline-rojo w-100">Ver más</a>
+                <!-- Tarjeta 3: De Sal -->
+                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="habitacion-card rounded-top overflow-hidden shadow-sm">
+                        <img src="assets/img/roomSal.jpeg" alt="Habitaciones de Sal" class="w-100" style="height: 280px; object-fit: cover;">
+                        <div class="card-body p-4 text-center">
+                            <h5 class="text-rojo mb-3">
+                                <i class="fas fa-mountain text-mostaza me-2"></i>De Sal
+                            </h5>
+                            <p class="mb-4">
+                                Construidas íntegramente con bloques de sal del Salar de Uyuni. Una experiencia sensorial única bajo el cielo estrellado.
+                            </p>
+                            <a href="habitaciones.php#sal" class="btn btn-outline-rojo w-100">Ver más</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-    <main class="container my-5">
-    
+    <!-- Paquetes Turísticos - Full View -->
+    <section id="paquetes" class="section-full d-flex align-items-center bg-gris-claro">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Imagen a la izquierda -->
+                <div class="col-md-6 mb-4 mb-md-0" data-aos="fade-right" data-aos-delay="100">
+                    <img src="assets/img/bgPaqt.jpg" alt="Paquetes Turísticos al Salar de Uyuni" class="w-100 rounded-4 shadow-sm" style="height: 350px; object-fit: cover;">
+                </div>
 
-        <!-- Paquetes Turísticos -->
-        <section class="mb-5">
-            <h3 class="text-center text-rojo mb-4">Paquetes Turísticos al Salar de Uyuni</h3>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
+                <!-- Tarjetas de paquetes a la derecha -->
+                <div class="col-md-6">
+                    <h3 class="text-rojo display-5 fw-bold mb-4" data-aos="fade-up">Paquetes Turísticos</h3>
+                    <p class="lead text-muted mb-4" data-aos="fade-up" data-aos-delay="100">Descubre experiencias inolvidables en el corazón del Salar de Uyuni.</p>
+
+                    <!-- Tarjeta 1: Paquete de 2 Días -->
+                    <div class="card border-0 shadow-sm mb-3" data-aos="zoom-in" data-aos-delay="200">
                         <div class="card-body">
-                            <h5><i class="fas fa-calendar-day text-mostaza me-2"></i>Paquete de 2 Días</h5>
-                            <ul>
+                            <h5 class="text-rojo mb-3"><i class="fas fa-calendar-day text-mostaza me-2"></i>Paquete de 2 Días</h5>
+                            <ul class="mb-3">
                                 <li>Transporte privado desde el hotel</li>
                                 <li>Visita a Laguna Colorada, Desierto de Siloli, Árbol de Piedra</li>
                                 <li>Alojamiento en refugio básico</li>
-                                <li>Comidas según preferencias (vegetariano, vegano, sin gluten, etc.)</li>
+                                <li>Comidas adaptadas a tus preferencias</li>
                                 <li>Fotos profesionales del recorrido</li>
                             </ul>
+                            <a href="paquetes.php#dos-dias" class="btn btn-outline-rojo w-100">Ver detalles</a>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
+
+                    <!-- Tarjeta 2: Paquete de 3 Días -->
+                    <div class="card border-0 shadow-sm" data-aos="zoom-in" data-aos-delay="300">
                         <div class="card-body">
-                            <h5><i class="fas fa-calendar-alt text-mostaza me-2"></i>Paquete de 3 Días</h5>
-                            <ul>
+                            <h5 class="text-rojo mb-3"><i class="fas fa-calendar-alt text-mostaza me-2"></i>Paquete de 3 Días</h5>
+                            <ul class="mb-3">
                                 <li>Recorrido completo por el Salar de Uyuni</li>
                                 <li>Visita a Isla Incahuasi, Ojos de Sal, Termas de Polques</li>
                                 <li>2 noches de alojamiento (1 en refugio, 1 en hotel)</li>
-                                <li>Menú personalizado según tus preferencias alimentarias</li>
+                                <li>Menú personalizado según tus necesidades</li>
                                 <li>Guía bilingüe y fotos incluidas</li>
                             </ul>
+                            <a href="paquetes.php#tres-dias" class="btn btn-outline-rojo w-100">Ver detalles</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="text-center mt-3"><em>Todos nuestros paquetes incluyen transporte, guía, comidas adaptadas a tus necesidades y recuerdos fotográficos.</em></p>
-        </section>
+        </div>
+    </section>
 
-        <!-- Pie de Página -->
+
+    <!-- Pie de Página -->
         <div class="footer-wrapper">
             <footer class="bg-dark text-white pt-4 pb-3">
                 <div class="container">
@@ -269,7 +279,6 @@
                 </div>
             </footer>
         </div>
-    </main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

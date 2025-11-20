@@ -211,7 +211,56 @@ section#habitaciones {
     background: linear-gradient(to bottom, #fcf2e7 0%, #ffffff 100%);
     box-shadow: 0 0 10px 10px white inset;
 }
+/* estilos para paquetes */
+/* Estilos para tarjetas de paquetes */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+}
+
+/* Botón personalizado estilo imagen (blanco con borde rojo) */
+.btn-outline-rojo {
+    border: 2px solid var(--color-rojo);
+    color: var(--color-rojo);
+    background-color: transparent;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-rojo:hover {
+    background-color: var(--color-rojo);
+    color: var(--color-blanco);
+}
+
+/* Ajuste para mobile */
+@media (max-width: 768px) {
+    .section-full {
+        padding: 2rem 1rem !important;
+    }
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Para que las tarjetas no tengan margen extra en mobile */
+@media (max-width: 576px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+/* mas estilos para paquetes */
+section#paquetes {
+    background: linear-gradient(to bottom, #fff 0%, #fcf2e7 100%);
+}
+.card {
+    border: 1px solid rgba(0,0,0,0.05);
+}
 
 /* Mapa */
 .ratio {
