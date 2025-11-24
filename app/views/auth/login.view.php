@@ -7,7 +7,7 @@ ob_start();
 
 <div class="auth-container">
     <a href="/" class="back-to-home" style="display:inline-block; margin-bottom:10px; color:#C8102E; text-decoration:none;">← Volver al inicio</a>
-    <img src="/assets/img/empresaLogoYokoso.png" alt="Hotel Yokoso Logo" />
+    <img src="/assets/img/logoSistemaYokoso.png" alt="Hotel Yokoso Logo" />
     <h2>Iniciar Sesión</h2>
 
     <?php if ($error ?? false): ?>

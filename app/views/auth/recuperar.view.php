@@ -7,7 +7,7 @@ ob_start();
 
 <div class="auth-container">
     <a href="/" class="back-to-home" style="display:inline-block; margin-bottom:10px; color:#C8102E; text-decoration:none;">← Volver al inicio</a>
-    <img src="/assets/img/logoYOKOSO2.png" alt="Hotel Yokoso Logo" />
+    <img src="/assets/img/logoSistemaYokoso.png" alt="Hotel Yokoso Logo" />
     <h2>Recuperar Contraseña</h2>
     <p>Ingresa tu correo para restablecer tu contraseña.</p>
 
