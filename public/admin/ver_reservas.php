@@ -1,4 +1,6 @@
 <?php
+//ARREGLAS DOS COSAS EN EL CODIGO
+
 // public/admin/ver_reservas.php
 
 define('ACCESO_PERMITIDO', true);
@@ -8,14 +10,14 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-$current_page = 'reservas'; // Para resaltar en el sidebar
+$current_page = 'reservas';
 require_once __DIR__ . '/../../config/database.php';
 
 // Filtros
 $filtroEstado = $_GET['estado'] ?? 'todas';
 $buscar = trim($_GET['buscar'] ?? '');
 
-// Consulta base (todas las reservas, incluso las hechas por huéspedes)
+// Consulta corregida y completa
 $sql = "
     SELECT r.*, h.nombre, h.apellido, h.nroDocumento,
            GROUP_CONCAT(ha.numero SEPARATOR ', ') AS habitaciones
@@ -34,12 +36,16 @@ if ($filtroEstado !== 'todas') {
 }
 
 if (!empty($buscar)) {
-    $sql .= " AND (h.nombre LIKE ? OR h.apellido LIKE ? OR h.nroDocumento LIKE ? OR r.idReserva LIKE ?)";
+    $sql .= " AND (h.nombre LIKE ? OR h.apellido LIKE ? OR h.nroDocumento LIKE ? OR CAST(r.idReserva AS CHAR) LIKE ?)";
     $like = "%$buscar%";
-    $params = array_merge($params, [$like, $like, $like, $like]);
+    $params[] = $like;
+    $params[] = $like;
+    $params[] = $like;
+    $params[] = $like;
 }
 
-/* $sql .= " GROUP BY r.idReserva ORDER BY r.fechaRegistro DESC"; */
+
+$sql .= " GROUP BY r.idReserva ORDER BY r.idReserva DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
@@ -54,7 +60,9 @@ $contenido_principal = '
         <h2 class="text-rojo fw-bold mb-0">
             Gestión de Reservas
         </h2>
-      
+        <a href="crear_reserva_admin.php" class="btn btn-yokoso btn-lg rounded-pill px-5 shadow-lg">
+            Nueva Reserva
+        </a>
     </div>
 
     <!-- FILTROS Y BUSCADOR -->
@@ -62,18 +70,19 @@ $contenido_principal = '
         <div class="card-body py-4">
             <form method="GET" class="row g-3 align-items-end">
                 <div class="col-md-4">
-                    <label class="form-label fw-bold">Estado</label>
+                    <label class="form-label fw-bold">Filtrar por estado</label>
                     <select name="estado" class="form-select form-select-lg rounded-pill" onchange="this.form.submit()">
                         <option value="todas" '.($filtroEstado==='todas'?'selected':'').'>Todas las reservas</option>
-                        <option value="pendiente" '.($filtroEstado==='pendiente'?'selected':'').'>Pendientes de confirmar</option>
+                        <option value="pendiente" '.($filtroEstado==='pendiente'?'selected':'').'>Pendientes</option>
                         <option value="confirmada" '.($filtroEstado==='confirmada'?'selected':'').'>Confirmadas</option>
                         <option value="cancelada" '.($filtroEstado==='cancelada'?'selected':'').'>Canceladas</option>
                         <option value="finalizada" '.($filtroEstado==='finalizada'?'selected':'').'>Finalizadas</option>
                     </select>
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label fw-bold">Buscar</label>
-                    <input type="text" name="buscar" class="form-control form-control-lg rounded-pill" placeholder="Nombre, documento o ID reserva..." value="'.htmlspecialchars($buscar).'">
+                    <label class="form-label fw-bold">Buscar huésped o ID</label>
+                    <input type="text" name="buscar" class="form-control form-control-lg rounded-pill" 
+                           placeholder="Nombre, apellido, documento o ID..." value="'.htmlspecialchars($buscar).'">
                 </div>
                 <div class="col-md-3">
                     <button type="submit" class="btn btn-rojo-quemado btn-lg w-100 rounded-pill shadow">
@@ -89,7 +98,7 @@ $contenido_principal = '
         ' . (empty($reservas) ? '
         <div class="col-12 text-center py-5">
             <i class="fas fa-calendar-times fa-5x text-muted mb-4"></i>
-            <h4 class="text-muted">No se encontraron reservas</h4>
+            <h4 class="text-muted">No se encontraron reservas con estos filtros</h4>
         </div>' : '') . '
 
         ' . implode('', array_map(function($r) {
@@ -104,11 +113,13 @@ $contenido_principal = '
             $acciones = '';
             if ($r['estado'] === 'pendiente') {
                 $acciones = '
-                <div class="btn-group" role="group">
-                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=confirmar" class="btn btn-success btn-sm" onclick="return confirm(\'¿Confirmar esta reserva?\')">
+                <div class="btn-group mt-3" role="group">
+                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=confirmar" 
+                       class="btn btn-success btn-sm" onclick="return confirm(\'¿Confirmar esta reserva?\')">
                         Confirmar
                     </a>
-                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=rechazar" class="btn btn-danger btn-sm" onclick="return confirm(\'¿Rechazar esta reserva?\')">
+                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=rechazar" 
+                       class="btn btn-danger btn-sm" onclick="return confirm(\'¿Rechazar esta reserva?\')">
                         Rechazar
                     </a>
                 </div>';
@@ -125,7 +136,7 @@ $contenido_principal = '
                             '.htmlspecialchars($r['nombre'].' '.$r['apellido']).'
                         </h6>
                         <p class="small text-muted mb-1">
-                            <i class="fas fa-id-card"></i> '.htmlspecialchars($r['nroDocumento']).'
+                            <i class="fas fa-id-card"></i> '.htmlspecialchars($r['nroDocumento'] ?? 'Sin documento').'
                         </p>
                         <p class="small text-muted mb-2">
                             <i class="fas fa-bed"></i> Hab: '.($r['habitaciones'] ?: 'Sin asignar').'
@@ -138,10 +149,11 @@ $contenido_principal = '
                             <h4 class="text-success fw-bold mb-0">Bs. '.number_format($r['total'], 2).'</h4>
                             <span class="badge bg-'.$badge.' fs-6 px-3 py-2">'.ucfirst($r['estado']).'</span>
                         </div>
-                        '.($r['estado']==='pendiente' ? '<div class="mt-3 text-center">'.$acciones.'</div>' : '').'
+                        '.$acciones.'
                     </div>
                     <div class="card-footer bg-light text-center">
-                        <a href="editar_reserva_admin.php?id='.$r['idReserva'].'" class="btn btn-yokoso btn-sm w-100 rounded-pill">
+                        <a href="editar_reserva_admin.php?id='.$r['idReserva'].'" 
+                           class="btn btn-yokoso btn-sm w-100 rounded-pill">
                             Gestionar
                         </a>
                     </div>

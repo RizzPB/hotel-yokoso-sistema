@@ -26,10 +26,11 @@ $current_page = $current_page ?? basename($_SERVER['PHP_SELF'], '.php');
         :root {
             --navbar-height: 85px;
             --sidebar-width: 280px;
-            --color-activo: var(--color-rojo-quemado);
+            --color-rojo-quemado: #8B1A1A;
+            --color-mostaza: #DAA520;
         }
 
-        /* Navbar igual que index.php */
+        /* Navbar */
         .navbar {
             height: var(--navbar-height) !important;
             background-color: var(--color-rojo-quemado) !important;
@@ -73,9 +74,32 @@ $current_page = $current_page ?? basename($_SERVER['PHP_SELF'], '.php');
 
         .sidebar .nav-link:hover,
         .sidebar .nav-link.active {
-            background: var(--color-activo) !important;
+            background: var(--color-rojo-quemado) !important;
             color: white !important;
             transform: translateX(5px);
+        }
+
+        /* Botones del panel (content) */
+        .btn-rojo {
+            background-color: var(--color-rojo-quemado) !important;
+            border-color: var(--color-rojo-quemado) !important;
+            transition: all 0.3s ease !important;
+            color: white !important; /* Letra blanca por defecto */
+        }
+        .btn-rojo:hover {
+            background-color: #A52A2A !important; /* Rojo más claro */
+            border-color: #A52A2A !important;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(139, 26, 26, 0.3) !important;
+        }
+        .hover-text-mostaza:hover {
+            color: var(--color-mostaza) !important; /* Mostaza al hover */
+        }
+        .text-white {
+            color: white !important;
+        }
+        .transition {
+            transition: all 0.3s ease;
         }
 
         /* Contenido */

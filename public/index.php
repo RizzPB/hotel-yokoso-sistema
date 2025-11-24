@@ -22,6 +22,7 @@
 
     <!-- Favicon -->
     <link rel="icon" href="/assets/img/favicon.ico">
+    
 </head>
 <body>
     <!-- Navbar fijo -->

@@ -46,61 +46,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            // Registrar huésped
+            // 1. Registrar huésped
             $stmt = $pdo->prepare("INSERT INTO Huesped (nombre, apellido, tipoDocumento, nroDocumento, procedencia, email, telefono, motivoVisita, preferenciaAlimentaria, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
             $stmt->execute([$nombre, $apellido, $tipoDocumento, $nroDocumento, $procedencia, $email, $telefono, $motivoVisita, $preferenciaAlimentaria]);
             $idHuesped = $pdo->lastInsertId();
 
-            // Fechas por defecto
+            // 2. Fechas: hoy y salida por defecto +7 días (puede ajustarse después)
             $fechaInicio = date('Y-m-d');
-            $fechaFin = date('Y-m-d', strtotime('+1 day'));
+            $fechaFin = date('Y-m-d', strtotime('+7 days'));
 
-            // Calcular total
+            // 3. Calcular total (solo 1 noche por defecto, se ajusta al check-out)
             $total = 0;
+            $preciosHabitaciones = [];
             foreach ($habitacionesSeleccionadas as $idHab) {
                 $stmt = $pdo->prepare("SELECT precioNoche FROM Habitacion WHERE idHabitacion = ?");
                 $stmt->execute([$idHab]);
-                $hab = $stmt->fetch();
-                $total += $hab['precioNoche'] ?? 0;
+                $precio = $stmt->fetchColumn();
+                $total += $precio;
+                $preciosHabitaciones[$idHab] = $precio;
             }
             if ($idPaquete) {
                 $stmt = $pdo->prepare("SELECT precio FROM PaqueteTuristico WHERE idPaquete = ?");
                 $stmt->execute([$idPaquete]);
-                $pkg = $stmt->fetch();
-                $total += $pkg['precio'] ?? 0;
+                $total += $stmt->fetchColumn();
             }
 
-            // Crear reserva
-            $stmt = $pdo->prepare("INSERT INTO Reserva (idHuesped, idPaquete, fechaInicio, fechaFin, total, estado) VALUES (?, ?, ?, ?, ?, 'confirmada')");
-            $stmt->execute([$idHuesped, $idPaquete, $fechaInicio, $fechaFin, $total]);
+            // 4. Crear reserva como OCUPADA (porque el huésped ya está en la habitación)
+            $stmt = $pdo->prepare("INSERT INTO Reserva (idHuesped, idPaquete, fechaInicio, fechaFin, total, anticipo, estado) 
+                                   VALUES (?, ?, ?, ?, ?, ?, 'ocupada')");
+            $stmt->execute([$idHuesped, $idPaquete, $fechaInicio, $fechaFin, $total, $total]); // anticipo = total en check-in
             $idReserva = $pdo->lastInsertId();
 
-            // Asignar habitaciones
+            // 5. Asignar habitaciones y marcar como OCUPADAS
+            $stmtInsert = $pdo->prepare("INSERT INTO ReservaHabitacion (idReserva, idHabitacion, precioNoche) VALUES (?, ?, ?)");
+            $stmtUpdate = $pdo->prepare("UPDATE Habitacion SET estado = 'ocupada' WHERE idHabitacion = ?");
+
             foreach ($habitacionesSeleccionadas as $idHab) {
-                $stmt = $pdo->prepare("INSERT INTO ReservaHabitacion (idReserva, idHabitacion, precioNoche) VALUES (?, ?, (SELECT precioNoche FROM Habitacion WHERE idHabitacion = ?))");
-                $stmt->execute([$idReserva, $idHab, $idHab]);
-                $stmt = $pdo->prepare("UPDATE Habitacion SET estado = 'ocupada' WHERE idHabitacion = ?");
-                $stmt->execute([$idHab]);
+                $stmtInsert->execute([$idReserva, $idHab, $preciosHabitaciones[$idHab]]);
+                $stmtUpdate->execute([$idHab]);
             }
 
             $pdo->commit();
-            $mensaje = "Huésped registrado y habitación asignada con éxito.";
+            $mensaje = "¡Huésped registrado y habitación asignada con éxito! Reserva #$idReserva";
 
         } catch (Exception $e) {
             $pdo->rollBack();
-            $error = "Error al procesar el registro. Intenta nuevamente.";
+            $error = "Error al registrar el huésped. Puede que la habitación ya no esté disponible.";
         }
     }
 }
 
-$titulo_pagina = "Registrar Huésped - Hotel Yokoso";
+$titulo_pagina = "Check-in: Registrar Huésped - Hotel Yokoso";
 
 $contenido_principal = '
 <div class="container py-5">
-    <h2 class="text-rojo fw-bold text-center mb-5">Registrar Nuevo Huésped</h2>
+    <h2 class="text-rojo fw-bold text-center mb-5">
+        Check-in: Registrar Huésped
+    </h2>
 
-    ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto" style="max-width: 900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
-    ' . ($error ? '<div class="alert alert-danger text-center mx-auto" style="max-width: 900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
+    ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto" style="max-width: 900px;"><i class="fas fa-check-circle fa-3x mb-3"></i><br><strong>' . $mensaje . '</strong></div>' : '') . '
+    ' . ($error ? '<div class="alert alert-danger text-center mx-auto" style="max-width: 900px;"><i class="fas fa-times-circle fa-3x mb-3"></i><br>' . $error . '</div>' : '') . '
 
     <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
@@ -108,64 +113,64 @@ $contenido_principal = '
                 <div class="card-body p-5 p-lg-6">
 
                     <form method="POST">
-                        <!-- DATOS PERSONALES -->
+                        <!-- DATOS DEL HUÉSPED -->
                         <div class="row g-4 mb-5">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Nombre *</label>
-                                <input type="text" class="form-control form-control-lg rounded-pill" name="nombre" required placeholder="Ej. Rebeca">
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="nombre" value="' . htmlspecialchars($_POST['nombre'] ?? '') . '" required placeholder="Ej. Juan Carlos">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Apellido *</label>
-                                <input type="text" class="form-control form-control-lg rounded-pill" name="apellido" required placeholder="Ej. Lopez Choque">
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="apellido" value="' . htmlspecialchars($_POST['apellido'] ?? '') . '" required placeholder="Ej. Pérez Gómez">
                             </div>
                         </div>
 
                         <div class="row g-4 mb-5">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Tipo Documento *</label>
-                                <select class="form-select form-select-lg rounded-pill" name="tipoDocumento" required >
+                                <select class="form-select form-select-lg rounded-pill" name="tipoDocumento" required>
                                     <option value="">Seleccionar...</option>
-                                    <option value="Carnet">Carnet</option>
-                                    <option value="DNI">DNI</option>
-                                    <option value="Pasaporte">Pasaporte</option>
+                                    <option value="Carnet" ' . (($_POST['tipoDocumento'] ?? '') === 'Carnet' ? 'selected' : '') . '>Carnet de Identidad</option>
+                                    <option value="DNI" ' . (($_POST['tipoDocumento'] ?? '') === 'DNI' ? 'selected' : '') . '>DNI</option>
+                                    <option value="Pasaporte" ' . (($_POST['tipoDocumento'] ?? '') === 'Pasaporte' ? 'selected' : '') . '>Pasaporte</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Nro. Documento *</label>
-                                <input type="text" class="form-control form-control-lg rounded-pill" name="nroDocumento" required placeholder="Ej. 456852">
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="nroDocumento" value="' . htmlspecialchars($_POST['nroDocumento'] ?? '') . '" required placeholder="Ej. 12345678">
                             </div>
                         </div>
 
                         <div class="row g-4 mb-5">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Procedencia</label>
-                                <input type="text" class="form-control form-control-lg rounded-pill" name="procedencia" placeholder="Ej. Cochabamba">
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="procedencia" value="' . htmlspecialchars($_POST['procedencia'] ?? '') . '" placeholder="Ej. La Paz, Santa Cruz">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark">Email</label>
-                                <input type="email" class="form-control form-control-lg rounded-pill" name="email" placeholder="Ej. usuario@gmail.com">
+                                <label class="form-label fw-bold text-dark">Teléfono</label>
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="telefono" value="' . htmlspecialchars($_POST['telefono'] ?? '') . '" placeholder="Ej. 70707070">
                             </div>
                         </div>
 
                         <div class="row g-4 mb-5">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark">Teléfono</label>
-                                <input type="text" class="form-control form-control-lg rounded-pill" name="telefono">
+                                <label class="form-label fw-bold text-dark">Email</label>
+                                <input type="email" class="form-control form-control-lg rounded-pill" name="email" value="' . htmlspecialchars($_POST['email'] ?? '') . '" placeholder="Ej. juan@gmail.com">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Motivo de Visita</label>
-                                <input type="text" class="form-control form-control-lg rounded-pill" name="motivoVisita" placeholder="Ej. Turismo, Trabajo">
+                                <input type="text" class="form-control form-control-lg rounded-pill" name="motivoVisita" value="' . htmlspecialchars($_POST['motivoVisita'] ?? '') . '" placeholder="Ej. Turismo, Negocios">
                             </div>
                         </div>
 
                         <div class="mb-5">
                             <label class="form-label fw-bold text-dark">Preferencias Alimentarias</label>
-                            <textarea class="form-control form-control-lg rounded-4" rows="3" name="preferenciaAlimentaria" placeholder="Ej. Vegetariano, sin gluten, alérgico a la leche..."></textarea>
+                            <textarea class="form-control form-control-lg rounded-4" rows="3" name="preferenciaAlimentaria" placeholder="Ej. Sin gluten, vegetariano, alérgico al maní...">' . htmlspecialchars($_POST['preferenciaAlimentaria'] ?? '') . '</textarea>
                         </div>
 
-                        <!-- HABITACIONES -->
+                        <!-- HABITACIONES DISPONIBLES -->
                         <hr class="my-5 border-secondary">
-                        <h4 class="text-rojo fw-bold mb-4">Seleccionar Habitación(es)</h4>
+                        <h4 class="text-rojo fw-bold mb-4">Seleccionar Habitación(es) Disponibles</h4>
                         <div class="row g-3 mb-4">
                             <div class="col-md-5">
                                 <select class="form-select form-select-lg rounded-pill" id="filtroHabitacion">
@@ -186,7 +191,7 @@ $contenido_principal = '
                                             <h4 class="text-success fw-bold mb-3">Bs. '.number_format($hab['precioNoche'], 2).'</h4>
                                             <input type="checkbox" name="habitaciones[]" value="'.$hab['idHabitacion'].'" id="hab_'.$hab['idHabitacion'].'" class="btn-check">
                                             <label for="hab_'.$hab['idHabitacion'].'" class="btn btn-yokoso btn-lg w-100 rounded-pill shadow-sm">
-                                                <i class="fas fa-bed me-2"></i>Seleccionar
+                                                Seleccionar
                                             </label>
                                         </div>
                                     </div>
@@ -194,7 +199,7 @@ $contenido_principal = '
                             }, $habitaciones)) . '
                         </div>
 
-                        <!-- PAQUETES -->
+                        <!-- PAQUETES OPCIONALES -->
                         <hr class="my-5 border-secondary">
                         <h4 class="text-rojo fw-bold mb-4">Paquete Turístico (Opcional)</h4>
                         <div class="row g-4">
@@ -214,12 +219,13 @@ $contenido_principal = '
                             }, $paquetes)) . '
                         </div>
 
-                        <!-- BOTONES FINALES -->
+                        <!-- BOTONES -->
                         <div class="mt-5 pt-4 text-end">
-                            <a href="panel_recepcionista.php" class="btn btn-outline-secondary btn-lg px-5 rounded-pill me-3">Cancelar</a>
+                            <a href="panel_recepcionista.php" class="btn btn-outline-secondary btn-lg px-5 rounded-pill me-3">
+                                Cancelar
+                            </a>
                             <button type="submit" class="btn btn-yokoso btn-lg px-5 rounded-pill shadow-lg">
-                                <i class="fas fa-user-plus fa-lg me-2"></i>
-                                Registrar Huésped
+                                Registrar y Asignar Habitación
                             </button>
                         </div>
                     </form>
@@ -230,8 +236,7 @@ $contenido_principal = '
 </div>
 
 <script>
-// FILTRO DE HABITACIONES 
-document.getElementById("filtroHabitacion").addEventListener("change", function() {
+document.getElementById("filtroHabitacion")?.addEventListener("change", function() {
     const tipo = this.value.toLowerCase();
     document.querySelectorAll(".habitacion-item").forEach(item => {
         const tipoHab = item.dataset.tipo.toLowerCase();

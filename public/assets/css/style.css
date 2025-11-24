@@ -1,4 +1,7 @@
-/* Variables globales */
+/* ============================================================= */
+/*                  HOTEL YOKOSO - STYLE.CSS FINAL               */
+/* ============================================================= */
+
 :root {
     --color-negro: #000000;
     --color-rojo: #C8102E;
@@ -14,158 +17,220 @@
     --color-transicion-arena-mostaza: #EBD8A9;
     --color-rojo-quemado: #9E2B25;
 
-    /* fuente */
     --font-body: 'Poppins', sans-serif;
     --font-heading: 'Playfair Display', serif;
 }
 
-/* Tipografía */
+/* ============================================================= */
+/* TIPOGRAFÍA Y BODY                                             */
+/* ============================================================= */
 body {
     font-family: var(--font-body);
     color: var(--color-texto);
     background-color: var(--color-blanco);
 }
-/* modificacion para el navbar en dmovil */
+
+/* Espacio para navbar fijo en móvil */
 @media (max-width: 991.98px) {
-  body {
-    padding-top: 70px; 
-  }
+    body { padding-top: 70px; }
 }
-/* Secciones de altura completa */
+
+/* ============================================================= */
+/* SECCIONES FULL – AHORA 100% RESPONSIVE (nunca más se pisan)  */
+/* ============================================================= */
 .section-full {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+    min-height: 100vh;
+    height: auto !important;
+    padding: 120px 0 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
-/* ajuste para bienvenida */
-section#bienvenida {
-  background: linear-gradient(135deg, #f9f5f0 0%, #ffffff 100%);
-}
-section#acerca {
-  background: linear-gradient(to bottom, #f0ebe2 0%, #f5f5f5 100%);
-  background-image: url('/assets/img/bgSunset.jpg'); 
-  background-size: cover; 
-  opacity: 0.9;
-  box-shadow: 0 0 10px 10px white inset;
-}
-
-/* Ajuste para sección "Acerca de Nosotros" */
-.acerca-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-}
-
-.acerca-texto {
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.acerca-cards {
-  margin-top: 2rem;
-}
-/* Ajustes suaves para AOS en sección Acerca de Nosotros */
-[data-aos] {
-  opacity: 0;
-  transform: translateY(20px);
-  transition-property: opacity, transform;
-}
-
-/* Asegurar que las tarjetas no tengan margen extra en mobile */
 @media (max-width: 768px) {
-  .acerca-cards .col-md-6 {
-    margin-bottom: 1.5rem;
-  }
+    .section-full { padding: 140px 0 80px !important; }
 }
 
-/* Títulos */
+/* ============================================================= */
+/* BIENVENIDA                                                    */
+/* ============================================================= */
+#bienvenida {
+    padding-top: 140px !important;
+    background: linear-gradient(135deg, #f9f5f0 0%, #ffffff 100%);
+}
+@media (max-width: 576px) {
+    #bienvenida {
+        padding-top: 160px !important;
+    }
+    #bienvenida .display-4 { font-size: 2.4rem !important; }
+}
+
+/* ============================================================= */
+/* ACERCA DE NOSOTROS – Imagen original + texto legible         */
+/* ============================================================= */
+#acerca {
+    background: url('/assets/img/bgSunset.jpg') center/cover no-repeat;
+    background-attachment: fixed;           /* efecto parallax bonito en PC */
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 0 80px !important;
+}
+
+/* Capa semi-transparente blanca MUY SUAVE solo detrás del contenido */
+#acerca::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.12);   /* ← casi transparente, solo para que resalte el texto */
+    backdrop-filter: blur(1px);
+    z-index: 1;
+}
+
+/* Contenedor centrado y legible */
+#acerca .acerca-container {
+    position: relative;
+    z-index: 2;
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#acerca .acerca-texto h3 {
+    font-size: 3.2rem;
+    color: rgb(164, 31, 31);
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+    margin-bottom: 1.5rem;
+}
+
+#acerca .acerca-texto p.lead {
+    font-size: 1.3rem;
+    color: white;
+    text-shadow: 1px 1px 8px rgba(0,0,0,0.8);
+    max-width: 900px;
+    margin: 0 auto 4rem;
+}
+
+/* Tarjetas de Misión y Visión */
+#acerca .card {
+    background: rgba(255, 255, 255, 0.92);
+    border: none;
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+}
+
+#acerca .card h5 {
+    color: var(--color-rojo);
+}
+
+#acerca .card p {
+    color: #333;
+}
+
+/* Móvil: quita el fixed y ajusta */
+@media (max-width: 768px) {
+    #acerca {
+        background-attachment: scroll;
+        padding: 140px 0 100px !important;
+    }
+    #acerca::before {
+        background: rgba(255, 255, 255, 0.25);   /* un poco más clara en móvil */
+    }
+    #acerca .acerca-texto h3 { font-size: 2.6rem !important; }
+    #acerca .acerca-texto p.lead { font-size: 1.15rem !important; }
+}
+/* ============================================================= */
+/* HABITACIONES                                                  */
+/* ============================================================= */
+#habitaciones {
+    padding-top: 140px !important;
+    background: linear-gradient(to bottom, #fcf2e7 0%, #ffffff 100%);
+    box-shadow: 0 0 10px 10px white inset;
+}
+#habitaciones::before {
+    content: "";
+    display: block;
+    height: 100px;
+    margin-top: -100px;
+    visibility: hidden;
+    pointer-events: none;
+}
+@media (max-width: 768px) {
+    #habitaciones {
+        padding-top: 160px !important;
+    }
+    #habitaciones .display-5 { font-size: 2.3rem !important; }
+    .habitacion-card img { height: 220px !important; object-fit: cover; }
+}
+
+/* ============================================================= */
+/* PAQUETES                                                      */
+/* ============================================================= */
+#paquetes {
+    padding-top: 120px !important;
+    background: linear-gradient(to bottom, #fff 0%, #fcf2e7 100%);
+}
+@media (max-width: 767.98px) {
+    #paquetes .row { flex-direction: column-reverse; }
+    #paquetes img {
+        height: 300px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin-bottom: 2.5rem;
+    }
+    #paquetes { padding-top: 160px !important; }
+}
+
+/* ============================================================= */
+/* CARRUSEL                                                      */
+/* ============================================================= */
+.carousel-item {
+    height: 100vh;
+    min-height: 420px;
+    background-size: cover !important;
+    background-position: center !important;
+}
+.text-shadow { text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: var(--color-mostaza);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+@media (max-width: 768px) {
+    .carousel-caption h1 { font-size: 2.3rem !important; }
+    .carousel-caption p  { font-size: 1.1rem !important; }
+    .carousel-caption .btn { font-size: 1rem; padding: 0.7rem 1.6rem; }
+}
+
+/* ============================================================= */
+/* TIPOGRAFÍA Y TÍTULOS                                          */
+/* ============================================================= */
 h1, h2, h3, h4, h5, h6,
 .display-4, .display-5,
 .carousel-caption h1,
 .carousel-caption h5 {
-  font-family: var(--font-heading);
-  font-weight: 600;
-}
-/* Opc */
-h1, h2 {
-  line-height: 1.2;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    line-height: 1.2;
 }
 
-/* Encabezado */
-header {
-    background-color: var(--color-rojo-quemado);
-}
-
-header .btn-outline-light:hover {
-    background-color: var(--color-mostaza);
-    color: var(--color-negro);
-}
-
-header .btn-warning {
-    background-color: var(--color-mostaza);
-    color: var(--color-negro);
-    border: none;
-}
-
-header .btn-warning:hover {
-    background-color: #B8952A;
-    color: var(--color-negro);
-}
-
-/* Botones personalizados */
+/* ============================================================= */
+/* BOTONES                                                       */
+/* ============================================================= */
 .btn-rojo {
     background-color: var(--color-rojo);
     color: var(--color-blanco);
     border: none;
+    font-weight: 600;
 }
-
 .btn-rojo:hover {
-    background-color: #A50D24;
+    background-color: var(--color-rojo-oscuro);
 }
-
-/* Tarjetas */
-.card {
-    transition: transform 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-}
-
-/* Colores personalizados */
-.text-mostaza {
-    color: var(--color-mostaza);
-}
-
-.text-rojo {
-    color: var(--color-rojo);
-}
-
-.bg-gris-claro {
-    background-color: var(--color-gris-claro);
-}
-
-/* estilos para tarjetas de habitaciones */
-/* Estilos para tarjetas de habitaciones con arco superior */
-.habitacion-card {
-    background-color: #fff;
-    border-top-left-radius: 8rem !important;
-    border-top-right-radius: 8rem !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.habitacion-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
-}
-
-/* Botón personalizado estilo imagen (blanco con borde rojo) */
 .btn-outline-rojo {
     border: 2px solid var(--color-rojo);
     color: var(--color-rojo);
@@ -175,149 +240,53 @@ header .btn-warning:hover {
     border-radius: 30px;
     transition: all 0.3s ease;
 }
-
 .btn-outline-rojo:hover {
     background-color: var(--color-rojo);
     color: var(--color-blanco);
 }
 
-/* Arco superior*/
+/* ============================================================= */
+/* TARJETAS                                                      */
+/* ============================================================= */
+.card, .habitacion-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover, .habitacion-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+}
+.habitacion-card {
+    background-color: #fff;
+    border-top-left-radius: 8rem !important;
+    border-top-right-radius: 8rem !important;
+}
 .habitacion-card img {
     border-top-left-radius: 8rem;
     border-top-right-radius: 8rem;
 }
 
-/* Ajuste para mobile */
-@media (max-width: 768px) {
-    .habitacion-card img {
-        height: 200px;
-    }
-    .habitacion-card {
-        margin-bottom: 20px;
-    }
-}
-
-/* Espaciado entre tarjetas en mobile */
-@media (max-width: 576px) {
-    .col-md-4 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-}
-
-/* estilos para habitaciones-tarjetas */
-section#habitaciones {
-    background: linear-gradient(to bottom, #fcf2e7 0%, #ffffff 100%);
-    box-shadow: 0 0 10px 10px white inset;
-}
-/* estilos para paquetes */
-/* Estilos para tarjetas de paquetes */
-.card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
-}
-
-/* Botón personalizado estilo imagen (blanco con borde rojo) */
-.btn-outline-rojo {
-    border: 2px solid var(--color-rojo);
-    color: var(--color-rojo);
-    background-color: transparent;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-rojo:hover {
-    background-color: var(--color-rojo);
-    color: var(--color-blanco);
-}
-
-/* Ajuste para mobile */
-@media (max-width: 768px) {
-    .section-full {
-        padding: 2rem 1rem !important;
-    }
-    .card {
-        margin-bottom: 1rem;
-    }
-}
-
-/* Para que las tarjetas no tengan margen extra en mobile */
-@media (max-width: 576px) {
-    .card {
-        margin-bottom: 1rem;
-    }
-}
-/* mas estilos para paquetes */
-section#paquetes {
-    background: linear-gradient(to bottom, #fff 0%, #fcf2e7 100%);
-}
-.card {
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-/* Mapa */
-.ratio {
-    background-color: #ddd;
-}
-
-/* Llamada a la acción */
-footer .btn-warning {
-    background-color: var(--color-mostaza);
-    color: var(--color-negro);
-    border: none;
-    padding: 10px 20px;
-    font-weight: bold;
-}
-
-footer .btn-warning:hover {
-    background-color: #B8952A;
-}
-/* Footer que ocupa todo el ancho */
-.footer-wrapper {
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-    background-color: #000;
-}
-/* mmods del footer */
-/* Estilos mejorados para el footer */
+/* ============================================================= */
+/* FOOTER                                                        */
+/* ============================================================= */
 .footer-wrapper {
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     background: linear-gradient(to bottom, #0a0a0a 0%, #121212 100%);
     box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
 }
-
-footer {
-    font-family: var(--font-body);
-}
-
 .footer-logo {
     height: 80px;
     width: auto;
     object-fit: contain;
+    transition: height 0.3s ease;
 }
-
-.text-mostaza {
-    color: var(--color-mostaza) !important;
-}
-
-/* Ajuste de íconos sociales */
 footer .fab {
     transition: transform 0.3s ease, color 0.3s ease;
 }
-
 footer .fab:hover {
     color: var(--color-mostaza) !important;
     transform: translateY(-3px);
 }
-
-/* Botón de llamada */
 footer .btn-warning {
     background-color: var(--color-mostaza);
     color: var(--color-negro);
@@ -325,210 +294,48 @@ footer .btn-warning {
     font-weight: 600;
     border-radius: 30px;
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-    transition: all 0.3s ease;
 }
-
 footer .btn-warning:hover {
     background-color: var(--color-mostaza-oscuro);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Footer responsive – logo más grande y redes más visibles */
+@media (max-width: 767.98px) {
     .footer-logo {
-        height: 40px;
+        height: 110px !important;
+        margin-bottom: 1.5rem;
     }
     footer .fab {
-        font-size: 1.5rem;
+        font-size: 2.5rem !important;
     }
-    /* En mobile, logo y texto en columna */
+    footer .gap-3 {
+        gap: 2.5rem !important;
+    }
     .col-md-4.d-flex.align-items-start {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: column !important;
+        align-items: center !important;
         text-align: center;
     }
-    .footer-logo {
-        margin-bottom: 1rem;
-    }
 }
 
-
-/* Responsive */
-@media (max-width: 768px) {
-    .card {
-        margin-bottom: 20px;
-    }
-}
-/* nuevos estilos del carrusel */
-.carousel-item {
-  height: 100vh;
-  background-size: cover;
-  background-position: center;
-}
-.text-shadow {
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-}
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  background-color: var(--color-mostaza);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-}
-@media (max-width: 768px) {
-  .carousel-caption h1 {
-    font-size: 2rem;
-  }
-  .carousel-caption p {
-    font-size: 1rem;
-  }
-}
-
-/* estilos para la seleccion de habitaciones por parte del huesped */
-/* Progreso de reserva */
-.progress {
-  height: 20px;
-  border-radius: 4px;
-  background-color: #e9ecef;
-}
-.progress-bar{
-  border-radius: 3px;
-}
-
-/* Tarjetas de habitación */
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Botones */
-.btn-rojo {
-  background-color: var(--color-rojo);
-  border: none;
-  font-weight: 600;
-}
-.btn-rojo:hover {
-  background-color: var(--color-rojo-oscuro);
-  transform: scale(1.02);
-}
-
-/* Badges */
-.badge {
-  font-weight: 600;
-}
-
-/* para package - paquetes turisticos por parte del huesped */
-/* Cards de paquetes */
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border-radius: 12px !important;
-}
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
-}
-
-/* Progreso */
-.progress-bar.bg-mostaza {
-  background-color: var(--color-mostaza) !important;
-}
-
-/* Botones */
-.btn-rojo {
-  background-color: var(--color-rojo);
-  border: none;
-  font-weight: 600;
-  border-radius: 8px;
-}
-.btn-rojo:hover {
-  background-color: var(--color-rojo-oscuro);
-  transform: scale(1.03);
-}
-
-/* estilos para confirmacion por parte del huesped */
-/* Confirmación */
-.fa-check-circle {
-  color: var(--color-mostaza);
-}
-.alert-info {
-  border-left: 4px solid var(--color-mostaza);
-}
-.list-group-item {
-  font-family: var(--font-body);
-}
-/* estilos para dashboard de huesped */
-/* Dashboard huésped */
-.btn-mostaza {
-  background-color: var(--color-mostaza);
-  border: none;
-  font-weight: 600;
-}
-.btn-mostaza:hover {
-  background-color: var(--color-mostaza-oscuro);
-}
-
-.badge.bg-warning {
-  color: var(--color-negro) !important;
-}
-
-/* para dashboard botones - huesped */
-/* Dashboard: ajuste de botones en tabla */
-.table td {
-    vertical-align: middle !important;
-}
-.btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-
-/* navbar responsive */
+/* ============================================================= */
+/* NAVBAR LOGO RESPONSIVE                                        */
+/* ============================================================= */
 .logo-navbar {
-    height: 58px;     
+    height: 58px;
     width: auto;
     transition: height 0.3s ease;
 }
+@media (min-width: 768px)  { .logo-navbar { height: 30px; } }
+@media (min-width: 992px)  { .logo-navbar { height: 60px; } }
+@media (min-width: 1200px) { .logo-navbar { height: 65px; } }
+@media (min-width: 1400px) { .logo-navbar { height: 70px; } }
 
-@media (min-width: 768px) {
-    .logo-navbar {
-        height: 30px;
-    }
-}
-
-@media (min-width: 992px) {
-    .logo-navbar {
-        height: 60px;
-    }
-}
-
-@media (min-width: 1200px) {
-    .logo-navbar {
-        height: 65px;
-    }
-}
-
-@media (min-width: 1400px) {
-    .logo-navbar {
-        height: 70px;
-    }
-}
-
-.navbar-brand {
-    gap: 12px; 
-}
-
-/* Sticky footer */
-html, body {
-    scroll-behavior: smooth;
-}
-body {
-    display: flex;
-    flex-direction: column;
-}
-main {
-    flex: 1 0 auto;
-}
-footer {
-    flex-shrink: 0;
-}
+/* ============================================================= */
+/* OTROS                                                         */
+/* ============================================================= */
+.text-mostaza { color: var(--color-mostaza) !important; }
+.text-rojo    { color: var(--color-rojo); }
+.bg-gris-claro { background-color: var(--color-gris-claro); }
+html, body { scroll-behavior: smooth; }
