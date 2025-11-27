@@ -38,8 +38,8 @@ ob_start();
 <!-- Indicador de pasos -->
 <nav aria-label="Progreso de reserva" class="mb-4">
   <ol class="progress">
-    <li class="progress-bar bg-mostaza" style="width: 33%; margin-left: -33px;">Habitación</li>
-    <li class="progress-bar bg-mostaza" style="width: 33%;">Paquete</li>
+    <li class="progress-bar" style="width: 33%; margin-left: -33px; background-color: var(--color-mostaza);">Habitación</li>
+    <li class="progress-bar" style="width: 33%; background-color: var(--color-mostaza);">Paquete</li>
     <li class="progress-bar bg-light" style="width: 36%;">Confirmar</li>
   </ol>
 </nav>
@@ -116,8 +116,7 @@ ob_start();
     <a href="rooms.php" class="btn btn-outline-secondary px-4 py-2">
       <i class="fas fa-arrow-left me-1"></i> Volver a Habitaciones
     </a>
-    <button type="button" class="btn btn-mostaza text-dark btn-lg px-5 py-2" id="btnSiguiente"
-            style="font-family: var(--font-body); font-weight: 600;">
+    <button type="button" class="btn btn-sig btn-lg px-5 py-2" id="btnSiguiente">
       <i class="fas fa-arrow-right me-2"></i> Siguiente: Datos Personales
     </button>
   </div>

@@ -38,7 +38,7 @@ ob_start();
 <!-- Indicador de pasos -->
 <nav aria-label="Progreso de reserva" class="mb-4">
   <ol class="progress">
-    <li class="progress-bar bg-mostaza" style="width: 33%; margin-left: -33px;">Habitación</li>
+    <li class="progress-bar" style="width: 33%; margin-left: -33px; background-color: var(--color-mostaza);">Habitación</li>
     <li class="progress-bar bg-light" style="width: 33%;">Paquete</li>
     <li class="progress-bar bg-light" style="width: 36%; ">Confirmar</li>
   </ol>
@@ -70,8 +70,12 @@ ob_start();
     <!-- Se llenará con JS -->
   </div>
 
+  
   <!-- Botón siguiente (deshabilitado al inicio) -->
   <div class="text-center mt-5">
+    <button type="button" class="btn btn-sig btn-lg px-5 py-2" >
+      <i class="fas fa-arrow-left me-2"></i> Volver a reservas
+    </button>
     <button type="button" class="btn btn-rojo btn-lg px-5 py-2" id="btnSiguiente" disabled
             style="font-family: var(--font-body);">
       <i class="fas fa-arrow-right me-2"></i> Siguiente: Paquetes Turísticos

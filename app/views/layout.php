@@ -37,13 +37,11 @@ if (session_status() === PHP_SESSION_NONE) {
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
-            background-color: #f8f9fa; /* o el fondo que uses */
+            background-color: #f8f9fa; 
         }
 
         .main-wrapper {
             flex: 1;
-            padding-top: 70px; /* altura del navbar */
-            padding-bottom: 60px; /* altura del footer */
         }
 
         .navbar-dashboard {
@@ -90,7 +88,7 @@ if (session_status() === PHP_SESSION_NONE) {
     
 <!-- Contenido principal  CAMBIADO-->
 <div class="main-wrapper">
-    <div class="<?= $use_container_fluid ?? false ? 'container-fluid px-4' : 'container' ?>">
+    <div class="<?= $use_container_fluid ?? false ? 'container-fluid ' : 'container' ?>">
         <?= $content ?? '' ?>
     </div>
 </div>
