@@ -1,5 +1,5 @@
 <?php
-// public/vistas/admin/editar_empleado.php
+// public/admin/editar_empleado.php
 
 define('ACCESO_PERMITIDO', true);
 

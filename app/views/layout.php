@@ -1,5 +1,4 @@
 <?php
-// Solo iniciar sesión si no está activa (útil para algunas vistas)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -30,23 +29,92 @@ if (session_status() === PHP_SESSION_NONE) {
     <?php endif; ?>
 
     <link rel="icon" href="/assets/img/favicon.ico">
-    
+
+    <!-- Estilos para layout fijo (navbar + footer) -->
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa; /* o el fondo que uses */
+        }
+
+        .main-wrapper {
+            flex: 1;
+            padding-top: 70px; /* altura del navbar */
+            padding-bottom: 60px; /* altura del footer */
+        }
+
+        .navbar-dashboard {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .footer-dashboard {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1030;
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body<?= !empty($body_class ?? '') ? ' class="' . htmlspecialchars($body_class) . '"' : '' ?>>
 
-<?= $content ?? '' ?>
+    <!-- Navbar (solo en páginas de dashboard) -->
+    <?php if (!empty($show_dashboard_nav ?? false)): ?>
+        <nav class="navbar-dashboard navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-rojo-quemado);">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="/guest/dashboard.php">
+                    <img src="/assets/img/empresaLogoYokoso.png" 
+                         alt="Logo Hotel Yokoso" 
+                         class="logo-navbar" style="height: 32px; margin-right: 8px;">
+                    <span class="fw-bold">Hotel Yokoso</span>
+                </a>
+                <div class="d-flex align-items-center">
+                    <span class="text-white me-3">
+                        <i class="fas fa-user me-1"></i> <?= htmlspecialchars($_SESSION['nombreUsuario'] ?? 'Huésped') ?>
+                    </span>
+                    <a href="/logout.php" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-door-open me-1"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </nav>
+    <?php endif; ?>
 
-<!-- Scripts base -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function confirmarAccion(mensaje = '¿Estás seguro?') {
-        return confirm(mensaje);
-    }
-</script>
+    <!-- Contenido principal -->
+    <div class="main-wrapper">
+        <div class="container">
+            <?= $content ?? '' ?>
+        </div>
+    </div>
 
-<?php if (!empty($scripts ?? '')): ?>
-    <?= $scripts ?>
-<?php endif; ?>
+    <!-- Footer (solo en dashboard) -->
+    <?php if (!empty($show_dashboard_footer ?? false)): ?>
+        <footer class="footer-dashboard bg-black text-white text-center py-3 small">
+            <div class="container">
+                <p class="mb-1">© <?= date('Y') ?> Hotel Yokoso. Todos los derechos reservados.</p>
+                <p class="mb-0"><i class="fas fa-phone me-1"></i> +591 7000 0000</p>
+            </div>
+        </footer>
+    <?php endif; ?>
+
+    <!-- Scripts base -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmarAccion(mensaje = '¿Estás seguro?') {
+            return confirm(mensaje);
+        }
+    </script>
+
+    <?php if (!empty($scripts ?? '')): ?>
+        <?= $scripts ?>
+    <?php endif; ?>
 
 </body>
 </html>
