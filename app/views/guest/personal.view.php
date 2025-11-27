@@ -1,6 +1,7 @@
 <?php
 $body_class = 'layout-dashboard'; // para footer fijo
 $title = "Completa tus Datos - Hotel Yokoso";
+$use_container_fluid = true;
 ob_start();
 ?>
 

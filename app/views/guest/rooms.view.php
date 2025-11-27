@@ -1,6 +1,7 @@
 <?php
 $body_class = 'layout-dashboard'; // para footer fijo
 $title = "Selecciona tu Habitación - Hotel Yokoso";
+$use_container_fluid = true;
 ob_start();
 ?>
 

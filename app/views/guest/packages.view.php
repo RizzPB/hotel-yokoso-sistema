@@ -1,6 +1,7 @@
 <?php
 $body_class = 'layout-dashboard'; // para footer fijo
 $title = "Selecciona un Paquete Turístico - Hotel Yokoso";
+$use_container_fluid = true; //linea nueva 
 ob_start();
 ?>
 

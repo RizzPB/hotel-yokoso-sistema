@@ -87,12 +87,13 @@ if (session_status() === PHP_SESSION_NONE) {
         </nav>
     <?php endif; ?>
 
-    <!-- Contenido principal -->
-    <div class="main-wrapper">
-        <div class="container">
-            <?= $content ?? '' ?>
-        </div>
+    
+<!-- Contenido principal  CAMBIADO-->
+<div class="main-wrapper">
+    <div class="<?= $use_container_fluid ?? false ? 'container-fluid px-4' : 'container' ?>">
+        <?= $content ?? '' ?>
     </div>
+</div>
 
     <!-- Footer (solo en dashboard) -->
     <?php if (!empty($show_dashboard_footer ?? false)): ?>
