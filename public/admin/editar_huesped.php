@@ -118,7 +118,7 @@ $contenido_principal = '
                                 <select class="form-select form-select-lg rounded-pill" name="tipoDocumento" required>
                                     <option value="DNI"      '.($huesped['tipoDocumento']==='DNI'?'selected':'').'>DNI</option>
                                     <option value="Pasaporte"'.($huesped['tipoDocumento']==='Pasaporte'?'selected':'').'>Pasaporte</option>
-                                    <option value="Carnet"   '.($huesped['tipoDocumento']==='Carnet'?'selected':'').'>Carnet Extranjeria</option>
+                                    <option value="Carnet"   '.($huesped['tipoDocumento']==='Carnet'?'selected':'').'>Carnet</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
