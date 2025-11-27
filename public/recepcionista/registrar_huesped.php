@@ -14,10 +14,14 @@ require_once __DIR__ . '/../../config/database.php';
 $mensaje = $error = '';
 
 // Cargar habitaciones disponibles
+//distinct es para obtener solo tipos únicos 
 $stmt = $pdo->prepare("SELECT DISTINCT tipo FROM Habitacion WHERE estado = 'disponible' ORDER BY tipo");
 $stmt->execute();
+// Obtener solo los tipos de habitación
+//fetchAll devuelve un array con todos los resultados de la consulta
+//fetch_column obtiene una sola columna de cada fila
 $tiposHabitacion = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
+// Cargar detalles de habitaciones disponibles
 $stmt = $pdo->prepare("SELECT idHabitacion, numero, tipo, precioNoche FROM Habitacion WHERE estado = 'disponible' ORDER BY numero");
 $stmt->execute();
 $habitaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -55,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fechaInicio = date('Y-m-d');
             $fechaFin = date('Y-m-d', strtotime('+7 days'));
 
-            // 3. Calcular total (solo 1 noche por defecto, se ajusta al check-out)
+            // 3. Calcular total 
             $total = 0;
             $preciosHabitaciones = [];
             foreach ($habitacionesSeleccionadas as $idHab) {
@@ -71,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $total += $stmt->fetchColumn();
             }
 
-            // 4. Crear reserva como OCUPADA (porque el huésped ya está en la habitación)
+            // 4. Crear reserva como OCUPADA (ej. porque el huésped ya está en la habitación)
             $stmt = $pdo->prepare("INSERT INTO Reserva (idHuesped, idPaquete, fechaInicio, fechaFin, total, anticipo, estado) 
                                    VALUES (?, ?, ?, ?, ?, ?, 'ocupada')");
             $stmt->execute([$idHuesped, $idPaquete, $fechaInicio, $fechaFin, $total, $total]); // anticipo = total en check-in
@@ -113,7 +117,7 @@ $contenido_principal = '
                 <div class="card-body p-5 p-lg-6">
 
                     <form method="POST">
-                        <!-- DATOS DEL HUÉSPED -->
+                               <!-- DATOS DEL HUÉSPED -->
                         <div class="row g-4 mb-5">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Nombre *</label>

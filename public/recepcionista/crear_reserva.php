@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
-            // 1. Crear huésped provisional
+            // 1. Crear huésped provisional para la reserva
             $partes = explode(' ', $nombreCompleto, 2);
             $nombre = $partes[0] ?? '';
             $apellido = $partes[1] ?? '';

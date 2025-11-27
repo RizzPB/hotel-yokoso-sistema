@@ -11,7 +11,7 @@ require_once __DIR__ . '/../../config/database.php';
 
 // TRAEMOS TODAS LAS RESERVAS CON FECHA Y HORA DE CREACIÓN
 $stmt = $pdo->prepare("
-    SELECT r.*, h.nombre, h.apellido, r.fechaCreacion,
+    SELECT r.*, h.nombre, h.apellido, r.fechaCreacion, 
            GROUP_CONCAT(ha.numero SEPARATOR ', ') AS numeros_habitacion
     FROM Reserva r
     JOIN Huesped h ON r.idHuesped = h.idHuesped
@@ -72,10 +72,16 @@ $contenido_principal = '
             $estadoTexto = ucfirst($r['estado']);
 
             // Formatear fecha y hora de creación
-            $fechaHoraCreacion = $r['fechaCreacion'] 
-                ? date('d/m/Y H:i', strtotime($r['fechaCreacion'])) 
-                : 'Sin fecha';
-
+            $fechaHoraCreacion = 'Sin fecha';
+            if (!empty($r['fechaCreacion']) && $r['fechaCreacion'] !== '0000-00-00 00:00:00') {
+                try {
+                // PDO normalmente devuelve DATETIME como string, así que esto funciona
+                $dt = new DateTime($r['fechaCreacion']);
+                $fechaHoraCreacion = $dt->format('d/m/Y H:i');
+                } catch (Exception $e) {
+                $fechaHoraCreacion = 'Error en fecha';
+                }
+            }
             return '
             <div class="col-md-6 col-lg-4 reserva-item" data-estado="'.$r['estado'].'">
                 <div class="card h-100 shadow hover-lift border-0 transition">

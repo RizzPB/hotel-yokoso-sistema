@@ -11,7 +11,22 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
 $current_page = 'habitaciones';
 require_once __DIR__ . '/../../config/database.php';
 
-$stmt = $pdo->prepare("SELECT idHabitacion, numero, tipo, precioNoche, estado FROM Habitacion ORDER BY CAST(numero AS UNSIGNED)");
+// Consulta para obtener habitaciones + estado calculado según reservas activas
+$stmt = $pdo->prepare("
+    SELECT h.idHabitacion, h.numero, h.tipo, h.precioNoche,
+           CASE 
+               WHEN EXISTS (
+                   SELECT 1 FROM Reserva r
+                   JOIN ReservaHabitacion rh ON r.idReserva = rh.idReserva
+                   WHERE rh.idHabitacion = h.idHabitacion
+                     AND r.estado IN ('confirmada', 'ocupada')
+                     AND CURDATE() BETWEEN r.fechaInicio AND r.fechaFin
+               ) THEN 'ocupada'
+               ELSE 'disponible'
+           END AS estado_calculado
+    FROM Habitacion h
+    ORDER BY CAST(h.numero AS UNSIGNED)
+");
 $stmt->execute();
 $habitaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -31,7 +46,7 @@ $contenido_principal = '
 
     <!-- ÁREA FIJA -->
     <div class="row justify-content-center">
-        <div class="col-xl-11 col-xxl-10"> <!-- tamaño -->
+        <div class="col-xl-11 col-xxl-10">
 
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-body p-5">
@@ -44,11 +59,11 @@ $contenido_principal = '
                         </div>' : '') . '
 
                         ' . implode('', array_map(function($h) {
-                            $color = $h['estado'] === 'disponible' ? 'success' : ($h['estado'] === 'ocupada' ? 'warning' : 'secondary');
-                            $texto = ucfirst($h['estado']);
+                            // Usamos estado_calculado en lugar de 'estado'
+                            $color = $h['estado_calculado'] === 'disponible' ? 'success' : 'warning';
+                            $texto = ucfirst($h['estado_calculado']);
 
                             return '
-                            
                             <div class="col-md-6 col-lg-4">
                                 <div class="card h-100 shadow-sm border-0 hover-lift position-relative">
                                     <div class="card-body text-center py-5">
@@ -75,6 +90,11 @@ $contenido_principal = '
                 <h5 class="text-muted">
                     Total: <strong class="text-rojo">' . count($habitaciones) . '</strong> habitaciones registradas
                 </h5>
+                <p class="text-muted mt-2">
+                    Ocupadas: <strong class="text-warning">' . 
+                    count(array_filter($habitaciones, fn($h) => $h['estado_calculado'] === 'ocupada')) . 
+                    '</strong>
+                </p>
             </div>
 
         </div>
