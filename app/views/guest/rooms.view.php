@@ -74,7 +74,8 @@ ob_start();
   <!-- Botón siguiente (deshabilitado al inicio) -->
   <div class="text-center mt-5">
     <button type="button" class="btn btn-sig btn-lg px-5 py-2" >
-      <i class="fas fa-arrow-left me-2"></i> Volver a reservas
+      
+      <a href="/guest/dashboard.php" style="text-decoration: none; color: white;"><i class="fas fa-arrow-left me-2"></i> Volver a reservas</a>
     </button>
     <button type="button" class="btn btn-rojo btn-lg px-5 py-2" id="btnSiguiente" disabled
             style="font-family: var(--font-body);">
@@ -161,7 +162,7 @@ function renderHabitaciones(tipo = 'todos') {
     document.querySelectorAll('.habitacion-checkbox').forEach(cb => {
         cb.addEventListener('change', actualizarBoton);
     });
-    actualizarBoton(); // en caso de que ya hubiera selección
+    actualizarBoton(); 
 }
 
 function actualizarBoton() {

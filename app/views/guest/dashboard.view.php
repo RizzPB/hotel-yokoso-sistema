@@ -21,7 +21,8 @@ ob_start();
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 </div>
 <?php endif; ?>
-
+<div style="padding: 80px 0 80px;">
+    
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3" style="font-family: var(--font-heading); color: var(--color-rojo);">
         <i class="fas fa-list me-2"></i> Mis Reservas
@@ -99,6 +100,7 @@ ob_start();
 </div>
 <?php endif; ?>
 
+</div>
 <?php
 $content = ob_get_clean();
 include __DIR__ . '/../layout.php';
