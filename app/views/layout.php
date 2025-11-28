@@ -42,6 +42,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
         .main-wrapper {
             flex: 1;
+            margin-top: 16px;
         }
 
         .navbar-dashboard {

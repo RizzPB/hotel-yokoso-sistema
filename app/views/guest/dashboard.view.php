@@ -7,7 +7,6 @@ $show_dashboard_footer = true;
 ob_start();
 ?>
 
-<!-- SOLO el contenido (sin navbar ni footer) -->
 <?php if ($mensajeExito): ?>
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     <i class="fas fa-check-circle me-2"></i> <?= $mensajeExito ?>
@@ -24,6 +23,7 @@ ob_start();
 <div style="padding: 80px 0 80px;">
     
 <div class="d-flex justify-content-between align-items-center mb-4">
+
     <h1 class="h3" style="font-family: var(--font-heading); color: var(--color-rojo);">
         <i class="fas fa-list me-2"></i> Mis Reservas
     </h1>
@@ -99,6 +99,8 @@ ob_start();
     </table>
 </div>
 <?php endif; ?>
+</div>
+
 
 </div>
 <?php
