@@ -79,21 +79,21 @@
             <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                 <h1 class="display-4 fw-bold text-white text-shadow">Paquetes Turísticos</h1>
                 <p class="lead text-white text-shadow">2 o 3 días de magia en el Salar de Uyuni.</p>
-                <a href="#" class="btn btn-warning btn-lg mt-3 text-dark">Ver paquetes</a>
+                <a href="#paquetes" class="btn btn-warning btn-lg mt-3 text-dark">Ver paquetes</a>
             </div>
             </div>
             <div class="carousel-item" style="background-image: url('assets/img/carrusel1.jpg');">
             <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                 <h1 class="display-4 fw-bold text-white text-shadow">Bajo el Cielo del Salar</h1>
                 <p class="lead text-white text-shadow">El espejo más grande del mundo te espera.</p>
-                <a href="#" class="btn btn-warning btn-lg mt-3 text-dark">Reserva ahora</a>
+                <a href="login.php" class="btn btn-warning btn-lg mt-3 text-dark">Reserva ahora</a>
             </div>
             </div>
             <div class="carousel-item" style="background-image: url('assets/img/carrusel3.jpg');">
             <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                 <h1 class="display-4 fw-bold text-white text-shadow">Hospitalidad Andina</h1>
                 <p class="lead text-white text-shadow">Calidez, autenticidad y conexión con la Pachamama.</p>
-                <a href="#" class="btn btn-warning btn-lg mt-3 text-dark">Contáctanos</a>
+                <a href="#footerFin" class="btn btn-warning btn-lg mt-3 text-dark">Contáctanos</a>
             </div>
             </div>
         </div>
@@ -158,7 +158,7 @@
                             <p class="mb-4">
                                 Cálidas y auténticas, diseñadas con madera, piedra y textiles bolivianos. Ideal para quienes buscan confort con sabor andino.
                             </p>
-                            <a href="habitaciones.php#rusticas" class="btn btn-outline-rojo w-100">Ver más</a>
+                            <a href="registro.php" class="btn btn-outline-rojo w-100">Ver más</a>
                         </div>
                     </div>
                 </div>
@@ -174,7 +174,7 @@
                             <p class="mb-4">
                                 Espacios amplios con dos habitaciones conectadas. Perfectos para familias o grupos que buscan privacidad y comodidad.
                             </p>
-                            <a href="habitaciones.php#familiares" class="btn btn-outline-rojo w-100">Ver más</a>
+                            <a href="registro.php" class="btn btn-outline-rojo w-100">Ver más</a>
                         </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@
                             <p class="mb-4">
                                 Construidas íntegramente con bloques de sal del Salar de Uyuni. Una experiencia sensorial única bajo el cielo estrellado.
                             </p>
-                            <a href="habitaciones.php#sal" class="btn btn-outline-rojo w-100">Ver más</a>
+                            <a href="registro.php" class="btn btn-outline-rojo w-100">Ver más</a>
                         </div>
                     </div>
                 </div>
@@ -223,7 +223,7 @@
                                 <li>Comidas adaptadas a tus preferencias</li>
                                 <li>Fotos profesionales del recorrido</li>
                             </ul>
-                            <a href="paquetes.php#dos-dias" class="btn btn-outline-rojo w-100">Ver detalles</a>
+                            <a href="registro.php" class="btn btn-outline-rojo w-100">Ver detalles</a>
                         </div>
                     </div>
 
@@ -238,7 +238,7 @@
                                 <li>Menú personalizado según tus necesidades</li>
                                 <li>Guía bilingüe y fotos incluidas</li>
                             </ul>
-                            <a href="paquetes.php#tres-dias" class="btn btn-outline-rojo w-100">Ver detalles</a>
+                            <a href="registro.php" class="btn btn-outline-rojo w-100">Ver detalles</a>
                         </div>
                     </div>
                 </div>
@@ -247,12 +247,10 @@
     </section>
 
 <!-- Pie de Página -->
-<!-- Pie de Página -->
-<div class="footer-wrapper">
+<div class="footer-wrapper" id="footerFin">
     <footer class="bg-dark text-white pt-5 pb-4">
         <div class="container">
             <div class="row align-items-start">
-                <!-- Columna 1: Logo + Contacto (alineados horizontalmente) -->
                 <div class="col-md-4 mb-4 d-flex align-items-start">
                     <img src="assets/img/logoSistemaYokoso.png" alt="YokosoStay" class="footer-logo me-3">
                     <div>
@@ -263,7 +261,6 @@
                     </div>
                 </div>
 
-                <!-- Columna 2: Redes Sociales -->
                 <div class="col-md-4 mb-4 text-center">
                     <h5 class="text-mostaza mb-3">Síguenos</h5>
                     <div class="d-flex justify-content-center gap-3 fs-4">
@@ -279,7 +276,6 @@
                     </div>
                 </div>
 
-                <!-- Columna 3: Mapa más grande con bordes redondeados -->
                 <div class="col-md-4 text-center text-md-start">
                     <h5 class="text-mostaza mb-3">Ubicación</h5>
                     <div class="ratio ratio-16x9 mx-auto" style="max-width: 400px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
