@@ -1,12 +1,10 @@
 <?php
 // public/recepcionista/plantilla_recepcionista.php
 
+
 if (!defined('ACCESO_PERMITIDO')) {
     exit('Acceso directo no permitido.');
 }
-
-// Para resaltar el menú activo
-$current_page = $current_page ?? basename($_SERVER['PHP_SELF'], '.php');
 ?>
 
 <!DOCTYPE html>
@@ -79,21 +77,40 @@ $current_page = $current_page ?? basename($_SERVER['PHP_SELF'], '.php');
             transform: translateX(5px);
         }
 
-        /* Botones del panel (content) */
+        /* Submenús */
+        .sidebar .collapse .nav-link {
+            padding-left: 30px !important;
+            font-size: 0.95rem;
+            color: #555 !important;
+            margin-bottom: 4px;
+        }
+        .sidebar .collapse .nav-link:hover,
+        .sidebar .collapse .nav-link.active {
+            color: var(--color-rojo-quemado) !important;
+            background: #f1f1f1 !important;
+        }
+
+        /* Flecha de submenu */
+        .sidebar .nav-link i.ms-auto {
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+
+        /* Botones del panel */
         .btn-rojo {
             background-color: var(--color-rojo-quemado) !important;
             border-color: var(--color-rojo-quemado) !important;
             transition: all 0.3s ease !important;
-            color: white !important; /* Letra blanca por defecto */
+            color: white !important;
         }
         .btn-rojo:hover {
-            background-color: #A52A2A !important; /* Rojo más claro */
+            background-color: #A52A2A !important;
             border-color: #A52A2A !important;
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(139, 26, 26, 0.3) !important;
         }
         .hover-text-mostaza:hover {
-            color: var(--color-mostaza) !important; /* Mostaza al hover */
+            color: var(--color-mostaza) !important;
         }
         .text-white {
             color: white !important;
@@ -150,6 +167,12 @@ $current_page = $current_page ?? basename($_SERVER['PHP_SELF'], '.php');
                 visibility: visible;
             }
         }
+
+        /* Flecha girada */
+        .sidebar .nav-link[data-bs-toggle="collapse"].active i.ms-auto,
+        .sidebar .collapse.show + .nav-link i.ms-auto {
+            transform: rotate(180deg) !important;
+        }
     </style>
 </head>
 <body>
@@ -182,24 +205,43 @@ $current_page = $current_page ?? basename($_SERVER['PHP_SELF'], '.php');
     <!-- Overlay -->
     <div class="sidebar-overlay" id="overlay"></div>
 
-    <!-- Sidebar -->
+    <!-- Sidebar con submenús -->
     <div class="sidebar" id="sidebar">
         <div class="nav flex-column mt-3">
-            <a href="panel_recepcionista.php" class="nav-link <?= $current_page == 'panel_recepcionista' ? 'active' : '' ?>">
+
+            <!-- INICIO -->
+            <a href="panel_recepcionista.php" class="nav-link <?= ($current_page ?? '') == 'panel_recepcionista' ? 'active' : '' ?>">
                 <i class="fas fa-home"></i> <span>Inicio</span>
             </a>
-            <a href="registrar_huesped.php" class="nav-link <?= $current_page == 'registrar_huesped' ? 'active' : '' ?>">
-                <i class="fas fa-user-plus"></i> <span>Registrar Huésped</span>
-            </a>
-            <a href="ver_huespedes.php" class="nav-link <?= $current_page == 'ver_huespedes' ? 'active' : '' ?>">
-                <i class="fas fa-users"></i> <span>Ver Huéspedes</span>
-            </a>
-            <a href="crear_reserva.php" class="nav-link <?= $current_page == 'crear_reserva' ? 'active' : '' ?>">
-                <i class="fas fa-calendar-plus"></i> <span>Hacer Reserva</span>
-            </a>
-            <a href="ver_reservas.php" class="nav-link <?= $current_page == 'ver_reservas' ? 'active' : '' ?>">
-                <i class="fas fa-calendar-check"></i> <span>Ver Reservas</span>
-            </a>
+
+            <!-- HUÉSPEDES -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['registrar_huesped', 'ver_huespedes', 'editar_huesped']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuHuespedes" role="button">
+                    <i class="fas fa-users"></i> <span>Gestionar Huéspedes</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['registrar_huesped', 'ver_huespedes', 'editar_huesped']) ? 'show' : '' ?>" id="submenuHuespedes">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'registrar_huesped' ? 'active' : '' ?>" href="registrar_huesped.php">Registrar Huésped</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'ver_huespedes' ? 'active' : '' ?>" href="ver_huespedes.php">Ver Huéspedes</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'editar_huesped' ? 'active' : '' ?>" href="editar_huesped.php">Editar Huésped</a>
+                </div>
+            </div>
+
+            <!-- RESERVAS -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['crear_reserva', 'ver_reservas', 'editar_reserva']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuReservas" role="button">
+                    <i class="fas fa-calendar-check"></i> <span>Gestionar Reservas</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['crear_reserva', 'ver_reservas', 'editar_reserva']) ? 'show' : '' ?>" id="submenuReservas">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'crear_reserva' ? 'active' : '' ?>" href="crear_reserva.php">Hacer Reserva</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'ver_reservas' ? 'active' : '' ?>" href="ver_reservas.php">Ver Reservas</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'editar_reserva' ? 'active' : '' ?>" href="editar_reserva.php">Editar Reserva</a>
+                </div>
+            </div>
+
         </div>
     </div>
 

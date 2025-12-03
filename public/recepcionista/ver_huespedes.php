@@ -1,6 +1,7 @@
 <?php
 // public/recepcionista/ver_huespedes.php
 
+
 define('ACCESO_PERMITIDO', true);
 session_start();
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'empleado') {
@@ -10,7 +11,6 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'empleado') {
 
 require_once __DIR__ . '/../../config/database.php';
 
-// 1. Traemos todos los huéspedes activos (sin ordenar aún, lo hará JS)
 $stmt = $pdo->prepare("
     SELECT idHuesped, nombre, apellido, tipoDocumento, nroDocumento, 
            procedencia, email, telefono
@@ -23,18 +23,33 @@ $huespedes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $titulo_pagina = "Huéspedes Registrados - Hotel Yokoso";
 
 $contenido_principal = '
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-rojo fw-bold">Huéspedes Registrados</h2>
-    <div class="d-flex align-items-center gap-3">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <h2 class="text-rojo fw-bold mb-0">Huéspedes Registrados</h2>
+    
+    <div class="d-flex flex-wrap align-items-center gap-3">
         <small class="text-muted">
             Total: <strong id="totalHuespedes">' . count($huespedes) . '</strong> huésped(es)
         </small>
+        
         <select class="form-select form-select-sm w-auto rounded-pill shadow-sm" id="ordenarHuespedes">
             <option value="nuevo">Más nuevo primero</option>
             <option value="antiguo">Más antiguo primero</option>
             <option value="nombre-asc">Nombre A → Z</option>
             <option value="nombre-desc">Nombre Z → A</option>
         </select>
+    </div>
+</div>
+
+<!-- ❤️ Buscador en tiempo real -->
+<div class="mb-4">
+    <div class="input-group input-group-lg">
+        <span class="input-group-text bg-rojo-quemado text-white">
+            <i class="fas fa-search"></i>
+        </span>
+        <input type="text" 
+               id="buscarHuespedes" 
+               class="form-control rounded-pill" 
+               placeholder="Buscar por nombre, apellido, documento, email o teléfono...">
     </div>
 </div>
 
@@ -54,7 +69,7 @@ $contenido_principal = '
             </tr>
         </thead>
         <tbody id="listaHuespedes">
-            <!-- Aquí JavaScript pondrá las filas dinámicamente -->
+            <!-- Las filas se generarán con JavaScript -->
         </tbody>
     </table>
 </div>
@@ -62,19 +77,22 @@ $contenido_principal = '
 <script>
 // ==================== DATOS DE HUESPEDES DESDE PHP ====================
 const huespedes = ' . json_encode($huespedes) . ';  
-// → json_encode convierte el array PHP en un objeto JavaScript válido y seguro
+
+// ==================== ESTADO ACTUAL ====================
+let huéspedesOrdenados = [...huespedes]; // Copia inicial
 
 // ==================== FUNCIÓN PARA MOSTRAR LA TABLA ====================
 function renderizarHuespedes(lista) {
     const tbody = document.getElementById("listaHuespedes");
+    const totalElement = document.getElementById("totalHuespedes");
 
-    // Si no hay huéspedes
+    totalElement.textContent = lista.length;
+
     if (lista.length === 0) {
-        tbody.innerHTML = "<tr><td colspan=\"9\" class=\"text-center py-5 text-muted\">No hay huéspedes registrados aún.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan=\"9\" class=\"text-center py-5 text-muted\"><i class=\"fas fa-search fa-3x mb-3\"></i><br>No se encontraron huéspedes.</td></tr>";
         return;
     }
 
-    // Generamos las filas con map() + join() 
     const filas = lista.map(h => {
         return "<tr>" +
             "<td class=\"fw-bold text-rojo\">#" + h.idHuesped + "</td>" +
@@ -90,42 +108,66 @@ function renderizarHuespedes(lista) {
                 "<button class=\"btn btn-outline-danger btn-sm ms-1\" onclick=\"eliminarHuesped(" + h.idHuesped + ")\">Eliminar</button>" +
             "</td>" +
         "</tr>";
-    }).join("");  // Une todas las filas sin comas
+    }).join("");
 
     tbody.innerHTML = filas;
 }
 
-// ==================== FUNCIÓN PARA ESCAPAR HTML (SEGURIDAD) ====================
+// ==================== ESCAPAR HTML (SEGURIDAD) ====================
 function escaparHTML(texto) {
     const div = document.createElement("div");
     div.textContent = texto;
     return div.innerHTML;
 }
 
-// ==================== FUNCIÓN PARA ORDENAR ====================
+// ==================== ORDENAR HUÉSPEDES ====================
 function ordenarHuespedes() {
     const criterio = document.getElementById("ordenarHuespedes").value;
-    let ordenados = [...huespedes];  // Copia del array original
 
     if (criterio === "nuevo") {
-        ordenados.sort((a, b) => b.idHuesped - a.idHuesped);        // ID descendente
+        huéspedesOrdenados.sort((a, b) => b.idHuesped - a.idHuesped);
     } else if (criterio === "antiguo") {
-        ordenados.sort((a, b) => a.idHuesped - b.idHuesped);        // ID ascendente
+        huéspedesOrdenados.sort((a, b) => a.idHuesped - b.idHuesped);
     } else if (criterio === "nombre-asc") {
-        ordenados.sort((a, b) => (a.nombre + " " + a.apellido).localeCompare(b.nombre + " " + b.apellido));
+        huéspedesOrdenados.sort((a, b) => 
+            (a.nombre + " " + a.apellido).localeCompare(b.nombre + " " + b.apellido, "es", { sensitivity: "base" })
+        );
     } else if (criterio === "nombre-desc") {
-        ordenados.sort((a, b) => (b.nombre + " " + b.apellido).localeCompare(a.nombre + " " + a.apellido));
+        huéspedesOrdenados.sort((a, b) => 
+            (b.nombre + " " + b.apellido).localeCompare(a.nombre + " " + a.apellido, "es", { sensitivity: "base" })
+        );
     }
 
-    renderizarHuespedes(ordenados);
-    document.getElementById("totalHuespedes").textContent = ordenados.length;
+    // Aplicamos búsqueda actual (si hay algo en el input)
+    aplicarBusqueda();
+}
+
+// ==================== APLICAR BÚSQUEDA EN TIEMPO REAL ====================
+function aplicarBusqueda() {
+    const termino = document.getElementById("buscarHuespedes").value.toLowerCase().trim();
+    
+    if (termino === "") {
+        renderizarHuespedes(huéspedesOrdenados);
+        return;
+    }
+
+    const filtrados = huéspedesOrdenados.filter(h => 
+        (h.nombre && h.nombre.toLowerCase().includes(termino)) ||
+        (h.apellido && h.apellido.toLowerCase().includes(termino)) ||
+        (h.nroDocumento && h.nroDocumento.toLowerCase().includes(termino)) ||
+        (h.email && h.email.toLowerCase().includes(termino)) ||
+        (h.telefono && h.telefono.toLowerCase().includes(termino))
+    );
+
+    renderizarHuespedes(filtrados);
 }
 
 // ==================== INICIAR ====================
-ordenarHuespedes();  // Carga inicial: más nuevo primero
+ordenarHuespedes(); // Carga inicial
 
-// Escuchar cambios en el select
+// Eventos
 document.getElementById("ordenarHuespedes").addEventListener("change", ordenarHuespedes);
+document.getElementById("buscarHuespedes").addEventListener("input", aplicarBusqueda);
 
 // ==================== ELIMINAR HUÉSPED ====================
 function eliminarHuesped(id) {

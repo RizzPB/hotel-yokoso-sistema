@@ -1,6 +1,7 @@
 <?php
 // public/vistas/admin/ver_huespedes.php
 
+
 define('ACCESO_PERMITIDO', true);
 session_start();
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
@@ -8,10 +9,12 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
+$current_page = 'ver_huespedes';
 require_once __DIR__ . '/../../config/database.php';
 
-$current_page = 'huespedes';  // ← RESALTA
+$current_page = 'huespedes';
 
+// Cargamos todos los huéspedes al inicio (para mostrar algo antes del AJAX)
 $stmt = $pdo->prepare("SELECT idHuesped, nombre, apellido, tipoDocumento, nroDocumento, email, telefono, activo FROM Huesped ORDER BY apellido");
 $stmt->execute();
 $huespedes = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -19,17 +22,31 @@ $huespedes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $titulo_pagina = "Huéspedes - Hotel Yokoso";
 
 $contenido_principal = '
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-rojo fw-bold">Gestión de Huéspedes</h2>
-    <a href="crear_huesped.php" class="btn btn-dark btn-lg shadow-lg px-5 position-relative overflow-hidden"">
-        <i class="fas fa-user-plus me-2"></i>Nuevo Huésped
-    </a>
-    
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <h2 class="text-rojo fw-bold mb-0">Gestión de Huéspedes</h2>
+   
 </div>
 
-<div class="row g-4">
-    ' . (empty($huespedes) ? '<div class="col-12 text-center py-5 text-muted"><i class="fas fa-users fa-4x mb-3"></i><h5>No hay huéspedes</h5></div>' : '') . '
-    ' . implode('', array_map(function($h) {
+<!-- ❤️ Buscador en tiempo real -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-3">
+        <div class="row">
+            <div class="col-md-8">
+                <label class="form-label fw-bold">Buscar huésped</label>
+                <input type="text" id="buscarHuespedes" class="form-control form-control-lg rounded-pill" 
+                       placeholder="Nombre, apellido, documento o email...">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🌸 Lista de huéspedes (se actualizará con AJAX) -->
+<div id="listaHuespedes" class="row g-4">
+    ' . (empty($huespedes) ? '
+    <div class="col-12 text-center py-5 text-muted">
+        <i class="fas fa-users fa-4x mb-3"></i>
+        <h5>No hay huéspedes registrados</h5>
+    </div>' : implode('', array_map(function($h) {
         $badge = $h['activo'] 
             ? '<span class="badge bg-success fs-6">Activo</span>' 
             : '<span class="badge bg-danger fs-6">Inactivo</span>';
@@ -55,8 +72,29 @@ $contenido_principal = '
                 </div>
             </div>
         </div>';
-    }, $huespedes)) . '
+    }, $huespedes))) . '
 </div>
+
+<script>
+// ❤️ Función para cargar huéspedes con AJAX
+function cargarHuespedes() {
+    const buscar = document.getElementById("buscarHuespedes").value;
+
+    fetch("buscar_huespedes_ajax.php?buscar=" + encodeURIComponent(buscar))
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById("listaHuespedes").innerHTML = html;
+        })
+        .catch(err => {
+            console.error("Error al cargar huéspedes:", err);
+            document.getElementById("listaHuespedes").innerHTML = 
+                \'<div class="col-12 text-center py-5 text-danger"><i class="fas fa-exclamation-triangle fa-3x mb-3"></i><h5>Error al cargar los huéspedes</h5></div>\';
+        });
+}
+
+// 🌸 Escuchar cada tecla que escribes (¡en tiempo real!)
+document.getElementById("buscarHuespedes").addEventListener("input", cargarHuespedes);
+</script>
 ';
 
 include 'plantilla_admin.php';

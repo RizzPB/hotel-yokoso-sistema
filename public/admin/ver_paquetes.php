@@ -8,6 +8,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
+$current_page = 'ver_paquetes';
 require_once __DIR__ . '/../../config/database.php';
 
 $current_page = 'paquetes';  // ← RESALTA EL MENÚ
@@ -21,9 +22,7 @@ $titulo_pagina = "Paquetes Turísticos - Hotel Yokoso";
 $contenido_principal = '
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-rojo fw-bold">Paquetes Turísticos</h2>
-    <a href="crear_paquete.php" class="btn btn-dark btn-lg shadow-lg px-5 position-relative overflow-hidden">
-        <i class="fas fa-plus me-2"></i>Nuevo Paquete
-    </a>
+    
 </div>
 
 <div class="row g-4">

@@ -1,7 +1,6 @@
 <?php
-//ARREGLAS DOS COSAS EN EL CODIGO
-
 // public/admin/ver_reservas.php
+
 
 define('ACCESO_PERMITIDO', true);
 session_start();
@@ -17,7 +16,7 @@ require_once __DIR__ . '/../../config/database.php';
 $filtroEstado = $_GET['estado'] ?? 'todas';
 $buscar = trim($_GET['buscar'] ?? '');
 
-// Consulta corregida y completa
+// Consulta segura
 $sql = "
     SELECT r.*, h.nombre, h.apellido, h.nroDocumento,
            GROUP_CONCAT(ha.numero SEPARATOR ', ') AS habitaciones
@@ -44,7 +43,6 @@ if (!empty($buscar)) {
     $params[] = $like;
 }
 
-
 $sql .= " GROUP BY r.idReserva ORDER BY r.idReserva DESC";
 
 $stmt = $pdo->prepare($sql);
@@ -55,53 +53,38 @@ $titulo_pagina = "Reservas - Panel Administrador";
 
 $contenido_principal = '
 <div class="container py-5">
-
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
-        <h2 class="text-rojo fw-bold mb-0">
-            Gestión de Reservas
-        </h2>
-        <a href="crear_reserva_admin.php" class="btn btn-yokoso btn-lg rounded-pill px-5 shadow-lg">
-            Nueva Reserva
-        </a>
-    </div>
+    <h2 class="text-rojo fw-bold mb-4">Gestión de Reservas</h2>
 
     <!-- FILTROS Y BUSCADOR -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body py-4">
-            <form method="GET" class="row g-3 align-items-end">
+            <div class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Filtrar por estado</label>
-                    <select name="estado" class="form-select form-select-lg rounded-pill" onchange="this.form.submit()">
-                        <option value="todas" '.($filtroEstado==='todas'?'selected':'').'>Todas las reservas</option>
-                        <option value="pendiente" '.($filtroEstado==='pendiente'?'selected':'').'>Pendientes</option>
-                        <option value="confirmada" '.($filtroEstado==='confirmada'?'selected':'').'>Confirmadas</option>
-                        <option value="cancelada" '.($filtroEstado==='cancelada'?'selected':'').'>Canceladas</option>
-                        <option value="finalizada" '.($filtroEstado==='finalizada'?'selected':'').'>Finalizadas</option>
+                    <select id="filtroEstado" class="form-select form-select-lg rounded-pill">
+                        <option value="todas">Todas las reservas</option>
+                        <option value="pendiente">Pendientes</option>
+                        <option value="confirmada">Confirmadas</option>
+                        <option value="cancelada">Canceladas</option>
+                        <option value="finalizada">Finalizadas</option>
                     </select>
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label fw-bold">Buscar huésped o ID</label>
-                    <input type="text" name="buscar" class="form-control form-control-lg rounded-pill" 
-                           placeholder="Nombre, apellido, documento o ID..." value="'.htmlspecialchars($buscar).'">
+                    <label class="form-label fw-bold">Buscar huésped</label>
+                    <input type="text" id="buscarReservas" class="form-control form-control-lg rounded-pill" 
+                           placeholder="Escribe nombre, apellido, documento o ID...">
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-rojo-quemado btn-lg w-100 rounded-pill shadow">
-                        Buscar
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
     <!-- LISTA DE RESERVAS -->
-    <div class="row g-4">
+    <div id="listaReservas" class="row g-4">
         ' . (empty($reservas) ? '
         <div class="col-12 text-center py-5">
             <i class="fas fa-calendar-times fa-5x text-muted mb-4"></i>
             <h4 class="text-muted">No se encontraron reservas con estos filtros</h4>
-        </div>' : '') . '
-
-        ' . implode('', array_map(function($r) {
+        </div>' : implode('', array_map(function($r) {
             $badge = match($r['estado']) {
                 'pendiente'   => 'warning',
                 'confirmada'  => 'success',
@@ -114,14 +97,14 @@ $contenido_principal = '
             if ($r['estado'] === 'pendiente') {
                 $acciones = '
                 <div class="btn-group mt-3" role="group">
-                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=confirmar" 
-                       class="btn btn-success btn-sm" onclick="return confirm(\'¿Confirmar esta reserva?\')">
+                    <button type="button" class="btn btn-success btn-sm" 
+                            onclick="confirmarReserva('.$r['idReserva'].')">
                         Confirmar
-                    </a>
-                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=rechazar" 
-                       class="btn btn-danger btn-sm" onclick="return confirm(\'¿Rechazar esta reserva?\')">
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" 
+                            onclick="rechazarReserva('.$r['idReserva'].')">
                         Rechazar
-                    </a>
+                    </button>
                 </div>';
             }
 
@@ -159,9 +142,71 @@ $contenido_principal = '
                     </div>
                 </div>
             </div>';
-        }, $reservas)) . '
+        }, $reservas))) . '
     </div>
 </div>
+
+<!-- SweetAlert2 para mensajes lindos -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+// Establecer estado inicial
+document.getElementById("filtroEstado").value = "' . addslashes($filtroEstado) . '";
+document.getElementById("buscarReservas").value = "' . addslashes($buscar) . '";
+
+// Cargar reservas con AJAX (búsqueda en tiempo real)
+function cargarReservas() {
+    const estado = document.getElementById("filtroEstado").value;
+    const buscar = document.getElementById("buscarReservas").value;
+
+    fetch("buscar_reservas_ajax.php?estado=" + encodeURIComponent(estado) + "&buscar=" + encodeURIComponent(buscar))
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById("listaReservas").innerHTML = html;
+        })
+        .catch(err => {
+            console.error("Error:", err);
+            Swal.fire("Error", "No se pudieron cargar las reservas.", "error");
+        });
+}
+
+// Eventos en tiempo real
+document.getElementById("buscarReservas").addEventListener("input", cargarReservas);
+document.getElementById("filtroEstado").addEventListener("change", cargarReservas);
+
+// Acciones con alertas personalizadas
+function confirmarReserva(id) {
+    Swal.fire({
+        title: "¿Confirmar reserva?",
+        text: "La reserva pasará a estado confirmada.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, confirmar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "acciones_reserva.php?id=" + id + "&accion=confirmar";
+        }
+    });
+}
+
+function rechazarReserva(id) {
+    Swal.fire({
+        title: "¿Rechazar reserva?",
+        text: "La reserva se marcará como cancelada.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, rechazar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "acciones_reserva.php?id=" + id + "&accion=rechazar";
+        }
+    });
+}
+</script>
 ';
 
 include 'plantilla_admin.php';

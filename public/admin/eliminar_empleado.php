@@ -10,6 +10,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
+$current_page = 'eliminar_empleado';
 require_once __DIR__ . '/../../config/database.php';
 
 // Obtener ID del empleado a eliminar

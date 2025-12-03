@@ -1,27 +1,28 @@
 <?php
 // public/admin/editar_empleado.php
 
-define('ACCESO_PERMITIDO', true);
 
+define('ACCESO_PERMITIDO', true);
 session_start();
+
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../../login.php");
     exit;
 }
 
+$current_page = 'editar_empleado';
 require_once __DIR__ . '/../../config/database.php';
 
-// Obtener ID del empleado a editar
 $id = $_GET['id'] ?? null;
-
 if (!$id) {
     header("Location: ver_empleados.php");
     exit;
 }
 
-// Obtener datos del empleado
+// ✅ CORRECCIÓN: Añadir u.idUsuario a la consulta
 $stmt = $pdo->prepare("
-    SELECT e.idEmpleado, e.nombre, e.apellido, e.cargo, u.nombreUsuario, u.email, u.rol, u.activo
+    SELECT e.idEmpleado, e.nombre, e.apellido, e.cargo, 
+           u.idUsuario, u.nombreUsuario, u.email, u.rol, u.activo
     FROM Empleado e
     JOIN Usuario u ON e.idUsuario = u.idUsuario
     WHERE e.idEmpleado = ?
@@ -46,19 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $activo = isset($_POST['activo']) ? 1 : 0;
     $nuevaPassword = $_POST['nuevaPassword'] ?? '';
 
-    // Validaciones para los campos obligatorios 
     if (empty($nombre) || empty($apellido) || empty($cargo) || empty($nombreUsuario) || empty($email)) {
         $error = "Los campos nombre, apellido, cargo, usuario y email son obligatorios.";
     } else {
-        // Verificar si el usuario o correo ya existe (excepto el actual)
         $stmt = $pdo->prepare("SELECT idUsuario FROM Usuario WHERE (nombreUsuario = ? OR email = ?) AND idUsuario != ?");
         $stmt->execute([$nombreUsuario, $email, $empleado['idUsuario']]);
         if ($stmt->fetch()) {
             $error = "El nombre de usuario o correo ya está registrado por otro usuario.";
         } else {
-            // Actualizar datos del usuario
             if (!empty($nuevaPassword)) {
-                // Verificar que la contraseña cumpla con los requisitos
                 if (strlen($nuevaPassword) < 8 || !preg_match('/[A-Z]/', $nuevaPassword) || !preg_match('/[a-z]/', $nuevaPassword) || !preg_match('/[0-9]/', $nuevaPassword) || !preg_match('/[@$!%*?&]/', $nuevaPassword)) {
                     $error = "La contraseña debe tener al menos 8 caracteres, mayúsculas, minúsculas, números y símbolos.";
                 } else {
@@ -71,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute([$nombreUsuario, $email, $activo, $hash, $empleado['idUsuario']]);
                 }
             } else {
-                // Actualizar sin cambiar contraseña
                 $stmt = $pdo->prepare("
                     UPDATE Usuario
                     SET nombreUsuario = ?, email = ?, activo = ?
@@ -80,17 +76,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([$nombreUsuario, $email, $activo, $empleado['idUsuario']]);
             }
 
-            // Actualizar datos del empleado
             $stmt = $pdo->prepare("
                 UPDATE Empleado
                 SET nombre = ?, apellido = ?, cargo = ?
                 WHERE idEmpleado = ?
             ");
             if ($stmt->execute([$nombre, $apellido, $cargo, $id])) {
-                $mensaje = "Empleado actualizado exitosamente.";
-                // Recargar datos
+                $mensaje = "¡Empleado actualizado exitosamente!";
+                // ✅ CORRECCIÓN: También aquí añadir u.idUsuario
                 $stmt = $pdo->prepare("
-                    SELECT e.idEmpleado, e.nombre, e.apellido, e.cargo, u.nombreUsuario, u.email, u.rol, u.activo
+                    SELECT e.idEmpleado, e.nombre, e.apellido, e.cargo, 
+                           u.idUsuario, u.nombreUsuario, u.email, u.rol, u.activo
                     FROM Empleado e
                     JOIN Usuario u ON e.idUsuario = u.idUsuario
                     WHERE e.idEmpleado = ?
@@ -116,13 +112,21 @@ $contenido_principal = '
         </div>
     </div>
 
-    ' . (!empty($mensaje) ? '<div class="alert alert-alert-success alert-dismissible fade show" role="alert">
-        <strong>Éxito!</strong> ' . htmlspecialchars($mensaje) . '
+    <!-- ✨ Mensaje de éxito con estilo llamativo -->
+    ' . (!empty($mensaje) ? '
+    <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <div class="d-inline-block">
+            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+            <h5 class="mb-0"><strong>¡Éxito!</strong></h5>
+            <p class="mb-0">' . htmlspecialchars($mensaje) . '</p>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>' : '') . '
 
-    ' . (!empty($error) ? '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>Error:</strong> ' . htmlspecialchars($error) . '
+    <!-- Mensaje de error -->
+    ' . (!empty($error) ? '
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong><i class="fas fa-exclamation-triangle me-1"></i>Error:</strong> ' . htmlspecialchars($error) . '
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>' : '') . '
     
@@ -173,7 +177,7 @@ $contenido_principal = '
             </div>
 
             <div class="mt-4 d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="ver_empleados.php" class="btn btn-cancelar me-md-2">Cancelar</a>
+                <a href="ver_empleados.php" class="btn btn-cancelar me-md-2"><i class="fas fa-times me-1"></i>Cancelar</a>
                 <button type="submit" class="btn btn-yokoso btn-lg shadow-sm">
                     <i class="fas fa-save me-2"></i>Guardar Cambios
                 </button>
@@ -183,4 +187,4 @@ $contenido_principal = '
 ';
 
 include 'plantilla_admin.php';
-?>  
+?>

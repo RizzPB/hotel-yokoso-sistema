@@ -9,6 +9,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
+$current_page = 'crear_habitacion';
 require_once __DIR__ . '/../../config/database.php';
 
 // Errores por campo
@@ -109,9 +110,7 @@ $contenido_principal = '
     <div class="content-header">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="text-rojo fw-bold">Registrar Nueva Habitación</h2>
-            <a href="ver_habitaciones.php" class="btn btn-volver btn-lg shadow-sm">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Habitaciones
-            </a>
+            
         </div>
     </div>
 

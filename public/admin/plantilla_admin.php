@@ -85,6 +85,25 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
         transform: translateX(5px);
     }
 
+    /* Submenús */
+    .sidebar .collapse .nav-link {
+        padding-left: 30px !important;
+        font-size: 0.95rem;
+        color: #555 !important;
+        margin-bottom: 4px;
+    }
+    .sidebar .collapse .nav-link:hover,
+    .sidebar .collapse .nav-link.active {
+        color: var(--color-activo) !important;
+        background: #f1f1f1 !important;
+    }
+
+    /* Flecha de submenu */
+    .sidebar .nav-link i.ms-auto {
+        margin-left: auto;
+        transition: transform 0.2s;
+    }
+
     /* Contenido */
     .content {
         margin-left: var(--sidebar-width);
@@ -120,7 +139,6 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
             margin-left: 0 !important;
         }
 
-        /* Fondo oscuro al abrir menú */
         .sidebar-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -134,6 +152,12 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
             opacity: 1;
             visibility: visible;
         }
+    }
+
+    /* Flecha girada cuando el menú está abierto */
+    .sidebar .collapse.show + .nav-link i.ms-auto,
+    .sidebar .nav-link[data-bs-toggle="collapse"].active i.ms-auto {
+        transform: rotate(180deg) !important;
     }
 </style>
 </head>
@@ -169,42 +193,113 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
             </div>
         </div>
     </nav>
-<!-- Botón flotante para abrir menú en móvil -->
-<div class="d-lg-none position-fixed start-0 ms-3" style="top: 78px; z-index: 1050;">
-    <button class="btn btn-dark rounded-circle shadow-lg p-3" id="menuToggle"
-            style="width: 58px; height: 58px;">
-        <i class="fas fa-home fa-lg"></i>
-    </button>
-</div>
 
-<!-- Overlay oscuro -->
-<div class="sidebar-overlay" id="overlay"></div>
-</div>
-<div class="sidebar" id="sidebar">
-    <div class="nav flex-column mt-3">
-        <a href="panel_admin.php" class="nav-link <?= ($current_page ?? '') == 'panel_admin' ? 'active' : '' ?>">
-            <i class="fas fa-home"></i> <span>Inicio</span>
-        </a>
-        <a href="ver_habitaciones.php" class="nav-link <?= ($current_page ?? '') == 'habitaciones' ? 'active' : '' ?>">
-            <i class="fas fa-hotel"></i> <span>Gestionar Habitaciones</span>
-        </a>
-        <a href="ver_empleados.php" class="nav-link <?= ($current_page ?? '') == 'empleados' ? 'active' : '' ?>">
-            <i class="fas fa-user-tie"></i> <span>Gestionar Empleados</span>
-        </a>
-        <a href="ver_huespedes.php" class="nav-link <?= ($current_page ?? '') == 'huespedes' ? 'active' : '' ?>">
-            <i class="fas fa-users"></i> <span>Gestionar Huéspedes</span>
-        </a>
-        <a href="ver_paquetes.php" class="nav-link <?= ($current_page ?? '') == 'paquetes' ? 'active' : '' ?>">
-            <i class="fas fa-suitcase"></i> <span>Paquetes Turísticos</span>
-        </a>
-        <a href="ver_reservas.php" class="nav-link <?= ($current_page ?? '') == 'reservas' ? 'active' : '' ?>">
-            <i class="fas fa-calendar-check"></i> <span>Reservas</span>
-        </a>
-        <a href="reportes.php" class="nav-link <?= ($current_page ?? '') == 'reportes' ? 'active' : '' ?>">
-            <i class="fas fa-chart-bar"></i> <span>Resportes</span>
-        </a>
+    <!-- Botón flotante para abrir menú en móvil -->
+    <div class="d-lg-none position-fixed start-0 ms-3" style="top: 78px; z-index: 1050;">
+        <button class="btn btn-dark rounded-circle shadow-lg p-3" id="menuToggle" style="width: 58px; height: 58px;">
+            <i class="fas fa-home fa-lg"></i>
+        </button>
     </div>
-</div>    <!-- Contenido principal -->
+
+    <!-- Overlay oscuro -->
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <!-- SIDEBAR CON SUBMENÚS PERSISTENTES -->
+    <div class="sidebar" id="sidebar">
+        <div class="nav flex-column mt-3">
+
+            <!-- INICIO -->
+            <a href="panel_admin.php" class="nav-link <?= ($current_page ?? '') == 'panel_admin' ? 'active' : '' ?>">
+                <i class="fas fa-home"></i> <span>Inicio</span>
+            </a>
+
+            <!-- HABITACIONES -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['ver_habitaciones', 'crear_habitacion', 'editar_habitacion']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuHabitaciones" role="button">
+                    <i class="fas fa-hotel"></i> <span>Gestionar Habitaciones</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['ver_habitaciones', 'crear_habitacion', 'editar_habitacion']) ? 'show' : '' ?>" id="submenuHabitaciones">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'ver_habitaciones' ? 'active' : '' ?>" href="ver_habitaciones.php">Listar Habitaciones</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'crear_habitacion' ? 'active' : '' ?>" href="crear_habitacion.php">Crear Habitación</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'editar_habitacion' ? 'active' : '' ?>" href="editar_habitacion.php">Editar Habitación</a>
+                </div>
+            </div>
+
+            <!-- EMPLEADOS -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['ver_empleados', 'crear_empleado', 'editar_empleado']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuEmpleados" role="button">
+                    <i class="fas fa-user-tie"></i> <span>Gestionar Empleados</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['ver_empleados', 'crear_empleado', 'editar_empleado']) ? 'show' : '' ?>" id="submenuEmpleados">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'ver_empleados' ? 'active' : '' ?>" href="ver_empleados.php">Listar Empleados</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'crear_empleado' ? 'active' : '' ?>" href="crear_empleado.php">Crear Empleado</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'editar_empleado' ? 'active' : '' ?>" href="editar_empleado.php">Editar Empleado</a>
+                </div>
+            </div>
+
+            <!-- HUÉSPEDES -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['ver_huespedes', 'crear_huesped', 'editar_huesped']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuHuespedes" role="button">
+                    <i class="fas fa-users"></i> <span>Gestionar Huéspedes</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['ver_huespedes', 'crear_huesped', 'editar_huesped']) ? 'show' : '' ?>" id="submenuHuespedes">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'ver_huespedes' ? 'active' : '' ?>" href="ver_huespedes.php">Listar Huéspedes</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'crear_huesped' ? 'active' : '' ?>" href="crear_huesped.php">Registrar Huésped</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'editar_huesped' ? 'active' : '' ?>" href="editar_huesped.php">Editar Huésped</a>
+                </div>
+            </div>
+
+            <!-- PAQUETES -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['ver_paquetes', 'crear_paquete', 'editar_paquete']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuPaquetes" role="button">
+                    <i class="fas fa-suitcase"></i> <span>Paquetes Turísticos</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['ver_paquetes', 'crear_paquete', 'editar_paquete']) ? 'show' : '' ?>" id="submenuPaquetes">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'ver_paquetes' ? 'active' : '' ?>" href="ver_paquetes.php">Listar Paquetes</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'crear_paquete' ? 'active' : '' ?>" href="crear_paquete.php">Crear Paquete</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'editar_paquete' ? 'active' : '' ?>" href="editar_paquete.php">Editar Paquete</a>
+                </div>
+            </div>
+
+            <!-- RESERVAS -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['ver_reservas', 'crear_reserva_admin', 'editar_reserva_admin']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuReservas" role="button">
+                    <i class="fas fa-calendar-check"></i> <span>Reservas</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['ver_reservas', 'crear_reserva_admin', 'editar_reserva_admin']) ? 'show' : '' ?>" id="submenuReservas">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'ver_reservas' ? 'active' : '' ?>" href="ver_reservas.php">Listar Reservas</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'crear_reserva_admin' ? 'active' : '' ?>" href="crear_reserva_admin.php">Crear Reserva</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'editar_reserva_admin' ? 'active' : '' ?>" href="editar_reserva_admin.php">Editar Reserva</a>
+                </div>
+            </div>
+
+            <!-- REPORTES -->
+            <div class="nav-item">
+                <a class="nav-link <?= in_array($current_page ?? '', ['reportes', 'generar_reporte']) ? 'active' : '' ?>" 
+                   data-bs-toggle="collapse" href="#submenuReportes" role="button">
+                    <i class="fas fa-chart-bar"></i> <span>Reportes</span>
+                    <i class="fas fa-chevron-down ms-auto" style="font-size: 0.8rem;"></i>
+                </a>
+                <div class="collapse <?= in_array($current_page ?? '', ['reportes', 'generar_reporte']) ? 'show' : '' ?>" id="submenuReportes">
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'reportes' ? 'active' : '' ?>" href="reportes.php">Ver Reportes</a>
+                    <a class="nav-link py-2 ps-5 <?= ($current_page ?? '') === 'generar_reporte' ? 'active' : '' ?>" href="generar_reporte.php">Generar Reporte</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
     <div class="content">
         <?= $contenido_principal ?? '<p>Contenido no definido.</p>' ?>
     </div>
@@ -215,18 +310,20 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
             <small>&copy; 2025 Hotel Yokoso. Todos los derechos reservados.</small>
         </div>
     </footer>
-<script>
-    /* aqui se hace.. */
-document.getElementById('menuToggle').addEventListener('click', function() {
-    document.getElementById('sidebar').classList.toggle('show');
-    document.getElementById('overlay').classList.toggle('show');
-});
 
-document.getElementById('overlay').addEventListener('click', function() {
-    document.getElementById('sidebar').classList.remove('show');
-    this.classList.remove('show');
-});
-</script>
+    <script>
+        /* Toggle sidebar móvil */
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('overlay').classList.toggle('show');
+        });
+
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('show');
+            this.classList.remove('show');
+        });
+    </script>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -8,6 +8,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../../login.php");
     exit;
 }
+$current_page = 'panel_admin';
 
 // RESALTA "INICIO" EN EL SIDEBAR DEL ADMIN
 $current_page = 'panel_admin';

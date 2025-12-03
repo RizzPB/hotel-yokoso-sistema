@@ -8,6 +8,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
+
 $current_page = 'habitaciones';
 require_once __DIR__ . '/../../config/database.php';
 
@@ -39,9 +40,7 @@ $contenido_principal = '
         <h2 class="text-rojo fw-bold">
             Gestión de Habitaciones
         </h2>
-        <a href="crear_habitacion.php" class="btn btn-yokoso btn-lg rounded-pill px-5 shadow-lg">
-             + Nueva Habitación
-        </a>
+        
     </div>
 
     <!-- ÁREA FIJA -->

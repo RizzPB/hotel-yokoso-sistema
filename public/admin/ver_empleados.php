@@ -8,6 +8,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
+$current_page = 'ver_empleados';
 require_once __DIR__ . '/../../config/database.php';
 
 $current_page = 'empleados';  // ← resalta la opcion seleccionada en el sidebar
@@ -23,9 +24,7 @@ $contenido_principal = '
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="text-rojo fw-bold">Gestión de Empleados</h2>
-    <a href="crear_empleado.php" class="btn btn-dark btn-lg shadow-lg px-5 position-relative overflow-hidden">
-        <i class="fas fa-user-plus me-2"></i>Nuevo Empleado
-    </a>
+   
 </div>
 
 <div class="row g-4">
