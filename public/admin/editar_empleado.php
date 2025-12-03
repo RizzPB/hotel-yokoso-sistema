@@ -106,9 +106,7 @@ $contenido_principal = '
     <div class="content-header">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="text-rojo fw-bold">Editar Empleado: ' . htmlspecialchars($empleado['nombre'] . ' ' . $empleado['apellido']) . '</h2>
-            <a href="ver_empleados.php" class="btn btn-volver btn-lg shadow-sm">
-                <i class="fas fa-arrow-left me-2"></i>Volver a Empleados
-            </a>
+         
         </div>
     </div>
 

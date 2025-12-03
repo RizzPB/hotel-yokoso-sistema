@@ -251,8 +251,9 @@
     <footer class="bg-dark text-white pt-5 pb-4">
         <div class="container">
             <div class="row align-items-start">
-                <div class="col-md-4 mb-4 d-flex align-items-start">
-                    <img src="assets/img/logoSistemaYokoso.png" alt="YokosoStay" class="footer-logo me-3">
+                <!-- Columna 1: Logo y contacto -->
+                <div class="col-md-3 mb-4">
+                    <img src="assets/img/logoSistemaYokoso.png" alt="YokosoStay" class="footer-logo me-3" style="max-height: 80px;">
                     <div>
                         <h5 class="text-mostaza mb-3">Hotel Yokoso</h5>
                         <p><i class="fas fa-map-marker-alt me-2"></i> Uyuni, Potosí, Bolivia</p>
@@ -261,9 +262,22 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 mb-4 text-center">
+                <!-- Columna 2: Navegación interna (¡NUEVA!) -->
+                <div class="col-md-3 mb-4">
+                    <h5 class="text-mostaza mb-3">Explorar</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#bienvenida" class="text-white text-decoration-none footer-link">Inicio</a></li>
+                        <li class="mb-2"><a href="#habitaciones" class="text-white text-decoration-none footer-link">Habitaciones</a></li>
+                        <li class="mb-2"><a href="#paquetes" class="text-white text-decoration-none footer-link">Paquetes Turísticos</a></li>
+                        <li class="mb-2"><a href="#acerca" class="text-white text-decoration-none footer-link">Acerca de Nosotros</a></li>
+                        <li class="mb-2"><a href="#footerFin" class="text-white text-decoration-none footer-link">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna 3: Redes sociales -->
+                <div class="col-md-3 mb-4 text-center text-md-start">
                     <h5 class="text-mostaza mb-3">Síguenos</h5>
-                    <div class="d-flex justify-content-center gap-3 fs-4">
+                    <div class="d-flex gap-3 fs-4">
                         <a href="https://www.facebook.com/share/1L89sfZGV5/" class="text-white text-decoration-none" aria-label="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
@@ -276,20 +290,21 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 text-center text-md-start">
+                <!-- Columna 4: Ubicación -->
+                <div class="col-md-3 text-center text-md-start">
                     <h5 class="text-mostaza mb-3">Ubicación</h5>
-                    <div class="ratio ratio-16x9 mx-auto" style="max-width: 400px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+                    <div class="ratio ratio-16x9 mx-auto" style="max-width: 300px; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
                         <iframe 
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3713.754488499243!2d-68.13866988530783!3d-17.38644448793947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x93e34b5c4c4c4c4c%3A0xc4c4c4c4c4c4c4c4!2sHotel%20Yokoso%2C%20Uyuni%2C%20Bolivia!5e0!3m2!1ses!2sbo!4v1700000000000!5m2!1ses!2sbo" 
                             allowfullscreen="" 
                             loading="lazy"
-                            style="border: none;">
+                            style="border: none; width: 100%; height: 100%;">
                         </iframe>
                     </div>
                 </div>
             </div>
 
-            <hr class="my-4 bg-gray-700">
+            <hr class="my-4" style="background-color: #444;">
 
             <div class="text-center mt-4">
                 <p class="mb-2">¿Listo para vivir la magia del Salar?</p>
@@ -319,5 +334,15 @@
         once: true // Solo anima una vez al cargar
     });
     </script>
+
+    <style>
+.footer-link:hover {
+    color: var(--color-mostaza) !important;
+    text-decoration: underline !important;
+}
+.footer-logo {
+    max-height: 50px;
+}
+</style>
 </body>
 </html>

@@ -134,12 +134,7 @@ $contenido_principal = '
                         </div>
                         '.$acciones.'
                     </div>
-                    <div class="card-footer bg-light text-center">
-                        <a href="editar_reserva_admin.php?id='.$r['idReserva'].'" 
-                           class="btn btn-yokoso btn-sm w-100 rounded-pill">
-                            Gestionar
-                        </a>
-                    </div>
+                    
                 </div>
             </div>';
         }, $reservas))) . '

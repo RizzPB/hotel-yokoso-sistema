@@ -75,9 +75,7 @@ $contenido_principal = '
         <h2 class="text-rojo fw-bold">
             Editar Habitación #' . htmlspecialchars($habitacion['numero']) . '
         </h2>
-        <a href="ver_habitaciones.php" class="btn btn-outline-secondary btn-lg rounded-pill px-5">
-            Volver a Habitaciones
-        </a>
+ 
     </div>
 
     ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '

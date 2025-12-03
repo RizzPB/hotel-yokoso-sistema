@@ -64,9 +64,7 @@ $contenido_principal = '
         <h2 class="text-rojo fw-bold">
             Editar Paquete Turístico
         </h2>
-        <a href="ver_paquetes.php" class="btn btn-outline-secondary btn-lg rounded-pill px-5">
-            Volver a Paquetes
-        </a>
+       
     </div>
 
     ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;">Paquete actualizado</div>' : '') . '
