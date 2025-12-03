@@ -105,20 +105,6 @@ $contenido_principal = '
     ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
     ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
 
-    <!-- ✨ CHECK-OUT MANUAL con SweetAlert2 (¡sin localhost!) -->
-    ' . ($reserva['estado'] === 'confirmada' ? '
-    <div class="text-center mb-5">
-        <button type="button" 
-                class="btn btn-success btn-lg rounded-pill shadow-sm px-5"
-                onclick="realizarCheckout(' . $reserva['idReserva'] . ')">
-            <i class="fas fa-door-open me-2"></i> Realizar Check-out
-        </button>
-        <div class="form-text text-muted mt-2">
-            Esto marcará la reserva como finalizada y liberará la(s) habitación(es).
-        </div>
-    </div>
-    ' : '') . '
-
     <!-- FORMULARIO -->
     <div class="row justify-content-center">
         <div class="col-xl-10 col-xxl-9">
@@ -238,25 +224,6 @@ document.getElementById("filtroHabitacion")?.addEventListener("change", function
     });
 });
 
-// ✨ CHECK-OUT con SweetAlert2
-function realizarCheckout(idReserva) {
-    Swal.fire({
-        title: "¿Confirmar check-out?",
-        text: "El huésped ya ha abandonado la habitación. Esta acción es irreversible.",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Sí, finalizar",
-        cancelButtonText: "Cancelar",
-        reverseButtons: true,
-        confirmButtonColor: "#28a745",
-        cancelButtonColor: "#6c757d"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = "checkout_reserva.php?id=" + idReserva;
-        }
-    });
-}
-</script>
 ';
 
 include 'plantilla_recepcionista.php';

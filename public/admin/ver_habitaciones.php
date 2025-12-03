@@ -8,23 +8,24 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
-
 $current_page = 'habitaciones';
 require_once __DIR__ . '/../../config/database.php';
 
-// Consulta para obtener habitaciones + estado calculado según reservas activas
+// Consulta correcta: combina estado real y estado por reserva activa
 $stmt = $pdo->prepare("
-    SELECT h.idHabitacion, h.numero, h.tipo, h.precioNoche,
-           CASE 
-               WHEN EXISTS (
-                   SELECT 1 FROM Reserva r
-                   JOIN ReservaHabitacion rh ON r.idReserva = rh.idReserva
-                   WHERE rh.idHabitacion = h.idHabitacion
-                     AND r.estado IN ('confirmada', 'ocupada')
-                     AND CURDATE() BETWEEN r.fechaInicio AND r.fechaFin
-               ) THEN 'ocupada'
-               ELSE 'disponible'
-           END AS estado_calculado
+    SELECT h.idHabitacion, h.numero, h.tipo, h.precioNoche, h.estado,
+        CASE 
+            WHEN EXISTS (
+                SELECT 1 
+                FROM Reserva r
+                JOIN ReservaHabitacion rh ON r.idReserva = rh.idReserva
+                WHERE rh.idHabitacion = h.idHabitacion
+                AND r.estado IN ('confirmada', 'ocupada')
+                AND CURDATE() BETWEEN r.fechaInicio AND r.fechaFin
+            ) 
+            THEN 'ocupada'
+            ELSE h.estado
+        END AS estado_final
     FROM Habitacion h
     ORDER BY CAST(h.numero AS UNSIGNED)
 ");
@@ -40,10 +41,9 @@ $contenido_principal = '
         <h2 class="text-rojo fw-bold">
             Gestión de Habitaciones
         </h2>
-        
     </div>
 
-    <!-- ÁREA FIJA -->
+    <!-- Área fija -->
     <div class="row justify-content-center">
         <div class="col-xl-11 col-xxl-10">
 
@@ -57,21 +57,32 @@ $contenido_principal = '
                             <h4 class="text-muted">No hay habitaciones registradas</h4>
                         </div>' : '') . '
 
-                        ' . implode('', array_map(function($h) {
-                            // Usamos estado_calculado en lugar de 'estado'
-                            $color = $h['estado_calculado'] === 'disponible' ? 'success' : 'warning';
-                            $texto = ucfirst($h['estado_calculado']);
+                        ' . implode("", array_map(function($h) {
+
+                            // Determinar color según estado
+                            $estado = $h["estado_final"];
+                            $color = match($estado) {
+                                "disponible"   => "success",
+                                "ocupada"      => "warning",
+                                "mantenimiento"=> "secondary",
+                                default        => "dark"
+                            };
 
                             return '
                             <div class="col-md-6 col-lg-4">
                                 <div class="card h-100 shadow-sm border-0 hover-lift position-relative">
                                     <div class="card-body text-center py-5">
-                                        <h1 class="display-4 fw-bold text-rojo mb-3">' . htmlspecialchars($h['numero']) . '</h1>
-                                        <h5 class="text-uppercase text-muted">' . htmlspecialchars($h['tipo']) . '</h5>
-                                        <h4 class="text-success fw-bold mt-3">Bs. ' . number_format($h['precioNoche'], 2) . ' / noche</h4>
-                                        <span class="badge bg-' . $color . ' position-absolute top-0 end-0 mt-3 me-3 fs-6">' . $texto . '</span>
+                                        <h1 class="display-4 fw-bold text-rojo mb-3">' . htmlspecialchars($h["numero"]) . '</h1>
+                                        <h5 class="text-uppercase text-muted">' . htmlspecialchars($h["tipo"]) . '</h5>
+                                        <h4 class="text-success fw-bold mt-3">Bs. ' . number_format($h["precioNoche"], 2) . ' / noche</h4>
+
+                                        <span class="badge bg-' . $color . ' position-absolute top-0 end-0 mt-3 me-3 fs-6">'
+                                            . ucfirst($estado) .
+                                        '</span>
+
                                         <div class="mt-4">
-                                            <a href="editar_habitacion.php?id=' . $h['idHabitacion'] . '" class="btn btn-outline-primary">
+                                            <a href="editar_habitacion.php?id=' . $h["idHabitacion"] . '" 
+                                               class="btn btn-outline-primary">
                                                 Editar
                                             </a>
                                         </div>
@@ -79,19 +90,21 @@ $contenido_principal = '
                                 </div>
                             </div>';
                         }, $habitaciones)) . '
+
                     </div>
 
                 </div>
             </div>
 
-            <!-- Contador elegante al final -->
+            <!-- Contador -->
             <div class="text-center mt-4">
                 <h5 class="text-muted">
                     Total: <strong class="text-rojo">' . count($habitaciones) . '</strong> habitaciones registradas
                 </h5>
+
                 <p class="text-muted mt-2">
                     Ocupadas: <strong class="text-warning">' . 
-                    count(array_filter($habitaciones, fn($h) => $h['estado_calculado'] === 'ocupada')) . 
+                        count(array_filter($habitaciones, fn($h) => $h["estado_final"] === "ocupada")) . 
                     '</strong>
                 </p>
             </div>
