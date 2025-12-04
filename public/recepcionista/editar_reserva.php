@@ -1,5 +1,8 @@
 <?php
 // public/recepcionista/editar_reserva.php
+// ✅ PERMITE EDITAR UNA RESERVA EXISTENTE
+// ✅ INCLUYE LA OPCIÓN 'ocupada' EN EL ESTADO
+// ✅ AGREGA BOTÓN DE "REGISTRAR LLEGADA" PARA RESERVAS CONFIRMADAS
 
 define('ACCESO_PERMITIDO', true);
 session_start();
@@ -26,12 +29,12 @@ if (!$reserva) {
     exit;
 }
 
-// Habitaciones actuales
+// Habitaciones actuales de la reserva
 $stmt = $pdo->prepare("SELECT idHabitacion FROM ReservaHabitacion WHERE idReserva = ?");
 $stmt->execute([$id]);
 $habitacionesReserva = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// Datos para formularios
+// Datos para los selects
 $tiposHabitacion = $pdo->query("SELECT DISTINCT tipo FROM Habitacion WHERE estado = 'disponible' ORDER BY tipo")->fetchAll(PDO::FETCH_COLUMN);
 $habitaciones    = $pdo->query("SELECT idHabitacion, numero, tipo, precioNoche FROM Habitacion WHERE estado = 'disponible' ORDER BY numero")->fetchAll(PDO::FETCH_ASSOC);
 $paquetes        = $pdo->query("SELECT idPaquete, nombre, precio FROM PaqueteTuristico WHERE activo = 1")->fetchAll(PDO::FETCH_ASSOC);
@@ -56,13 +59,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
 
+            // Actualizar la reserva
             $stmt = $pdo->prepare("UPDATE Reserva SET idHuesped=?, idPaquete=?, fechaInicio=?, fechaFin=?, anticipo=?, total=?, estado=? WHERE idReserva=?");
             $stmt->execute([$idHuesped, $idPaquete, $fechaInicio, $fechaFin, $anticipo, $total, $estado, $id]);
 
             // Eliminar habitaciones anteriores
             $pdo->prepare("DELETE FROM ReservaHabitacion WHERE idReserva = ?")->execute([$id]);
 
-            // Asignar nuevas
+            // Asignar nuevas habitaciones y marcarlas como ocupadas
             if (!empty($_POST['habitaciones'])) {
                 $stmtIns = $pdo->prepare("INSERT INTO ReservaHabitacion (idReserva, idHabitacion, precioNoche) VALUES (?, ?, (SELECT precioNoche FROM Habitacion WHERE idHabitacion = ?))");
                 $stmtUpd = $pdo->prepare("UPDATE Habitacion SET estado = 'ocupada' WHERE idHabitacion = ?");
@@ -75,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->commit();
             $mensaje = "Reserva actualizada con éxito.";
 
-            // Recargar datos actualizados
+            // Recargar datos
             $stmt = $pdo->prepare("SELECT * FROM Reserva WHERE idReserva = ?");
             $stmt->execute([$id]);
             $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -103,6 +107,17 @@ $contenido_principal = '
 
     ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
     ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
+
+    <!-- ✅ BOTÓN DE CHECK-IN RÁPIDO (solo si la reserva está CONFIRMADA) -->
+    ' . ($reserva['estado'] === 'confirmada' ? '
+    <div class="alert alert-info text-center mb-4">
+        <i class="fas fa-info-circle me-2"></i>
+        Esta reserva está confirmada. ¿El huésped ya llegó?
+        <a href="registrar_huesped.php?reserva=' . $reserva['idReserva'] . '" class="btn btn-success btn-sm ms-2">
+            <i class="fas fa-sign-in-alt me-1"></i>Registrar llegada (Check-in)
+        </a>
+    </div>
+    ' : '') . '
 
     <!-- FORMULARIO -->
     <div class="row justify-content-center">
@@ -187,11 +202,13 @@ $contenido_principal = '
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-bold text-dark">Estado</label>
+                                <!-- ✅ INCLUYE LA OPCIÓN "OCUPADA" -->
                                 <select class="form-select form-select-lg rounded-pill" name="estado">
                                     <option value="pendiente"  '.($reserva['estado']==='pendiente'?'selected':'').'>Pendiente</option>
                                     <option value="confirmada" '.($reserva['estado']==='confirmada'?'selected':'').'>Confirmada</option>
-                                    <option value="cancelada"  '.($reserva['estado']==='cancelada'?'selected':'').'>Cancelada</option>
+                                    <option value="ocupada"    '.($reserva['estado']==='ocupada'?'selected':'').'>Ocupada</option>
                                     <option value="finalizada" '.($reserva['estado']==='finalizada'?'selected':'').'>Finalizada</option>
+                                    <option value="cancelada"  '.($reserva['estado']==='cancelada'?'selected':'').'>Cancelada</option>
                                 </select>
                             </div>
                         </div>

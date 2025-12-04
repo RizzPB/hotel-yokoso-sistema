@@ -11,11 +11,43 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
 $current_page = 'reservas';
 require_once __DIR__ . '/../../config/database.php';
 
+// ✅ Procesar acciones de confirmar/rechazar (sin archivo aparte)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['accion'])) {
+    $idReserva = $_POST['idReserva'] ?? null;
+    $accion = $_POST['accion'] ?? null;
+
+    if ($idReserva && in_array($accion, ['confirmar', 'rechazar'])) {
+        try {
+            // Verificar que la reserva exista y esté pendiente
+            $stmt = $pdo->prepare("SELECT estado FROM Reserva WHERE idReserva = ? AND estado = 'pendiente'");
+            $stmt->execute([$idReserva]);
+            if ($stmt->fetch()) {
+                $nuevoEstado = ($accion === 'confirmar') ? 'confirmada' : 'cancelada';
+                $stmt = $pdo->prepare("UPDATE Reserva SET estado = ? WHERE idReserva = ?");
+                $stmt->execute([$nuevoEstado, $idReserva]);
+                $_SESSION['mensaje_exito'] = "Reserva #$idReserva " . ($accion === 'confirmar' ? 'confirmada' : 'rechazada') . " exitosamente.";
+            } else {
+                $_SESSION['mensaje_error'] = "La reserva no existe o ya fue procesada.";
+            }
+        } catch (Exception $e) {
+            $_SESSION['mensaje_error'] = "Error al procesar la acción.";
+        }
+        header("Location: ver_reservas.php");
+        exit;
+    }
+}
+
+// Mensajes de sesión
+$mensaje_exito = $_SESSION['mensaje_exito'] ?? null;
+$mensaje_error = $_SESSION['mensaje_error'] ?? null;
+if ($mensaje_exito) unset($_SESSION['mensaje_exito']);
+if ($mensaje_error) unset($_SESSION['mensaje_error']);
+
 // Filtros
 $filtroEstado = $_GET['estado'] ?? 'todas';
 $buscar = trim($_GET['buscar'] ?? '');
 
-// Consulta principal de reservas con filtros aplicados
+// Consulta principal
 $sql = "
     SELECT r.*, h.nombre, h.apellido, h.nroDocumento,
            GROUP_CONCAT(ha.numero SEPARATOR ', ') AS habitaciones
@@ -25,44 +57,75 @@ $sql = "
     LEFT JOIN Habitacion ha ON rh.idHabitacion = ha.idHabitacion
     WHERE 1=1
 ";
-// Parámetros para la consulta
 $params = [];
 
-// Aplicar filtro de estado si no es "todas"
 if ($filtroEstado !== 'todas') {
     $sql .= " AND r.estado = ?";
     $params[] = $filtroEstado;
 }
-
-// Aplicar búsqueda si hay término
 if (!empty($buscar)) {
     $sql .= " AND (h.nombre LIKE ? OR h.apellido LIKE ? OR h.nroDocumento LIKE ? OR CAST(r.idReserva AS CHAR) LIKE ?)";
     $like = "%$buscar%";
-    $params[] = $like;
-    $params[] = $like;
-    $params[] = $like;
-    $params[] = $like;
+    $params = array_merge($params, [$like, $like, $like, $like]);
 }
-
-
-// Agrupar por reserva para evitar duplicados por habitaciones y ordenar por ID descendente
 $sql .= " GROUP BY r.idReserva ORDER BY r.idReserva DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
-// Fetch de reservas 
 $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $titulo_pagina = "Reservas - Panel Administrador";
+?>
 
+<!-- ✅ Script para modal de confirmación -->
+<script>
+function abrirModal(accion, idReserva) {
+    // Establecer los datos en el formulario oculto del modal
+    document.getElementById('modalFormAccion').value = accion;
+    document.getElementById('modalFormId').value = idReserva;
+    
+    // Actualizar el texto del modal
+    const titulo = document.getElementById('modalTitulo');
+    const cuerpo = document.getElementById('modalCuerpo');
+    const btn = document.getElementById('modalSubmitBtn');
+    
+    if (accion === 'confirmar') {
+        titulo.textContent = 'Confirmar reserva';
+        cuerpo.innerHTML = '¿Estás seguro de que deseas <strong>confirmar</strong> la reserva #' + idReserva + '?';
+        btn.className = 'btn btn-success';
+        btn.innerHTML = '<i class="fas fa-check me-1"></i>Confirmar';
+    } else {
+        titulo.textContent = 'Rechazar reserva';
+        cuerpo.innerHTML = '¿Estás seguro de que deseas <strong>rechazar</strong> la reserva #' + idReserva + '?<br>Esta acción no se puede deshacer.';
+        btn.className = 'btn btn-danger';
+        btn.innerHTML = '<i class="fas fa-times me-1"></i>Rechazar';
+    }
+    
+    // Mostrar el modal
+    const modal = new bootstrap.Modal(document.getElementById('modalConfirmacion'));
+    modal.show();
+}
+</script>
+
+<?php
 $contenido_principal = '
 <div class="container py-5">
+
+    <!-- ✅ Mensajes de éxito/error -->
+    ' . ($mensaje_exito ? '<div class="alert alert-success alert-dismissible fade show text-center" role="alert">
+        <i class="fas fa-check-circle me-2"></i>' . htmlspecialchars($mensaje_exito) . '
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>' : '') . '
+
+    ' . ($mensaje_error ? '<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>' . htmlspecialchars($mensaje_error) . '
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>' : '') . '
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
         <h2 class="text-rojo fw-bold mb-0">
             Gestión de Reservas
         </h2>
-       
     </div>
 
     <!-- FILTROS Y BUSCADOR -->
@@ -113,15 +176,15 @@ $contenido_principal = '
             $acciones = '';
             if ($r['estado'] === 'pendiente') {
                 $acciones = '
-                <div class="btn-group mt-3" role="group">
-                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=confirmar" 
-                       class="btn btn-success btn-sm" onclick="return confirm(\'¿Confirmar esta reserva?\')">
+                <div class="btn-group mt-3 d-flex gap-2" role="group">
+                    <button type="button" onclick="abrirModal(\'confirmar\', '.$r['idReserva'].')" 
+                       class="btn btn-success btn-sm w-100">
                         Confirmar
-                    </a>
-                    <a href="acciones_reserva.php?id='.$r['idReserva'].'&accion=rechazar" 
-                       class="btn btn-danger btn-sm" onclick="return confirm(\'¿Rechazar esta reserva?\')">
+                    </button>
+                    <button type="button" onclick="abrirModal(\'rechazar\', '.$r['idReserva'].')" 
+                       class="btn btn-danger btn-sm w-100">
                         Rechazar
-                    </a>
+                    </button>
                 </div>';
             }
 
@@ -151,11 +214,32 @@ $contenido_principal = '
                         </div>
                         '.$acciones.'
                     </div>
-                   
                 </div>
             </div>';
         }, $reservas)) . '
     </div>
+</div>
+
+<!-- ✅ MODAL DE CONFIRMACIÓN INTEGRADO -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitulo"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modalCuerpo"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <!-- Formulario oculto para enviar la acción -->
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="accion" id="modalFormAccion">
+            <input type="hidden" name="idReserva" id="modalFormId">
+            <button type="submit" class="btn" id="modalSubmitBtn">Confirmar</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 ';
 

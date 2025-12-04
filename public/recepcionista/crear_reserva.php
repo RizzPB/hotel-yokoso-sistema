@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// === VISTA (sin cambios importantes, solo títulos más claros) ===
+// === VISTA 
 $titulo_pagina = "Crear Reserva Anticipada - Hotel Yokoso";
 
 $contenido_principal = '
@@ -163,10 +163,7 @@ $contenido_principal = '
                         <!-- ANTICIPO Y TOTAL -->
                         <hr class="my-5 border-secondary">
                         <div class="row g-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold text-dark">Anticipo (Bs.)</label>
-                                <input type="number" step="0.01" class="form-control form-control-lg rounded-pill" name="anticipo" value="0" min="0">
-                            </div>
+                            
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Total Estimado (Bs.)</label>
                                 <input type="number" step="0.01" class="form-control form-control-lg bg-warning-subtle fw-bold text-dark rounded-pill" name="total" readonly required>
