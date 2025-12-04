@@ -60,9 +60,7 @@ $contenido_principal = '
         <h2 class="text-rojo fw-bold mb-0">
             Gestión de Reservas
         </h2>
-        <a href="crear_reserva_admin.php" class="btn btn-yokoso btn-lg rounded-pill px-5 shadow-lg">
-            Nueva Reserva
-        </a>
+       
     </div>
 
     <!-- FILTROS Y BUSCADOR -->
@@ -151,12 +149,7 @@ $contenido_principal = '
                         </div>
                         '.$acciones.'
                     </div>
-                    <div class="card-footer bg-light text-center">
-                        <a href="editar_reserva_admin.php?id='.$r['idReserva'].'" 
-                           class="btn btn-yokoso btn-sm w-100 rounded-pill">
-                            Gestionar
-                        </a>
-                    </div>
+                   
                 </div>
             </div>';
         }, $reservas)) . '

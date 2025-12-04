@@ -11,19 +11,25 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
 $current_page = 'habitaciones';
 require_once __DIR__ . '/../../config/database.php';
 
-// Consulta para obtener habitaciones + estado calculado según reservas activas
+// ✅ Misma consulta robusta que corregimos antes
 $stmt = $pdo->prepare("
-    SELECT h.idHabitacion, h.numero, h.tipo, h.precioNoche,
-           CASE 
-               WHEN EXISTS (
-                   SELECT 1 FROM Reserva r
-                   JOIN ReservaHabitacion rh ON r.idReserva = rh.idReserva
-                   WHERE rh.idHabitacion = h.idHabitacion
-                     AND r.estado IN ('confirmada', 'ocupada')
-                     AND CURDATE() BETWEEN r.fechaInicio AND r.fechaFin
-               ) THEN 'ocupada'
-               ELSE 'disponible'
-           END AS estado_calculado
+    SELECT 
+        h.idHabitacion, 
+        h.numero, 
+        h.tipo, 
+        h.precioNoche,
+        h.estado AS estado_manual,
+        CASE 
+            WHEN h.estado = 'mantenimiento' THEN 'mantenimiento'
+            WHEN EXISTS (
+                SELECT 1 FROM Reserva r
+                JOIN ReservaHabitacion rh ON r.idReserva = rh.idReserva
+                WHERE rh.idHabitacion = h.idHabitacion
+                  AND r.estado IN ('confirmada', 'ocupada')
+                  AND CURDATE() BETWEEN r.fechaInicio AND r.fechaFin
+            ) THEN 'ocupada'
+            ELSE 'disponible'
+        END AS estado_final
     FROM Habitacion h
     ORDER BY CAST(h.numero AS UNSIGNED)
 ");
@@ -32,6 +38,51 @@ $habitaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $titulo_pagina = "Habitaciones - Hotel Yokoso";
 
+// Tipos de habitación (para el filtro y para evitar listas duras)
+$tipos_habitacion = ['simple', 'doble', 'triple', 'cuadruple', 'familiar', 'suite', 'de sal'];
+
+// Función para obtener color y texto del estado
+function obtenerEstadoInfo($estado) {
+    switch ($estado) {
+        case 'ocupada':
+            return ['color' => 'warning', 'texto' => 'Ocupada'];
+        case 'mantenimiento':
+            return ['color' => 'danger', 'texto' => 'Mantenimiento'];
+        case 'disponible':
+        default:
+            return ['color' => 'success', 'texto' => 'Disponible'];
+    }
+}
+?>
+
+<!-- Script para filtrar sin recargar -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const estadoFilter = document.getElementById('filtroEstado');
+    const tipoFilter = document.getElementById('filtroTipo');
+    const cards = document.querySelectorAll('.habitacion-card');
+
+    function aplicarFiltros() {
+        const estadoSel = estadoFilter.value;
+        const tipoSel = tipoFilter.value;
+
+        cards.forEach(card => {
+            const estadoCard = card.dataset.estado;
+            const tipoCard = card.dataset.tipo;
+
+            const coincideEstado = !estadoSel || estadoCard === estadoSel;
+            const coincideTipo = !tipoSel || tipoCard === tipoSel;
+
+            card.style.display = (coincideEstado && coincideTipo) ? 'block' : 'none';
+        });
+    }
+
+    estadoFilter?.addEventListener('change', aplicarFiltros);
+    tipoFilter?.addEventListener('change', aplicarFiltros);
+});
+</script>
+
+<?php
 $contenido_principal = '
 <div class="container py-5">
 
@@ -44,6 +95,32 @@ $contenido_principal = '
         </a>
     </div>
 
+    <!-- 🔍 BARRA DE FILTROS -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-6">
+            <label for="filtroEstado" class="form-label fw-bold">Filtrar por Estado</label>
+            <select id="filtroEstado" class="form-select form-select-lg rounded-pill">
+                <option value="">Todos los estados</option>
+                <option value="disponible">Disponible</option>
+                <option value="ocupada">Ocupada</option>
+                <option value="mantenimiento">En Mantenimiento</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="filtroTipo" class="form-label fw-bold">Filtrar por Tipo</label>
+            <select id="filtroTipo" class="form-select form-select-lg rounded-pill">
+                <option value="">Todos los tipos</option>
+                <option value="simple">Simple</option>
+                <option value="doble">Doble</option>
+                <option value="triple">Triple</option>
+                <option value="cuadruple">Cuádruple</option>
+                <option value="familiar">Familiar</option>
+                <option value="suite">Suite de Sal</option>
+                
+            </select>
+        </div>
+    </div>
+
     <!-- ÁREA FIJA -->
     <div class="row justify-content-center">
         <div class="col-xl-11 col-xxl-10">
@@ -51,7 +128,7 @@ $contenido_principal = '
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-body p-5">
 
-                    <div class="row g-4">
+                    <div class="row g-4 habitaciones-grid" id="habitacionesGrid">
                         ' . (empty($habitaciones) ? '
                         <div class="col-12 text-center py-5">
                             <i class="fas fa-bed fa-5x text-muted mb-4"></i>
@@ -59,12 +136,15 @@ $contenido_principal = '
                         </div>' : '') . '
 
                         ' . implode('', array_map(function($h) {
-                            // Usamos estado_calculado en lugar de 'estado'
-                            $color = $h['estado_calculado'] === 'disponible' ? 'success' : 'warning';
-                            $texto = ucfirst($h['estado_calculado']);
+                            $estadoInfo = obtenerEstadoInfo($h['estado_final']);
+                            $color = $estadoInfo['color'];
+                            $texto = $estadoInfo['texto'];
 
+                            // Añadimos dataset para el filtro JS
                             return '
-                            <div class="col-md-6 col-lg-4">
+                            <div class="col-md-6 col-lg-4 habitacion-card" 
+                                 data-estado="' . htmlspecialchars($h['estado_final']) . '" 
+                                 data-tipo="' . htmlspecialchars($h['tipo']) . '">
                                 <div class="card h-100 shadow-sm border-0 hover-lift position-relative">
                                     <div class="card-body text-center py-5">
                                         <h1 class="display-4 fw-bold text-rojo mb-3">' . htmlspecialchars($h['numero']) . '</h1>
@@ -91,8 +171,14 @@ $contenido_principal = '
                     Total: <strong class="text-rojo">' . count($habitaciones) . '</strong> habitaciones registradas
                 </h5>
                 <p class="text-muted mt-2">
+                    Disponibles: <strong class="text-success">' . 
+                    count(array_filter($habitaciones, fn($h) => $h['estado_final'] === 'disponible')) . 
+                    '</strong> |
                     Ocupadas: <strong class="text-warning">' . 
-                    count(array_filter($habitaciones, fn($h) => $h['estado_calculado'] === 'ocupada')) . 
+                    count(array_filter($habitaciones, fn($h) => $h['estado_final'] === 'ocupada')) . 
+                    '</strong> |
+                    En mantenimiento: <strong class="text-danger">' . 
+                    count(array_filter($habitaciones, fn($h) => $h['estado_final'] === 'mantenimiento')) . 
                     '</strong>
                 </p>
             </div>

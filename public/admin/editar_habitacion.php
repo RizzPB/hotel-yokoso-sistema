@@ -27,18 +27,26 @@ if (!$habitacion) {
 }
 
 $mensaje = $error = null;
+$motivoMantenimiento = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $numero      = trim($_POST['numero'] ?? '');
-    $tipo        = $_POST['tipo'] ?? '';
-    $precioNoche = $_POST['precioNoche'] ?? '';
-    $estado      = $_POST['estado'] ?? '';
-    $foto        = $_FILES['foto']['name'] ?? null;
+    $numero           = trim($_POST['numero'] ?? '');
+    $tipo             = $_POST['tipo'] ?? '';
+    $precioNoche      = $_POST['precioNoche'] ?? '';
+    $estado           = $_POST['estado'] ?? '';
+    $motivoMantenimiento = trim($_POST['motivoMantenimiento'] ?? '');
+    $foto             = $_FILES['foto']['name'] ?? null;
 
+    // Validaciones básicas
     if (empty($numero) || empty($tipo) || empty($precioNoche)) {
         $error = "Los campos número, tipo y precio por noche son obligatorios.";
+    } elseif ($estado === 'mantenimiento' && empty($motivoMantenimiento)) {
+        $error = "Debes especificar el motivo del mantenimiento.";
     } else {
         try {
+            $pdo->beginTransaction();
+
+            // Actualizar habitación
             if ($foto) {
                 $directorio = __DIR__ . '/../../assets/img/habitaciones/';
                 $rutaFoto   = $directorio . basename($foto);
@@ -46,25 +54,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
                     $error = "Solo se permiten imágenes (JPG, PNG, GIF, WEBP).";
-                } elseif (move_uploaded_file($_FILES['foto']['tmp_name'], $rutaFoto)) {
+                } elseif (!move_uploaded_file($_FILES['foto']['tmp_name'], $rutaFoto)) {
+                    $error = "Error al subir la imagen.";
+                } else {
                     $stmt = $pdo->prepare("UPDATE Habitacion SET numero=?, tipo=?, precioNoche=?, estado=?, foto=? WHERE idHabitacion=?");
                     $stmt->execute([$numero, $tipo, $precioNoche, $estado, $foto, $id]);
-                    $mensaje = "Habitación actualizada con nueva foto.";
                     $habitacion['foto'] = $foto;
-                } else {
-                    $error = "Error al subir la imagen.";
                 }
             } else {
                 $stmt = $pdo->prepare("UPDATE Habitacion SET numero=?, tipo=?, precioNoche=?, estado=? WHERE idHabitacion=?");
                 $stmt->execute([$numero, $tipo, $precioNoche, $estado, $id]);
+            }
+
+            // Solo si no hubo error con la imagen
+            if (!$error) {
+                // Si el estado es "mantenimiento", registrar en tabla Mantenimiento
+                if ($estado === 'mantenimiento') {
+                    // Verificar si ya hay un mantenimiento activo (opcional, pero bueno para evitar duplicados)
+                    $stmtCheck = $pdo->prepare("SELECT idMantenimiento FROM Mantenimiento WHERE idHabitacion = ? AND estado IN ('programado', 'en curso')");
+                    $stmtCheck->execute([$id]);
+                    if (!$stmtCheck->fetch()) {
+                        // Registrar nuevo mantenimiento
+                        $stmtIns = $pdo->prepare("
+                            INSERT INTO Mantenimiento (idHabitacion, motivo, fechaInicio, estado)
+                            VALUES (?, ?, CURDATE(), 'en curso')
+                        ");
+                        $stmtIns->execute([$id, $motivoMantenimiento]);
+                    }
+                    // Nota: si ya existe uno activo, podrías actualizarlo, pero por ahora solo evitamos duplicados
+                }
+
+                $pdo->commit();
                 $mensaje = "Habitación actualizada exitosamente.";
+                // Actualizar datos en memoria para la vista
+                $habitacion['numero'] = $numero;
+                $habitacion['tipo'] = $tipo;
+                $habitacion['precioNoche'] = $precioNoche;
+                $habitacion['estado'] = $estado;
+            } else {
+                $pdo->rollback();
             }
         } catch (Exception $e) {
-            $error = "Error al guardar los cambios.";
+            $pdo->rollback();
+            $error = "Error al guardar los cambios: " . $e->getMessage();
         }
     }
 }
+?>
 
+<script>
+// Mostrar/ocultar campo de motivo cuando se cambia el estado
+document.addEventListener('DOMContentLoaded', function() {
+    const estadoSelect = document.querySelector('select[name="estado"]');
+    const motivoContainer = document.getElementById('motivoMantenimientoContainer');
+
+    function toggleMotivo() {
+        if (estadoSelect && motivoContainer) {
+            motivoContainer.style.display = (estadoSelect.value === 'mantenimiento') ? 'block' : 'none';
+        }
+    }
+
+    if (estadoSelect) {
+        toggleMotivo(); // Inicial
+        estadoSelect.addEventListener('change', toggleMotivo);
+    }
+});
+</script>
+
+<?php
 $titulo_pagina = "Editar Habitación - Hotel Yokoso";
 
 $contenido_principal = '
@@ -79,8 +136,8 @@ $contenido_principal = '
         </a>
     </div>
 
-    ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . $mensaje . '</div>' : '') . '
-    ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . $error . '</div>' : '') . '
+    ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-2x"></i><br>' . htmlspecialchars($mensaje) . '</div>' : '') . '
+    ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-2x"></i><br>' . htmlspecialchars($error) . '</div>' : '') . '
 
     <!-- FORMULARIO FIJO -->
     <div class="row justify-content-center">
@@ -124,6 +181,15 @@ $contenido_principal = '
                             </div>
                         </div>
 
+                        <!-- Campo de motivo (solo visible si estado = mantenimiento) -->
+                        <div class="row g-4 mb-5" id="motivoMantenimientoContainer" style="display: none;">
+                            <div class="col-12">
+                                <label class="form-label fw-bold text-dark">Motivo del Mantenimiento *</label>
+                                <textarea class="form-control form-control-lg rounded-4" name="motivoMantenimiento" rows="3" placeholder="Ej: Fugas en el baño, pintura descascarada, etc.">' . htmlspecialchars($motivoMantenimiento) . '</textarea>
+                                <div class="form-text">Este motivo se registrará en el historial de mantenimientos.</div>
+                            </div>
+                        </div>
+
                         <!-- FOTO ACTUAL -->
                         <div class="mb-5">
                             <label class="form-label fw-bold text-dark">Foto Actual</label>
@@ -144,8 +210,8 @@ $contenido_principal = '
 
                         <!-- BOTONES FINALES -->
                         <div class="pt-4 border-top text-end">
-                            <a href="ver_habitaciones.php" class="btn btn-outline-secondary btn-lg px-5 rounded-pill me-3">
-                                Cancelar
+                            <a href="ver_habitaciones.php" class="btn btn-cancelar me-3">
+                                <i class="fas fa-xmark me-2"></i>Cancelar
                             </a>
                             <button type="submit" class="btn btn-yokoso btn-lg px-5 rounded-pill shadow-lg">
                                 Guardar Cambios

@@ -142,8 +142,8 @@ $contenido_principal = '
                         <option value="triple" ' . (recordar('tipo') === 'triple' ? 'selected' : '') . '>Triple</option>
                         <option value="cuadruple" ' . (recordar('tipo') === 'cuadruple' ? 'selected' : '') . '>Cuádruple</option>
                         <option value="familiar" ' . (recordar('tipo') === 'familiar' ? 'selected' : '') . '>Familiar</option>
-                        <option value="suite" ' . (recordar('tipo') === 'suite' ? 'selected' : '') . '>Suite</option>
-                        <option value="de sal" ' . (recordar('tipo') === 'de sal' ? 'selected' : '') . '>De Sal</option>
+                        <option value="suite" ' . (recordar('tipo') === 'suite' ? 'selected' : '') . '>Suite de Sal</option>
+                        
                     </select>
                     ' . mostrarError('tipo', $errores) . '
                 </div>
