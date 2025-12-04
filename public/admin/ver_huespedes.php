@@ -15,6 +15,7 @@ $current_page = 'huespedes';
 // ✅ Traemos TODOS los huéspedes (el filtrado lo hará JS en el cliente)
 $stmt = $pdo->prepare("SELECT idHuesped, nombre, apellido, tipoDocumento, nroDocumento, email, telefono, activo FROM Huesped ORDER BY apellido, nombre");
 $stmt->execute();
+// Fetch de huéspedes 
 $huespedes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $titulo_pagina = "Huéspedes - Hotel Yokoso";
@@ -22,6 +23,7 @@ $titulo_pagina = "Huéspedes - Hotel Yokoso";
 
 <!-- ✨ Script para búsqueda y orden en tiempo real -->
 <script>
+//evento para filtrar y ordenar huéspedes 
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('buscadorHuespedes');
     const orderSelect = document.getElementById('ordenHuespedes');
@@ -35,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         id: parseInt(card.dataset.id)
     }));
 
+    // Función para aplicar filtros y orden
     function aplicarFiltrosYOrden() {
         const searchTerm = (searchInput.value || '').toLowerCase().trim();
         const orden = orderSelect.value;

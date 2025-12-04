@@ -15,6 +15,7 @@ require_once __DIR__ . '/../../config/database.php';
 $errores = [];
 $mensaje = null;
 
+// Procesar el formulario al enviarse
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $numero = trim($_POST['numero'] ?? '');
     $tipo = $_POST['tipo'] ?? '';
@@ -32,7 +33,7 @@ if (empty($numero)) {
 }
 
     // Validar tipo
-    $tiposValidos = ['simple', 'doble', 'triple', 'cuadruple', 'familiar', 'suite', 'de sal'];
+    $tiposValidos = ['simple', 'doble', 'triple', 'cuadruple', 'familiar', 'suite de sal'];
     if (empty($tipo) || !in_array($tipo, $tiposValidos)) {
         $errores['tipo'] = "Por favor, selecciona un tipo de habitación válido.";
     }
@@ -48,7 +49,7 @@ if (empty($numero)) {
         }
     }
 
-    // Validar estado (opcional, pero por seguridad)
+    // Validar estado
     $estadosValidos = ['disponible', 'ocupada', 'mantenimiento'];
     if (empty($estado) || !in_array($estado, $estadosValidos)) {
         $errores['estado'] = "Estado inválido.";

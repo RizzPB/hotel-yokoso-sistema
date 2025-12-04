@@ -1,5 +1,5 @@
 <?php
-// public/vistas/admin/ver_paquetes.php
+// public/admin/ver_paquetes.php
 
 define('ACCESO_PERMITIDO', true);
 session_start();
@@ -12,77 +12,111 @@ require_once __DIR__ . '/../../config/database.php';
 
 $current_page = 'paquetes';  // ← RESALTA EL MENÚ
 
-$stmt = $pdo->prepare("SELECT idPaquete, nombre, descripcion, precio, duracionDias, activo FROM PaqueteTuristico ORDER BY nombre");
+$stmt = $pdo->prepare("
+    SELECT idPaquete, nombre, descripcion, precio, duracionDias, activo, incluye, noIncluye 
+    FROM PaqueteTuristico 
+    ORDER BY nombre
+");
 $stmt->execute();
 $paquetes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $titulo_pagina = "Paquetes Turísticos - Hotel Yokoso";
 
 $contenido_principal = '
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-rojo fw-bold">Paquetes Turísticos</h2>
-    <a href="crear_paquete.php" class="btn btn-dark btn-lg shadow-lg px-5 position-relative overflow-hidden">
-        <i class="fas fa-plus me-2"></i>Nuevo Paquete
-    </a>
-</div>
+<div class="container py-5">
 
-<div class="row g-4">
-    ' . (empty($paquetes) ? '
-    <div class="col-12">
-        <div class="text-center py-5 text-muted">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-rojo fw-bold">Paquetes Turísticos</h2>
+        <a href="crear_paquete.php" class="btn btn-dark btn-lg shadow-lg px-5 position-relative overflow-hidden rounded-pill">
+            <i class="fas fa-plus me-2"></i>Nuevo Paquete
+        </a>
+    </div>
+
+    <!-- GRID DE PAQUETES -->
+    <div class="row g-4">
+        ' . (empty($paquetes) ? '
+        <div class="col-12 text-center py-5 text-muted">
             <i class="fas fa-suitcase fa-4x mb-3"></i>
             <h5>No hay paquetes turísticos registrados</h5>
-        </div>
-    </div>' : '') . '
+        </div>' : '') . '
 
-    ' . implode('', array_map(function($p) {
-        $badge = $p['activo'] 
-            ? '<span class="badge bg-success">Activo</span>' 
-            : '<span class="badge bg-secondary">Inactivo</span>';
-        return '
-        <div class="col-md-6 col-lg-12 col-xl-6">
-            <div class="card h-100 shadow-sm border-0 hover-lift">
-                <div class="card-body d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <h5 class="card-title mb-0">' . htmlspecialchars($p['nombre']) . '</h5>
-                        ' . $badge . '
-                    </div>
-                    <p class="text-muted small"><i class="fas fa-clock me-1"></i>' . $p['duracionDias'] . ' días</p>
-                    <p class="card-text flex-grow-1">' . htmlspecialchars($p['descripcion']) . '</p>
-                    <div class="d-flex justify-content-between align-items-end mt-3">
-                        <h4 class="text-rojo fw-bold mb-0">Bs. ' . number_format($p['precio'], 2) . '</h4>
-                        <div>
-                            <a href="editar_paquete.php?id=' . $p['idPaquete'] . '" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button onclick="eliminar(' . $p['idPaquete'] . ')" class="btn btn-outline-danger btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </button>
+        ' . implode('', array_map(function($p) {
+            $badge = $p['activo'] 
+                ? '<span class="badge bg-success fs-6">Activo</span>' 
+                : '<span class="badge bg-secondary fs-6">Inactivo</span>';
+
+            // Formatear "Incluye" y "No Incluye" como lista con puntos
+            $incluye = !empty($p['incluye']) ? 
+                '<strong>Incluye:</strong> <br><ul class="list-unstyled ms-3 mb-0"><li>' . 
+                str_replace("\n", '</li><li>', htmlspecialchars(trim($p['incluye']))) . 
+                '</li></ul>' : '';
+
+            $noIncluye = !empty($p['noIncluye']) ? 
+                '<strong>No Incluye:</strong> <br><ul class="list-unstyled ms-3 mb-0"><li>' . 
+                str_replace("\n", '</li><li>', htmlspecialchars(trim($p['noIncluye']))) . 
+                '</li></ul>' : '';
+
+            return '
+            <div class="col-md-6 col-lg-12 col-xl-6">
+                <div class="card h-100 shadow-sm border-0 hover-lift">
+                    <div class="card-body d-flex flex-column">
+
+                        <!-- ENCABEZADO -->
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0">' . htmlspecialchars($p['nombre']) . '</h5>
+                            ' . $badge . '
                         </div>
+
+                        <!-- DURACIÓN -->
+                        <p class="text-muted small mb-3">
+                            <i class="fas fa-clock me-1"></i>' . $p['duracionDias'] . ' día' . ($p['duracionDias'] > 1 ? 's' : '') . '
+                        </p>
+
+                        <!-- DESCRIPCIÓN COMPLETA -->
+                        <div class="flex-grow-1 mb-3">
+                            <p class="card-text mb-2">' . htmlspecialchars($p['descripcion']) . '</p>
+                            ' . $incluye . '
+                            ' . $noIncluye . '
+                        </div>
+
+                        <!-- PIE: PRECIO + BOTONES -->
+                        <div class="d-flex justify-content-between align-items-end mt-auto">
+                            <h4 class="text-rojo fw-bold mb-0">Bs. ' . number_format($p['precio'], 2) . '</h4>
+                            <div>
+                                <a href="editar_paquete.php?id=' . $p['idPaquete'] . '" class="btn btn-outline-primary btn-sm me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="eliminar(' . $p['idPaquete'] . ')" class="btn btn-outline-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
-        </div>';
-    }, $paquetes)) . '
-</div>
+            </div>';
+        }, $paquetes)) . '
+    </div>
 
-<!-- Modal eliminar -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirmar eliminación</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        ¿Eliminar este paquete turístico? Esta acción no se puede deshacer.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <a href="" id="confirmDelete" class="btn btn-danger">Eliminar</a>
+    <!-- MODAL DE ELIMINAR -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirmar eliminación</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            ¿Eliminar este paquete turístico? Esta acción no se puede deshacer.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <a href="" id="confirmDelete" class="btn btn-danger">Eliminar</a>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+
 </div>
 
 <script>

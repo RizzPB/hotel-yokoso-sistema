@@ -19,7 +19,7 @@ if (!$id) {
     exit;
 }
 
-// Obtener datos del empleado — ¡AHORA SÍ INCLUYE u.idUsuario!
+// Obtener datos del empleado a editar, incluyendo idUsuario
 $stmt = $pdo->prepare("
     SELECT e.idEmpleado, e.nombre, e.apellido, e.cargo, 
            u.idUsuario, u.nombreUsuario, u.email, u.rol, u.activo
@@ -27,7 +27,9 @@ $stmt = $pdo->prepare("
     JOIN Usuario u ON e.idUsuario = u.idUsuario
     WHERE e.idEmpleado = ?
 ");
+// Ejecutar la consulta
 $stmt->execute([$id]);
+// Fetch del empleado a editar 
 $empleado = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Si no existe el empleado o falta el idUsuario, redirigir
@@ -40,6 +42,7 @@ if (!$empleado || !isset($empleado['idUsuario'])) {
 $error = null;
 $mensaje = null;
 
+// Procesar el formulario al enviarse 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
     $apellido = trim($_POST['apellido'] ?? '');
@@ -69,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         !preg_match('/[@$!%*?&]/', $nuevaPassword)) {
                         $error = "La contraseña debe tener al menos 8 caracteres, mayúsculas, minúsculas, números y símbolos.";
                     } else {
+                        // Actualizar con nueva contraseña 
                         $hash = password_hash($nuevaPassword, PASSWORD_DEFAULT);
                         $stmt = $pdo->prepare("
                             UPDATE Usuario
@@ -93,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         SET nombre = ?, apellido = ?, cargo = ?
                         WHERE idEmpleado = ?
                     ");
+                    // Ejecutar actualización MENSAJE DE ÉXITO
                     if ($stmt->execute([$nombre, $apellido, $cargo, $id])) {
                         $mensaje = "Empleado actualizado exitosamente.";
 
@@ -160,6 +165,7 @@ $contenido_principal = $estilos_adicionales . '
         <strong>Error:</strong> ' . htmlspecialchars($error) . '
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>' : '') . '
+
     
     <div class="reserva-form-container">
         <form method="POST">

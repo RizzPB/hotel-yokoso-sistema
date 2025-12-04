@@ -31,25 +31,38 @@ $mensaje = $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre       = trim($_POST['nombre'] ?? '');
     $descripcion  = trim($_POST['descripcion'] ?? '');
-    $precio       = $_POST['precio'] ?? 0;
-    $duracionDias = $_POST['duracionDias'] ?? 0;
+    $precio       = trim($_POST['precio'] ?? '');
+    $duracionDias = trim($_POST['duracionDias'] ?? '');
     $activo       = isset($_POST['activo']) ? 1 : 0;
+    $incluye      = trim($_POST['incluye'] ?? '');
+    $noIncluye    = trim($_POST['noIncluye'] ?? '');
 
-    if (empty($nombre) || empty($descripcion) || $precio <= 0 || $duracionDias <= 0) {
-        $error = "Nombre, descripción, precio y duración son obligatorios.";
+    // Validaciones
+    if (empty($nombre) || empty($descripcion) || empty($precio) || empty($duracionDias)) {
+        $error = "Los campos nombre, descripción, precio y duración son obligatorios.";
+    } elseif (!is_numeric($precio) || $precio <= 0) {
+        $error = "El precio debe ser un número mayor a 0.";
+    } elseif (!is_numeric($duracionDias) || $duracionDias <= 0 || $duracionDias != intval($duracionDias)) {
+        $error = "La duración debe ser un número entero mayor a 0.";
     } else {
-        $stmt = $pdo->prepare("
-            UPDATE PaqueteTuristico 
-            SET nombre = ?, descripcion = ?, precio = ?, duracionDias = ?, activo = ? 
-            WHERE idPaquete = ?
-        ");
-        if ($stmt->execute([$nombre, $descripcion, $precio, $duracionDias, $activo, $id])) {
-            $mensaje = "Paquete actualizado exitosamente.";
-            $stmt = $pdo->prepare("SELECT * FROM PaqueteTuristico WHERE idPaquete = ?");
-            $stmt->execute([$id]);
-            $paquete = $stmt->fetch(PDO::FETCH_ASSOC);
-        } else {
-            $error = "Error al guardar los cambios.";
+        try {
+            $stmt = $pdo->prepare("
+                UPDATE PaqueteTuristico 
+                SET nombre = ?, descripcion = ?, precio = ?, duracionDias = ?, activo = ?, 
+                    incluye = ?, noIncluye = ? 
+                WHERE idPaquete = ?
+            ");
+            if ($stmt->execute([$nombre, $descripcion, $precio, $duracionDias, $activo, $incluye, $noIncluye, $id])) {
+                $mensaje = "Paquete actualizado exitosamente.";
+                // Recargar datos
+                $stmt = $pdo->prepare("SELECT * FROM PaqueteTuristico WHERE idPaquete = ?");
+                $stmt->execute([$id]);
+                $paquete = $stmt->fetch(PDO::FETCH_ASSOC);
+            } else {
+                $error = "Error al guardar los cambios.";
+            }
+        } catch (Exception $e) {
+            $error = "Ocurrió un error inesperado. Inténtalo de nuevo.";
         }
     }
 }
@@ -68,10 +81,10 @@ $contenido_principal = '
         </a>
     </div>
 
-    ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;">Paquete actualizado</div>' : '') . '
-    ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;">Error: ' . htmlspecialchars($error) . '</div>' : '') . '
+    ' . ($mensaje ? '<div class="alert alert-success text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-check-circle fa-lg me-2"></i>Paquete actualizado exitosamente.</div>' : '') . '
+    ' . ($error ? '<div class="alert alert-danger text-center mx-auto mb-4" style="max-width:900px;"><i class="fas fa-times-circle fa-lg me-2"></i>Error: ' . htmlspecialchars($error) . '</div>' : '') . '
 
-    <!-- FORMULARIO FIJO, ANCHO Y SIN ESPACIOS GIGANTES -->
+    <!-- FORMULARIO -->
     <div class="row justify-content-center">
         <div class="col-xl-11 col-xxl-10">
             <div class="card border-0 shadow-lg rounded-4">
@@ -113,27 +126,29 @@ $contenido_principal = '
 
                         <div class="mb-5">
                             <label class="form-label fw-bold text-dark">Descripción *</label>
-                            <textarea class="form-control form-control-lg rounded-4" rows="5" name="descripcion" required>'.htmlspecialchars($paquete['descripcion']).'</textarea>
+                            <textarea class="form-control form-control-lg rounded-4" rows="4" name="descripcion" required>'.htmlspecialchars($paquete['descripcion']).'</textarea>
                         </div>
 
                         <div class="row g-4 mb-5">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">Incluye</label>
                                 <textarea class="form-control form-control-lg rounded-4" rows="5" name="incluye" placeholder="Ej. Desayuno buffet, traslado aeropuerto, tour guiado...">'.htmlspecialchars($paquete['incluye'] ?? '').'</textarea>
+                                <div class="form-text">Separa los ítems con saltos de línea (Enter).</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold text-dark">No Incluye</label>
                                 <textarea class="form-control form-control-lg rounded-4" rows="5" name="noIncluye" placeholder="Ej. Propinas, bebidas alcohólicas, seguros...">'.htmlspecialchars($paquete['noIncluye'] ?? '').'</textarea>
+                                <div class="form-text">Separa los ítems con saltos de línea (Enter).</div>
                             </div>
                         </div>
 
-                        <!-- BOTONES FINALES -->
+                        <!-- BOTONES -->
                         <div class="pt-4 border-top text-end">
-                            <a href="ver_paquetes.php" class="btn btn-outline-secondary btn-lg px-5 rounded-pill me-3">
-                                Cancelar
+                            <a href="ver_paquetes.php" class="btn btn-cancelar me-3">
+                                <i class="fas fa-xmark me-2"></i>Cancelar
                             </a>
                             <button type="submit" class="btn btn-yokoso btn-lg px-5 rounded-pill shadow-lg">
-                                Guardar Cambios
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
                             </button>
                         </div>
                     </form>
@@ -145,5 +160,4 @@ $contenido_principal = '
 ';
 
 include 'plantilla_admin.php';
-include __DIR__ . '/../layout.php';
 ?>

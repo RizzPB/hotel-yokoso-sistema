@@ -1,8 +1,9 @@
 <?php
 // public/admin/editar_habitacion.php
-
+// Editar habitación existente
 define('ACCESO_PERMITIDO', true);
 session_start();
+// Verificar sesión y rol de admin
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../../login.php");
     exit;
@@ -10,6 +11,7 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
 
 require_once __DIR__ . '/../../config/database.php';
 
+// Obtener ID de la habitación a editar
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) {
     header("Location: ver_habitaciones.php");
@@ -21,14 +23,17 @@ $stmt = $pdo->prepare("SELECT * FROM Habitacion WHERE idHabitacion = ?");
 $stmt->execute([$id]);
 $habitacion = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// Si no existe la habitación, redirigir
 if (!$habitacion) {
     header("Location: ver_habitaciones.php");
     exit;
 }
 
+// Inicializar variables para mensajes
 $mensaje = $error = null;
 $motivoMantenimiento = '';
 
+// Procesar el formulario al enviarse
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $numero           = trim($_POST['numero'] ?? '');
     $tipo             = $_POST['tipo'] ?? '';
@@ -48,10 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Actualizar habitación
             if ($foto) {
+                // Subir nueva foto
                 $directorio = __DIR__ . '/../../assets/img/habitaciones/';
                 $rutaFoto   = $directorio . basename($foto);
+                // Obtener extensión
                 $extension  = strtolower(pathinfo($rutaFoto, PATHINFO_EXTENSION));
 
+                // Validar tipo de imagen
                 if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
                     $error = "Solo se permiten imágenes (JPG, PNG, GIF, WEBP).";
                 } elseif (!move_uploaded_file($_FILES['foto']['tmp_name'], $rutaFoto)) {
@@ -70,9 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$error) {
                 // Si el estado es "mantenimiento", registrar en tabla Mantenimiento
                 if ($estado === 'mantenimiento') {
-                    // Verificar si ya hay un mantenimiento activo (opcional, pero bueno para evitar duplicados)
+                    // Verificar si ya hay un mantenimiento 
                     $stmtCheck = $pdo->prepare("SELECT idMantenimiento FROM Mantenimiento WHERE idHabitacion = ? AND estado IN ('programado', 'en curso')");
                     $stmtCheck->execute([$id]);
+                    //para evitar duplicados
                     if (!$stmtCheck->fetch()) {
                         // Registrar nuevo mantenimiento
                         $stmtIns = $pdo->prepare("
@@ -81,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ");
                         $stmtIns->execute([$id, $motivoMantenimiento]);
                     }
-                    // Nota: si ya existe uno activo, podrías actualizarlo, pero por ahora solo evitamos duplicados
+                    
                 }
 
                 $pdo->commit();
@@ -105,16 +114,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script>
 // Mostrar/ocultar campo de motivo cuando se cambia el estado
 document.addEventListener('DOMContentLoaded', function() {
+    //para el motivo de mantenimiento
     const estadoSelect = document.querySelector('select[name="estado"]');
     const motivoContainer = document.getElementById('motivoMantenimientoContainer');
 
+    // Función para mostrar u ocultar el campo de motivo
     function toggleMotivo() {
+        //condicion para mostrar el campo
         if (estadoSelect && motivoContainer) {
+            // Mostrar solo si el estado es "mantenimiento"
             motivoContainer.style.display = (estadoSelect.value === 'mantenimiento') ? 'block' : 'none';
         }
     }
 
+    //condicion para agregar el event listener
     if (estadoSelect) {
+        //llama el la funcion al cargar la pagina 
         toggleMotivo(); // Inicial
         estadoSelect.addEventListener('change', toggleMotivo);
     }

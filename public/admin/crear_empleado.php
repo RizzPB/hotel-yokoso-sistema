@@ -3,15 +3,17 @@
 
 define('ACCESO_PERMITIDO', true);
 
+// Iniciar sesión y verificar rol de admin
 session_start();
 if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     header("Location: ../../login.php");
     exit;
 }
 
+// Conexión a la base de datos
 require_once __DIR__ . '/../../config/database.php';
 
-// Valores previos para mantener el formulario en caso de error
+// Valores previos para mantener el formulario en caso de error, un error como string o array de errores por campo
 $nombre = $_POST['nombre'] ?? '';
 $apellido = $_POST['apellido'] ?? '';
 $cargo = $_POST['cargo'] ?? '';
@@ -79,23 +81,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Si no hay errores individuales, verificar duplicados
     if (empty($errores)) {
+        // Verificar si el nombre de usuario o email ya existen
         $stmt = $pdo->prepare("SELECT idUsuario FROM Usuario WHERE nombreUsuario = ? OR email = ?");
         $stmt->execute([trim($nombreUsuario), trim($email)]);
         if ($stmt->fetch()) {
             // Puedes marcar ambos campos o uno; elegimos el más apropiado
             $errores['nombreUsuario'] = "Este usuario o correo ya está registrado.";
         } else {
-            // Registrar
+            // Registrar nuevo empleado y usuario
             $hash = password_hash($password, PASSWORD_DEFAULT);
+            // Usar transacción para asegurar integridad para ambas inserciones
             $pdo->beginTransaction();
+            // Insertar en Usuario
             try {
                 $stmt = $pdo->prepare("
                     INSERT INTO Usuario (nombreUsuario, contrasena, rol, email, activo)
                     VALUES (?, ?, 'empleado', ?, 1)
                 ");
+                
                 $stmt->execute([trim($nombreUsuario), $hash, trim($email)]);
                 $idUsuario = $pdo->lastInsertId();
 
+                // Insertar en Empleado
                 $stmt = $pdo->prepare("
                     INSERT INTO Empleado (nombre, apellido, cargo, idUsuario)
                     VALUES (?, ?, ?, ?)

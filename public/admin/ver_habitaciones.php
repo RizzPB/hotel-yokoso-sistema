@@ -8,10 +8,11 @@ if (!isset($_SESSION['idUsuario']) || $_SESSION['rol'] !== 'admin') {
     exit;
 }
 
+// Conexión a la base de datos
 $current_page = 'habitaciones';
 require_once __DIR__ . '/../../config/database.php';
 
-// ✅ Misma consulta robusta que corregimos antes
+// ✅ Traemos todas las habitaciones con su estado calculado
 $stmt = $pdo->prepare("
     SELECT 
         h.idHabitacion, 
@@ -57,15 +58,20 @@ function obtenerEstadoInfo($estado) {
 
 <!-- Script para filtrar sin recargar -->
 <script>
+// Filtrado de habitaciones por estado y tipo
 document.addEventListener('DOMContentLoaded', function() {
     const estadoFilter = document.getElementById('filtroEstado');
     const tipoFilter = document.getElementById('filtroTipo');
+    //filtrar las tarjetas de habitaciones
     const cards = document.querySelectorAll('.habitacion-card');
 
+    //funcion para aplicar los filtros
     function aplicarFiltros() {
+        //parametros seleccionados 
         const estadoSel = estadoFilter.value;
         const tipoSel = tipoFilter.value;
 
+        //cards de habitaciones donde se aplicaran los filtros
         cards.forEach(card => {
             const estadoCard = card.dataset.estado;
             const tipoCard = card.dataset.tipo;
@@ -165,7 +171,7 @@ $contenido_principal = '
                 </div>
             </div>
 
-            <!-- Contador elegante al final -->
+            <!-- Contador de habitaciones al final -->
             <div class="text-center mt-4">
                 <h5 class="text-muted">
                     Total: <strong class="text-rojo">' . count($habitaciones) . '</strong> habitaciones registradas

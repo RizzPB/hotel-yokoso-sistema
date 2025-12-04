@@ -1,6 +1,4 @@
 <?php
-//ARREGLAS DOS COSAS EN EL CODIGO
-
 // public/admin/ver_reservas.php
 
 define('ACCESO_PERMITIDO', true);
@@ -17,7 +15,7 @@ require_once __DIR__ . '/../../config/database.php';
 $filtroEstado = $_GET['estado'] ?? 'todas';
 $buscar = trim($_GET['buscar'] ?? '');
 
-// Consulta corregida y completa
+// Consulta principal de reservas con filtros aplicados
 $sql = "
     SELECT r.*, h.nombre, h.apellido, h.nroDocumento,
            GROUP_CONCAT(ha.numero SEPARATOR ', ') AS habitaciones
@@ -27,14 +25,16 @@ $sql = "
     LEFT JOIN Habitacion ha ON rh.idHabitacion = ha.idHabitacion
     WHERE 1=1
 ";
-
+// Parámetros para la consulta
 $params = [];
 
+// Aplicar filtro de estado si no es "todas"
 if ($filtroEstado !== 'todas') {
     $sql .= " AND r.estado = ?";
     $params[] = $filtroEstado;
 }
 
+// Aplicar búsqueda si hay término
 if (!empty($buscar)) {
     $sql .= " AND (h.nombre LIKE ? OR h.apellido LIKE ? OR h.nroDocumento LIKE ? OR CAST(r.idReserva AS CHAR) LIKE ?)";
     $like = "%$buscar%";
@@ -45,10 +45,12 @@ if (!empty($buscar)) {
 }
 
 
+// Agrupar por reserva para evitar duplicados por habitaciones y ordenar por ID descendente
 $sql .= " GROUP BY r.idReserva ORDER BY r.idReserva DESC";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
+// Fetch de reservas 
 $reservas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $titulo_pagina = "Reservas - Panel Administrador";
