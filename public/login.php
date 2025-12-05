@@ -24,8 +24,21 @@ $bloqueado = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = trim($_POST['usuario']);
     $password = $_POST['password'];
-
-    $stmt = $pdo->prepare("SELECT idUsuario, nombreUsuario, contrasena, rol, bloqueadoHasta, intentosFallidos FROM Usuario WHERE (nombreUsuario = ? OR email = ?) AND activo = 1");
+    
+    // Ajusta los campos según tu tabla Usuario
+    // Asumimos que tienes: idUsuario, nombreUsuario, email, contrasena, rol, activo
+    $stmt = $pdo->prepare("
+        SELECT 
+            idUsuario, 
+            nombreUsuario, 
+            email, 
+            contrasena, 
+            rol, 
+            bloqueadoHasta, 
+            intentosFallidos 
+        FROM Usuario 
+        WHERE (nombreUsuario = ? OR email = ?) AND activo = 1
+    ");
     $stmt->execute([$usuario, $usuario]);
     $user = $stmt->fetch();
 
@@ -34,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $bloqueadoHasta = $user['bloqueadoHasta'];
 
-        // ssi el bloqueo YA EXPIRÓ, resetearlo
+        // Si el bloqueo YA expiró, resetearlo
         if ($bloqueadoHasta && new DateTime() >= new DateTime($bloqueadoHasta)) {
             $pdo->prepare("UPDATE Usuario SET intentosFallidos = 0, bloqueadoHasta = NULL WHERE idUsuario = ?")
                 ->execute([$user['idUsuario']]);
@@ -53,10 +66,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $_SESSION['idUsuario'] = $user['idUsuario'];
                 $_SESSION['rol'] = $user['rol'];
+                $_SESSION['email'] = $user['email']; 
+                $_SESSION['nombreUsuario'] = $user['nombreUsuario']; 
 
+
+                // Registrar auditoría
                 $pdo->prepare("INSERT INTO AuditoriaLogin (idUsuario, fechaHora) VALUES (?, NOW())")
                     ->execute([$user['idUsuario']]);
 
+                // Redirigir según rol
                 switch ($user['rol']) {
                     case 'admin':
                         header('Location: ../admin/panel_admin.php');

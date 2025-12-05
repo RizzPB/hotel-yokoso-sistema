@@ -1,11 +1,11 @@
 <?php
-$body_class = 'layout-dashboard'; // para footer fijo
+$body_class = 'layout-dashboard';
 $title = "Completa tus Datos - Hotel Yokoso";
 $use_container_fluid = true;
 ob_start();
 ?>
 
-<!-- Navbar igual al dashboard -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--color-rojo-quemado);">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="../index.php">
@@ -47,7 +47,7 @@ ob_start();
 <div class="container py-4">
   <div class="text-center mb-5">
     <h1 class="display-5 fw-bold" style="font-family: var(--font-heading); color: var(--color-rojo);">
-      <i class="fas fa-user-edit me-2"></i> Tus Datos Personales
+      <i class="fas fa-user-edit me-2"></i> Datos de Reserva
     </h1>
     <p class="lead" style="font-family: var(--font-body);">
       Solo necesitamos información básica para tu solicitud de reserva.  
@@ -147,11 +147,9 @@ ob_start();
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="email" class="form-label">Correo Electrónico <span class="text-danger">*</span></label>
-            <input type="email" class="form-control <?= !empty($errors['email']) ? 'is-invalid' : '' ?>" 
-                   id="email" name="email" value="<?= htmlspecialchars($datos['email'] ?? '') ?>" required>
-            <?php if (!empty($errors['email'])): ?>
-              <div class="invalid-feedback"><?= htmlspecialchars($errors['email']) ?></div>
-            <?php endif; ?>
+            <input type="email" class="form-control" 
+                   value="<?= htmlspecialchars($_SESSION['email']) ?>" disabled>
+            <input type="hidden" name="email" value="<?= htmlspecialchars($_SESSION['email']) ?>">
           </div>
           <div class="col-md-6 mb-3">
             <label for="telefono" class="form-label">Teléfono <span class="text-danger">*</span></label>
@@ -192,7 +190,7 @@ ob_start();
           </select>
         </div>
         <div class="mb-3">
-          <label for="preferenciaAlimentaria" class="form-label">Preferencias Alimentarias (alergias, dietas, etc.)</label>
+          <label for="preferenciaAlimentaria" class="form-label">Preferencias Alimentarias</label>
           <textarea class="form-control" id="preferenciaAlimentaria" name="preferenciaAlimentaria" rows="2"><?= htmlspecialchars($datos['preferenciaAlimentaria'] ?? '') ?></textarea>
           <small class="form-text text-muted">Ej: vegetariano, sin gluten, alergia al maní, etc.</small>
         </div>
@@ -226,10 +224,7 @@ ob_start();
     const form = document.querySelector('form');
     if (form) {
       form.addEventListener('submit', function (event) {
-        // Verificar manualmente
         let valid = true;
-
-        // Campos obligatorios
         const requiredFields = form.querySelectorAll('[required]');
         requiredFields.forEach(field => {
           if (!field.value.trim()) {
@@ -240,16 +235,6 @@ ob_start();
           }
         });
 
-        // Validar email
-        const email = form.querySelector('[name="email"]');
-        if (email && email.value && !/^\S+@\S+\.\S+$/.test(email.value)) {
-          email.classList.add('is-invalid');
-          valid = false;
-        } else if (email) {
-          email.classList.remove('is-invalid');
-        }
-
-        // Validar fechas
         const fechaInicio = form.querySelector('[name="fechaInicio"]');
         const fechaFin = form.querySelector('[name="fechaFin"]');
         if (fechaInicio && fechaFin) {
@@ -267,7 +252,6 @@ ob_start();
         }
       });
 
-      // Quitar rojo al escribir
       form.querySelectorAll('input, select, textarea').forEach(input => {
         input.addEventListener('input', function() {
           this.classList.remove('is-invalid');
